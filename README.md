@@ -1,4 +1,4 @@
-# flutter_application_1
+# flutter_blog_app
 
 A new Flutter project.
 
