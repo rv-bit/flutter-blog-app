@@ -9,7 +9,7 @@ class App extends StatelessWidget {
 	@override
 	Widget build(BuildContext context) {
 		return MaterialApp.router(
-			title: 'Flutter Demo with GoRouter',
+			title: 'Offline Blog App',
 			routerConfig: appRouter,
 			theme: AppTheme.theme,
 		);
