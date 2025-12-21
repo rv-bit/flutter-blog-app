@@ -1,9 +1,14 @@
 import 'package:sqflite/sqflite.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_blog_app/core/database/database.dart';
 import 'package:flutter_blog_app/core/exceptions/database_exceptions.dart';
 
-class BlogPostDAO {
+final blogDAOProvider = Provider<BlogDAO>((ref) {
+	return BlogDAO();
+});
+
+class BlogDAO {
 	final databaseHelper = DatabaseHelper();
 
 	Future<void> insertBlogPost(Map<String, dynamic> blog) async {
@@ -64,10 +69,11 @@ class BlogPostDAO {
 	Future<int> deleteMultiple(List<String> ids) async {
 		final database = await databaseHelper.database;
 		final placeholders = List.filled(ids.length, '?').join(',');
+
 		return database.update(
 			'blog_posts', 
 			{'is_deleted': 1},
-			where: 'id = ($placeholders)',
+			where: 'id IN ($placeholders)',
 			whereArgs: [ids]
 		);
 	}
