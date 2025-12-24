@@ -3,10 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-import 'package:flutter_blog_app/common/controllers/ui_controller.dart';
 import 'package:flutter_blog_app/config/theme_pallet.dart';
-import 'package:flutter_blog_app/constants/components_constants.dart' as components;
+import 'package:flutter_blog_app/common/controllers/ui_controller.dart';
+
 import 'package:flutter_blog_app/constants/assets_constants.dart';
+import 'package:flutter_blog_app/constants/components_constants.dart' as components;
 
 class AppShell extends StatelessWidget {
 	final Widget child;
@@ -38,7 +39,7 @@ class AppShell extends StatelessWidget {
 			resizeToAvoidBottomInset: false,
 			body: Stack(
 				children: [
-					child,
+					child, // The routed content
 					_AnimatedBottomBar(
 						onTap: _onItemTapped,
 						currentIndex: _locationToIndex(context),
@@ -47,7 +48,7 @@ class AppShell extends StatelessWidget {
 						currentIndex: currentIndex,
 					),
 				],
-			), // The route the user is currently on, also known as the outlet
+			),
 		);
 	}
 }
@@ -92,11 +93,10 @@ class _AnimatedFAB extends StatelessWidget {
 	Widget build(BuildContext context) {
 		return AnimatedBuilder(
 			animation: scrollUIController,
-			builder: (_, __) {
-
+			builder: (_, _) {
 				return AnimatedPositioned(
 					right: 15,
-					bottom: scrollUIController.isHidden ? -kFabSize + MediaQuery.of(context).viewPadding.bottom : kBottomBarHeight,
+					bottom: scrollUIController.isHidden ? kFabSize / 2 + MediaQuery.of(context).viewPadding.bottom : kBottomBarHeight + kFabBasePadding,
 					duration: const Duration(milliseconds: 200),
 					curve: Curves.easeIn,
 					child: components.StaticFAB(
