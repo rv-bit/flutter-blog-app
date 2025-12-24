@@ -23,6 +23,7 @@ class _HomeViewState extends State<HomeView> {
 	static const double _offsetToArmed = 36.0;
 
 	bool _showSpinner = false;
+	bool _hasTriggeredArmedHaptic = false;
 
 	double _dragDistance = 0.0;
 
@@ -42,6 +43,9 @@ class _HomeViewState extends State<HomeView> {
 			setState(() {
 				_showSpinner = false;
 			});
+						
+			// 🔔 Haptic on release/completion
+			HapticFeedback.lightImpact();
 		}
 
 		_items = List.generate(50, (index) => 'Item $index');
@@ -58,11 +62,19 @@ class _HomeViewState extends State<HomeView> {
 
 							if (notification is ScrollUpdateNotification) {
 								if (notification.metrics.pixels <= 0) {
+									final oldDistance = _dragDistance;
 									_dragDistance -= notification.scrollDelta ?? 0;
+									
+									// 🔔 Haptic when first crossing armed threshold
+									if (!_hasTriggeredArmedHaptic && oldDistance < _offsetToArmed &&  _dragDistance >= _offsetToArmed) {
+										HapticFeedback.mediumImpact();
+										_hasTriggeredArmedHaptic = true;
+									}
 								}
 							}
 
 							if (notification is ScrollEndNotification) {
+								_hasTriggeredArmedHaptic = false;
 								_dragDistance = 0;
 							}
 							
