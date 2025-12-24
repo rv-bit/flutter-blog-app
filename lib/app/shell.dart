@@ -1,12 +1,11 @@
-import 'package:flutter_blog_app/common/controllers/ui_controller.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
+import 'package:flutter_blog_app/common/controllers/ui_controller.dart';
 import 'package:flutter_blog_app/config/theme_pallet.dart';
-import 'package:flutter_blog_app/constants/components_constants.dart';
+import 'package:flutter_blog_app/constants/components_constants.dart' as components;
 import 'package:flutter_blog_app/constants/assets_constants.dart';
 
 class AppShell extends StatelessWidget {
@@ -22,12 +21,12 @@ class AppShell extends StatelessWidget {
 
 	void _onItemTapped(BuildContext context, int index) {
 		switch (index) {
-		case 0:
-			context.go('/');
-			break;
-		case 1:
-			context.go('/search');
-			break;
+			case 0:
+				context.go('/');
+				break;
+			case 1:
+				context.go('/search');
+				break;
 		}
 	}
 
@@ -36,11 +35,10 @@ class AppShell extends StatelessWidget {
 		final currentIndex = _locationToIndex(context);
 
 		return Scaffold(
+			resizeToAvoidBottomInset: false,
 			body: Stack(
 				children: [
 					child,
-
-					const _AnimatedAppBar(),
 					_AnimatedBottomBar(
 						onTap: _onItemTapped,
 						currentIndex: _locationToIndex(context),
@@ -54,24 +52,6 @@ class AppShell extends StatelessWidget {
 	}
 }
 
-class _AnimatedAppBar extends StatelessWidget {
-	const _AnimatedAppBar();
-
-	@override
-	Widget build(BuildContext context) {
-		return AnimatedBuilder(
-			animation: scrollUIController,
-			builder: (_, __) {
-				return Positioned(
-					top: -scrollUIController.offset,
-					left: 0,
-					right: 0,
-					child: ComponentsConstants.appBar(),
-				);
-			},
-		);
-	}
-}
 class _AnimatedBottomBar extends StatelessWidget {
 	final int currentIndex;
 	final void Function(BuildContext, int) onTap;
@@ -86,42 +66,15 @@ class _AnimatedBottomBar extends StatelessWidget {
 		return AnimatedBuilder(
 			animation: scrollUIController,
 			builder: (_, __) {
-				return Positioned(
+				return AnimatedPositioned(
 					left: 0,
 					right: 0,
-					bottom: -scrollUIController.offset,
-					child: CupertinoTabBar(
-						height: kBottomBarHeight,
+					duration: const Duration(milliseconds: 200),
+					curve: Curves.easeIn,
+					bottom: scrollUIController.isHidden ? -(kBottomBarHeight + MediaQuery.of(context).viewPadding.bottom) : 0,
+					child: components.StaticBottomBar(
 						currentIndex: currentIndex,
-						onTap: (i) => onTap(context, i),
-						items: [
-							BottomNavigationBarItem(
-								icon: SvgPicture.asset(
-									currentIndex == 0
-										? AssetsConstants.homeFilledIcon
-										: AssetsConstants.homeOutlinedIcon,
-									colorFilter: ColorFilter.mode(
-										currentIndex == 0
-											? Palette.whiteColor
-											: Palette.greyColor,
-										BlendMode.srcIn,
-									),
-								),
-								label: 'Home',
-							),
-							BottomNavigationBarItem(
-								icon: SvgPicture.asset(
-									AssetsConstants.searchIcon,
-									colorFilter: ColorFilter.mode(
-										currentIndex == 1
-											? Palette.whiteColor
-											: Palette.greyColor,
-										BlendMode.srcIn,
-									),
-								),
-								label: 'Search',
-							),
-						],
+						onTap: (index) => onTap(context, index),
 					),
 				);
 			},
@@ -140,26 +93,20 @@ class _AnimatedFAB extends StatelessWidget {
 		return AnimatedBuilder(
 			animation: scrollUIController,
 			builder: (_, __) {
-				final offset = scrollUIController.offset;
-				final cappedLift = Curves.easeOut.transform(
-					(offset / kFabMaxLift).clamp(0, 1),
-				) * kFabMaxLift;
 
-				return Positioned(
+				return AnimatedPositioned(
 					right: 15,
-					bottom: kFabBasePadding + kBottomBarHeight - cappedLift,
-					child: currentIndex == 0 ? FloatingActionButton(
+					bottom: scrollUIController.isHidden ? -kFabSize + MediaQuery.of(context).viewPadding.bottom : kBottomBarHeight,
+					duration: const Duration(milliseconds: 200),
+					curve: Curves.easeIn,
+					child: components.StaticFAB(
 						onPressed: () => context.go('/create'),
-						tooltip: 'Create Post',
-						shape: RoundedSuperellipseBorder(
-							borderRadius: BorderRadius.circular(30.0),
-						),
-						child: SvgPicture.asset(
+						icon: SvgPicture.asset(
 							AssetsConstants.blogInsert,
 							colorFilter: ColorFilter.mode(Palette.whiteColor, BlendMode.srcIn),
 							height: 24,
 						),
-					) : SizedBox.shrink(),
+					),
 				);
 			},
 		);

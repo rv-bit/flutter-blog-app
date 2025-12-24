@@ -1,24 +1,43 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/cupertino.dart';
 
 final scrollUIController = ScrollUIController();
 
+const double kAppBarHeight = 70;
+const double kAppBarLiftThreshold = 20; // used to determine the height of app bar when hidden
+
 const double kBottomBarHeight = 50;
-const double kFabBasePadding = 30;
+const double kFabBasePadding = 10;
 const double kFabMaxLift = 30; 
+const double kFabSize = 56;
+
+enum BarVisibility { shown, hidden }
 
 class ScrollUIController extends ChangeNotifier {
-	double _offset = 0;
-	final double _maxOffset = kBottomBarHeight + 20; // Make sure to cover padding
+	BarVisibility _visibility = BarVisibility.shown;
+	BarVisibility get visibility => _visibility;
 
-	double get offset => _offset;
+	bool get isHidden => _visibility == BarVisibility.hidden;
 
-	void update(double delta) {
-		_offset = (_offset + delta * 0.8).clamp(0, _maxOffset);
-		notifyListeners();
+	void onScroll(ScrollNotification notification) {
+		if (notification is! ScrollUpdateNotification) return;
+
+		final delta = notification.scrollDelta ?? 0;
+
+		// Down = hide
+		if (delta > 0 && _visibility != BarVisibility.hidden) {
+			_visibility = BarVisibility.hidden;
+			notifyListeners();
+		}
+
+		// Up = show
+		if (delta < 0 && _visibility != BarVisibility.shown) {
+			_visibility = BarVisibility.shown;
+			notifyListeners();
+		}
 	}
 
-	void snap() {
-		_offset = _offset > _maxOffset / 2 ? _maxOffset : 0;
+	void forceShow() {
+		_visibility = BarVisibility.shown;
 		notifyListeners();
 	}
 }
