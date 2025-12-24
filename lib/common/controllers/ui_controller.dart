@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart';
 
 final scrollUIController = ScrollUIController();
 
@@ -15,28 +16,43 @@ enum BarVisibility { shown, hidden }
 class ScrollUIController extends ChangeNotifier {
 	BarVisibility _visibility = BarVisibility.shown;
 	BarVisibility get visibility => _visibility;
-
 	bool get isHidden => _visibility == BarVisibility.hidden;
 
+
 	void onScroll(ScrollNotification notification) {
-		if (notification is! ScrollUpdateNotification) return;
+		if (notification is! UserScrollNotification) return;
 
-		final delta = notification.scrollDelta ?? 0;
+		final direction = notification.direction;
+		final metrics = notification.metrics;
 
-		// Down = hide
-		if (delta > 0 && _visibility != BarVisibility.hidden) {
-			_visibility = BarVisibility.hidden;
-			notifyListeners();
-		}
+		// 🔒 If content cannot scroll, ignore completely
+		if (metrics.maxScrollExtent <= 0) return;
 
-		// Up = show
-		if (delta < 0 && _visibility != BarVisibility.shown) {
-			_visibility = BarVisibility.shown;
-			notifyListeners();
+		switch (direction) {
+			case ScrollDirection.reverse:
+				// User scrolls DOWN
+				if (_visibility != BarVisibility.hidden) {
+					_visibility = BarVisibility.hidden;
+					notifyListeners();
+				}
+				break;
+
+			case ScrollDirection.forward:
+				// User scrolls UP
+				if (_visibility != BarVisibility.shown) {
+					_visibility = BarVisibility.shown;
+					notifyListeners();
+				}
+				break;
+
+			case ScrollDirection.idle:
+				// Do nothing
+				break;
 		}
 	}
 
 	void forceShow() {
+		if (_visibility == BarVisibility.shown) return;
 		_visibility = BarVisibility.shown;
 		notifyListeners();
 	}
