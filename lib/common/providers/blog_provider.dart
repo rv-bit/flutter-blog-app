@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_blog_app/models/blog_posts.dart';
-import 'package:flutter_blog_app/common/repositories/repositories.dart';
+import 'package:flutter_blog_app/common/repositories/index.dart';
 
 final blogProvider = AsyncNotifierProvider<BlogNotifier, List<BlogPost>>(() {
 	return BlogNotifier();
