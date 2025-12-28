@@ -1,9 +1,12 @@
 import 'package:go_router/go_router.dart';
 
 import 'package:flutter_blog_app/app/shell.dart';
+
 import 'package:flutter_blog_app/features/home/views/home_view.dart';
+import 'package:flutter_blog_app/features/blog/views/create_blog_view.dart';
 
 final appRouter = GoRouter(
+	initialLocation: '/',
 	routes: [
 		ShellRoute(
 			builder: (context, state, child) {
@@ -12,18 +15,18 @@ final appRouter = GoRouter(
 			routes: [
 				GoRoute(
 					path: '/',
-					builder: (context, state) => HomeView(title: 'Home Page'),
+					builder: (context, state) => HomeView(),
 				),
 				GoRoute(
 					path: '/search',
-					builder: (context, state) => HomeView(title: 'Search Page'),
+					builder: (context, state) => HomeView(),
 				),
 			],
 		),
 
 		GoRoute(
 			path: '/create',
-			builder: (context, state) => HomeView(title: 'Create Page'),
+			builder: (context, state) => CreateBlogView(),
 		),
 	],
 );
