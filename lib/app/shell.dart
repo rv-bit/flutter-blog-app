@@ -10,7 +10,6 @@ class AppShell extends StatelessWidget {
 	final Widget child;
 	const AppShell({super.key, required this.child});
 
-
 	void _onItemTapped(BuildContext context, int index) {
 		switch (index) {
 			case 0:
