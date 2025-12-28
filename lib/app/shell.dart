@@ -7,7 +7,7 @@ import 'package:flutter_blog_app/config/theme_pallet.dart';
 import 'package:flutter_blog_app/common/controllers/ui_controller.dart';
 
 import 'package:flutter_blog_app/constants/assets_constants.dart';
-import 'package:flutter_blog_app/constants/components_constants.dart' as components;
+import 'package:flutter_blog_app/common/widgets/index.dart' as widgets;
 
 class AppShell extends StatelessWidget {
 	final Widget child;
@@ -73,7 +73,7 @@ class _AnimatedBottomBar extends StatelessWidget {
 					duration: const Duration(milliseconds: 200),
 					curve: Curves.easeIn,
 					bottom: scrollUIController.isHidden ? -(kBottomBarHeight + MediaQuery.of(context).viewPadding.bottom) : 0,
-					child: components.StaticBottomBar(
+					child: widgets.StaticBottomBar(
 						currentIndex: currentIndex,
 						onTap: (index) => onTap(context, index),
 					),
@@ -99,7 +99,7 @@ class _AnimatedFAB extends StatelessWidget {
 					bottom: scrollUIController.isHidden ? kFabSize / 2 + MediaQuery.of(context).viewPadding.bottom : kBottomBarHeight + kFabBasePadding,
 					duration: const Duration(milliseconds: 200),
 					curve: Curves.easeIn,
-					child: components.StaticFAB(
+					child: widgets.StaticFAB(
 						onPressed: () => context.go('/create'),
 						icon: SvgPicture.asset(
 							AssetsConstants.blogInsert,
