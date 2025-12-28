@@ -6,4 +6,5 @@ class AssetsConstants {
 	static const String homeFilledIcon = '$_svgsPath/home_filled.svg';
 	static const String homeOutlinedIcon = '$_svgsPath/home_outlined.svg';
 	static const String searchIcon = '$_svgsPath/search.svg';
+	static const String addImageIcon = '$_svgsPath/addImageIcon.svg';
 }
