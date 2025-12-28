@@ -64,15 +64,18 @@ class _AnimatedBottomBar extends StatelessWidget {
 
 	@override
 	Widget build(BuildContext context) {
+		final bottomInset = MediaQuery.of(context).viewPadding.bottom;
+		final totalHeight = kBottomBarHeight + bottomInset;
+
 		return AnimatedBuilder(
 			animation: scrollUIController,
-			builder: (_, __) {
+			builder: (_, _) {
 				return AnimatedPositioned(
 					left: 0,
 					right: 0,
 					duration: const Duration(milliseconds: 200),
 					curve: Curves.easeIn,
-					bottom: scrollUIController.isHidden ? -(kBottomBarHeight + MediaQuery.of(context).viewPadding.bottom) : 0,
+					bottom: scrollUIController.isHidden ? -totalHeight : 0,
 					child: widgets.StaticBottomBar(
 						currentIndex: currentIndex,
 						onTap: (index) => onTap(context, index),
@@ -91,12 +94,14 @@ class _AnimatedFAB extends StatelessWidget {
 
 	@override
 	Widget build(BuildContext context) {
+		final bottomInset = MediaQuery.of(context).viewPadding.bottom;
+
 		return AnimatedBuilder(
 			animation: scrollUIController,
 			builder: (_, _) {
 				return AnimatedPositioned(
 					right: 15,
-					bottom: scrollUIController.isHidden ? kFabSize / 2 + MediaQuery.of(context).viewPadding.bottom : kBottomBarHeight + kFabBasePadding,
+					bottom: scrollUIController.isHidden ? kFabSize / 5 + bottomInset : kBottomBarHeight + kFabBasePadding + bottomInset,
 					duration: const Duration(milliseconds: 200),
 					curve: Curves.easeIn,
 					child: widgets.StaticFAB(
