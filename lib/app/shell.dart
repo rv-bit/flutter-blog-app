@@ -1,24 +1,15 @@
 import 'package:go_router/go_router.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
-import 'package:flutter_blog_app/config/theme_pallet.dart';
-import 'package:flutter_blog_app/common/controllers/ui_controller.dart';
-
-import 'package:flutter_blog_app/constants/assets_constants.dart';
+import 'package:flutter_blog_app/core/utils/index.dart' as utils;
+import 'package:flutter_blog_app/common/controllers/index.dart' as controllers;
 import 'package:flutter_blog_app/common/widgets/index.dart' as widgets;
 
 class AppShell extends StatelessWidget {
 	final Widget child;
 	const AppShell({super.key, required this.child});
-	
-	int _locationToIndex(BuildContext context) {
-		final location = GoRouterState.of(context).uri.path;
 
-		if (location.startsWith('/search')) return 1;
-		return 0;
-	}
 
 	void _onItemTapped(BuildContext context, int index) {
 		switch (index) {
@@ -33,8 +24,6 @@ class AppShell extends StatelessWidget {
 
 	@override
 	Widget build(BuildContext context) {
-		final currentIndex = _locationToIndex(context);
-
 		return Scaffold(
 			resizeToAvoidBottomInset: false,
 			body: Stack(
@@ -42,10 +31,7 @@ class AppShell extends StatelessWidget {
 					child, // The routed content
 					_AnimatedBottomBar(
 						onTap: _onItemTapped,
-						currentIndex: _locationToIndex(context),
-					),
-					_AnimatedFAB(
-						currentIndex: currentIndex,
+						currentIndex: utils.locationToIndex(context),
 					),
 				],
 			),
@@ -65,52 +51,20 @@ class _AnimatedBottomBar extends StatelessWidget {
 	@override
 	Widget build(BuildContext context) {
 		final bottomInset = MediaQuery.of(context).viewPadding.bottom;
-		final totalHeight = kBottomBarHeight + bottomInset;
+		final totalHeight = controllers.kBottomBarHeight + bottomInset;
 
 		return AnimatedBuilder(
-			animation: scrollUIController,
+			animation: controllers.scrollUIController,
 			builder: (_, _) {
 				return AnimatedPositioned(
 					left: 0,
 					right: 0,
 					duration: const Duration(milliseconds: 200),
 					curve: Curves.easeIn,
-					bottom: scrollUIController.isHidden ? -totalHeight : 0,
+					bottom: controllers.scrollUIController.isHidden ? -totalHeight : 0,
 					child: widgets.StaticBottomBar(
 						currentIndex: currentIndex,
 						onTap: (index) => onTap(context, index),
-					),
-				);
-			},
-		);
-	}
-}
-
-class _AnimatedFAB extends StatelessWidget {
-	final int currentIndex;
-	const _AnimatedFAB({
-		required this.currentIndex,
-	});
-
-	@override
-	Widget build(BuildContext context) {
-		final bottomInset = MediaQuery.of(context).viewPadding.bottom;
-
-		return AnimatedBuilder(
-			animation: scrollUIController,
-			builder: (_, _) {
-				return AnimatedPositioned(
-					right: 15,
-					bottom: scrollUIController.isHidden ? kFabSize / 5 + bottomInset : kBottomBarHeight + kFabBasePadding + bottomInset,
-					duration: const Duration(milliseconds: 200),
-					curve: Curves.easeIn,
-					child: widgets.StaticFAB(
-						onPressed: () => context.go('/create'),
-						icon: SvgPicture.asset(
-							AssetsConstants.blogInsert,
-							colorFilter: ColorFilter.mode(Palette.whiteColor, BlendMode.srcIn),
-							height: 24,
-						),
 					),
 				);
 			},

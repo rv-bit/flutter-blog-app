@@ -1,16 +1,24 @@
-import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:flutter/services.dart';
 
-import 'package:flutter_blog_app/common/controllers/ui_controller.dart';
-import 'package:flutter_blog_app/features/home/widgets/appbar_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+
+import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
+
+import 'package:flutter_blog_app/config/theme_pallet.dart';
+import 'package:flutter_blog_app/constants/assets_constants.dart';
+
+import 'package:flutter_blog_app/core/utils/index.dart' as utils;
+import 'package:flutter_blog_app/common/controllers/index.dart' as controllers;
+import 'package:flutter_blog_app/common/widgets/action_buttons_widget.dart' as widgets;
+
+import 'package:flutter_blog_app/features/home/widgets/app_bar_widget.dart';
 import 'package:flutter_blog_app/features/home/widgets/indicator_widget.dart';
 
 class HomeView extends StatefulWidget {
-	final String title;
-
-	const HomeView({super.key, required this.title});
+	const HomeView({super.key});
 
 	@override
 	State<HomeView> createState() => _HomeViewState();
@@ -56,12 +64,13 @@ class _HomeViewState extends State<HomeView> {
 	@override
 	Widget build(BuildContext context) {
 		final bottomInset = MediaQuery.of(context).viewPadding.bottom;
+		final currentIndex = utils.locationToIndex(context);
 
 		return Stack(
 			children: [
 				NotificationListener<ScrollNotification>(
 					onNotification: (notification) {
-						scrollUIController.onScroll(notification);
+						controllers.scrollUIController.onScroll(notification);
 
 						if (notification is ScrollUpdateNotification) {
 							if (notification.metrics.pixels <= 0) {
@@ -83,15 +92,16 @@ class _HomeViewState extends State<HomeView> {
 						
 						return false;
 					},
+
 					child: CustomRefreshIndicator(
 						offsetToArmed: _offsetToArmed,
 						triggerMode: IndicatorTriggerMode.anywhere,
 						onRefresh: _handleRefresh,
 						onStateChanged: (change) {
 							if (change.didChange(to: IndicatorState.dragging) || change.didChange(to: IndicatorState.armed) || change.didChange(to: IndicatorState.loading)) {
-								scrollUIController.setRefreshing(true);
+								controllers.scrollUIController.setRefreshing(true);
 							} else if (change.didChange(to: IndicatorState.idle)) {
-								scrollUIController.setRefreshing(false);
+								controllers.scrollUIController.setRefreshing(false);
 							}
 						},
 						builder: (context, child, controller) {
@@ -109,7 +119,7 @@ class _HomeViewState extends State<HomeView> {
 										children: [
 											// Indicator (fixed under app bar)
 											Positioned(
-												top: kAppBarHeight + _indicatorHeight / 2,
+												top: controllers.kAppBarHeight + _indicatorHeight / 2,
 												left: 0,
 												right: 0,
 												height: _indicatorHeight,
@@ -125,36 +135,71 @@ class _HomeViewState extends State<HomeView> {
 											Transform.translate(
 												offset: Offset(
 													0,
-													kAppBarHeight + _indicatorHeight * rawValue,
+													controllers.kAppBarHeight + _indicatorHeight * rawValue,
 												),
 												child: child,
 											),
 										],
 									),
-								);
-							},
-						);
-					},
+								);},
+							);
+						},
 						
-					child: ListView.builder(
-						controller: _controller,
-						physics: const AlwaysScrollableScrollPhysics(
-							parent: BouncingScrollPhysics(),
+						child: ListView.builder(
+							controller: _controller,
+							physics: const AlwaysScrollableScrollPhysics(
+								parent: BouncingScrollPhysics(),
+							),
+							padding: EdgeInsets.only(
+								top: _showSpinner ? _indicatorHeight : 10,
+								bottom: controllers.kBottomBarHeight + bottomInset + 15,
+							),
+							itemCount: _items.length,
+							itemBuilder: (_, i) => ListTile(
+								title: Text(' ${_items[i]}'),
+							),
 						),
-						padding: EdgeInsets.only(
-							top: _showSpinner ? _indicatorHeight : 10,
-							bottom: kBottomBarHeight + bottomInset + 15,
-						),
-						itemCount: _items.length,
-						itemBuilder: (_, i) => ListTile(
-							title: Text('${widget.title} ${_items[i]}'),
-						),
+					
 					),
 				),
-			),
 
-			const CustomAppBar(),
+				const CustomAppBar(),
+				_AnimatedFAB(currentIndex: currentIndex)
 			],
+		);
+	}
+}
+
+
+class _AnimatedFAB extends StatelessWidget {
+	final int currentIndex;
+
+	const _AnimatedFAB({
+		required this.currentIndex,
+	});
+
+	@override
+	Widget build(BuildContext context) {
+		final bottomInset = MediaQuery.of(context).viewPadding.bottom;
+
+		return AnimatedBuilder(
+			animation: controllers.scrollUIController,
+			builder: (_, _) {
+				return AnimatedPositioned(
+					right: 15,
+					bottom: controllers.scrollUIController.isHidden ? controllers.kFabSize / 5 + bottomInset : controllers.kBottomBarHeight + controllers.kFabBasePadding + bottomInset,
+					duration: const Duration(milliseconds: 200),
+					curve: Curves.easeIn,
+					child: widgets.StaticFAB(
+						onPressed: () => context.push('/create'),
+						icon: SvgPicture.asset(
+							AssetsConstants.blogInsert,
+							colorFilter: ColorFilter.mode(Palette.whiteColor, BlendMode.srcIn),
+							height: 24,
+						),
+					),
+				);
+			},
 		);
 	}
 }
