@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:flutter_blog_app/models/models.dart';
+import 'package:flutter_blog_app/models/index.dart';
 import 'package:flutter_blog_app/common/dao/blog_dao.dart';
 
 final blogRepositoryProvider = Provider<BlogRepository>((ref) {
