@@ -1,33 +1,9 @@
-import 'dart:io';
+import 'package:flutter/cupertino.dart';
+import 'package:go_router/go_router.dart';
 
-import 'package:image_picker/image_picker.dart';
+int locationToIndex(BuildContext context) {
+	final location = GoRouterState.of(context).uri.path;
 
-Future<List<File>> pickImages() async {
-	List<File> images = [];
-	final ImagePicker picker = ImagePicker();
-	final imageFiles = await picker.pickMultiImage();
-	if (imageFiles.isNotEmpty) {
-		for (final image in imageFiles) {
-			images.add(File(image.path));
-		}
-	}
-	return images;
-}
-
-Future<File?> pickImage() async {
-	final ImagePicker picker = ImagePicker();
-	final imageFile = await picker.pickImage(source: ImageSource.gallery);
-	if (imageFile != null) {
-		return File(imageFile.path);
-	}
-	return null;
-}
-
-Future<File?> pickImageCamera() async {
-	final ImagePicker picker = ImagePicker();
-	final imageFile = await picker.pickImage(source: ImageSource.camera);
-	if (imageFile != null) {
-		return File(imageFile.path);
-	}
-	return null;
+	if (location.startsWith('/search')) return 1;
+	return 0;
 }
