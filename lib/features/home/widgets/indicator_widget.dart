@@ -16,12 +16,13 @@ class Indicator extends StatelessWidget {
 		if (!showSpinner) {
 			return Opacity(
 				opacity: value,
-				child: Transform.rotate(
-					angle: 0,
+				child: AnimatedRotation(
+					turns: value == 1.0 ? 0.5 : 0.0, // 0.5 turns = 180°
+					duration: const Duration(milliseconds: 150),
 					child: const Icon(
-						Icons.keyboard_arrow_down,
+						Icons.arrow_downward_rounded,
 						size: 28,
-						color: Colors.white, // FORCE visibility
+						color: Colors.white,
 					),
 				),
 			);
@@ -30,11 +31,11 @@ class Indicator extends StatelessWidget {
 		// ARMED / LOADING → spinner
 		if (showSpinner) {
 			return const SizedBox(
-				width: 22,
-				height: 22,
+				width: 15,
+				height: 15,
 				child: CircularProgressIndicator(
-				strokeWidth: 2.2,
-				color: Colors.white,
+					strokeWidth: 2.2,
+					color: Colors.white,
 				),
 			);
 		}
