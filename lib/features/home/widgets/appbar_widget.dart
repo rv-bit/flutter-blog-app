@@ -8,8 +8,8 @@ import 'package:flutter_blog_app/constants/assets_constants.dart';
 
 import 'package:flutter_blog_app/common/controllers/ui_controller.dart';
 
-class GlassAppBar extends StatelessWidget {
-	const GlassAppBar({super.key});
+class CustomAppBar extends StatelessWidget {
+	const CustomAppBar({super.key});
 
 	@override
 	Widget build(BuildContext context) {

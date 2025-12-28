@@ -115,7 +115,7 @@ class _HomeViewState extends State<HomeView> {
 												height: _indicatorHeight,
 												child: Center(
 													child: Indicator(
-														value: eased,
+														value: rawValue > 0 ? eased : 0,
 														showSpinner: _showSpinner,
 													),
 												),
@@ -153,7 +153,7 @@ class _HomeViewState extends State<HomeView> {
 				),
 			),
 
-			const GlassAppBar(),
+			const CustomAppBar(),
 			],
 		);
 	}
