@@ -7,6 +7,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:logging/logging.dart';
 
 import 'package:flutter_blog_app/core/exceptions/database_exceptions.dart';
+import 'package:flutter_blog_app/core/database/migrations.dart';
 
 final log = Logger('DatabaseHelper');
 
@@ -17,10 +18,11 @@ class DatabaseHelper {
 
 	static Database? _database;
 	static const String _databaseName = 'blog_posts.db';
-	static const int _databaseVersion = 1;
+	static int get _databaseVersion => DatabaseMigrations.latestVersion;
 
 	Future<Database> get database async {
-		_database ??= await _initDatabase();
+		if (_database != null) return _database!;
+		_database = await _initDatabase();
 		return _database!;
 	}
 
@@ -29,46 +31,54 @@ class DatabaseHelper {
 			final documentsDirectory = await getApplicationDocumentsDirectory();
 			final path = join(documentsDirectory.path, _databaseName);
 
+			log.info('Initializing database at: $path');
+
 			return await openDatabase(
 				path,
 				version: _databaseVersion,
 				onCreate: _onCreate,
 				onConfigure: _onConfigure,
+				onUpgrade: _onUpgrade
 			);
 		} catch (e) {
+			log.severe('Database initialization failed: $e');
 			throw MyDatabaseException('Something went wrong, $e');
 		}
+	}
+
+	Future<int> getDatabaseVersion() async {
+		final db = await database;
+		return await db.getVersion();
 	}
 
 	// Enable foreign keys and other constraints
 	Future<void> _onConfigure(Database db) async {
 		await db.execute('PRAGMA foreign_keys = ON');
+		log.info('Foreign keys enabled');
 	}
 
 	Future<void> _onCreate(Database db, int version) async {
-		await db.execute('''
-			CREATE TABLE blog_posts (
-				id TEXT PRIMARY KEY,
-				title TEXT NOT NULL,
-				content TEXT NOT NULL,
-				created_at TEXT NOT NULL,
-				updated_at TEXT NOT NULL,
-				deleted_at TEXT NOT NULL,
-				image TEXT,
-				is_deleted INTEGER NOT NULL DEFAULT 0
-			)
-		''');
+		log.info('Creating database with version: $version');
+		
+		try {
+			await DatabaseMigrations.createInitialSchema(db);
+			log.info('Database schema created successfully');
+		} catch (e) {
+			log.severe('Error creating database schema: $e');
+			rethrow;
+		}
+	}
 
-		// Create index for better query performance
-		await db.execute('''
-			CREATE INDEX idx_blog_title ON blog_posts(title)
-		''');
-		await db.execute('''
-			CREATE INDEX idx_blog_content ON blog_posts(content)
-		''');
-		await db.execute('''
-			CREATE INDEX idx_blog_created_at ON blog_posts(created_at)
-		''');
+	Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+		log.info('Upgrading database from version $oldVersion to $newVersion');
+		
+		try {
+			await DatabaseMigrations.runMigrations(db, oldVersion, newVersion);
+			log.info('Database upgraded successfully');
+		} catch (e) {
+			log.severe('Error upgrading database: $e');
+			rethrow;
+		}
 	}
 
 	Future<void> close() async {
@@ -83,5 +93,11 @@ class DatabaseHelper {
 		final path = join(documentsDirectory.path, _databaseName);
 		await databaseFactory.deleteDatabase(path);
 		_database = null;
+		log.info('Database deleted');
+	}
+
+	Future<bool> needsMigration() async {
+		final currentVersion = await getDatabaseVersion();
+		return currentVersion < _databaseVersion;
 	}
 }
