@@ -7,5 +7,10 @@ class AppTheme {
 		floatingActionButtonTheme: FloatingActionButtonThemeData(
 			backgroundColor: Palette.blueColor,
 		),
+		textSelectionTheme: TextSelectionThemeData(
+			cursorColor: Palette.whiteColor,
+			selectionColor: Palette.searchBarColor,
+			selectionHandleColor: Palette.backgroundColor,
+		),
 	);
 }
