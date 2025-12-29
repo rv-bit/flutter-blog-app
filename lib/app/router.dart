@@ -1,9 +1,48 @@
 import 'package:go_router/go_router.dart';
 
+import 'package:flutter/cupertino.dart';
+
 import 'package:flutter_blog_app/app/shell.dart';
 
 import 'package:flutter_blog_app/features/home/views/home_view.dart';
 import 'package:flutter_blog_app/features/blog/views/create_blog_view.dart';
+
+// This code was taken from a stack overflow page, as wanted transitions for page / router changes, as go router currently doesn't support for this, the quickest and easier fix was this
+CustomTransitionPage buildPageWithDefaultTransition<T>({
+	required BuildContext context, 
+	required GoRouterState state, 
+	required Widget child,
+}) {
+	return CustomTransitionPage<T>(
+		key: state.pageKey,
+		child: child,
+		transitionsBuilder: (context, animation, secondaryAnimation, child) {
+			// Twitter-like slide transition
+			const begin = Offset(1.0, 0.0); // Start from right
+			const end = Offset.zero;
+			const curve = Curves.easeInOut;
+
+			var slideTween = Tween(begin: begin, end: end).chain(
+				CurveTween(curve: curve),
+			);
+
+			var slideAnimation = animation.drive(slideTween);
+
+			var secondaryScaleTween = Tween<double>(begin: 1.0, end: 0.95);
+
+			return SlideTransition(
+				position: slideAnimation,
+				child: FadeTransition(
+					opacity: Tween<double>(begin: 1.0, end: 1.0).animate(animation),
+					child: Transform.scale(
+						scale: secondaryScaleTween.evaluate(secondaryAnimation),
+						child: child,
+					),
+				),
+			);
+		},
+	);
+}
 
 final appRouter = GoRouter(
 	initialLocation: '/',
@@ -15,18 +54,30 @@ final appRouter = GoRouter(
 			routes: [
 				GoRoute(
 					path: '/',
-					builder: (context, state) => HomeView(),
+					pageBuilder: (context, state) => buildPageWithDefaultTransition<void>(
+						context: context,
+						state: state,
+						child: HomeView(),
+					)
 				),
 				GoRoute(
 					path: '/search',
-					builder: (context, state) => HomeView(),
+					pageBuilder: (context, state) => buildPageWithDefaultTransition<void>(
+						context: context,
+						state: state,
+						child: HomeView(),
+					)
 				),
 			],
 		),
 
 		GoRoute(
 			path: '/create',
-			builder: (context, state) => CreateBlogView(),
+			pageBuilder: (context, state) => buildPageWithDefaultTransition<void>(
+				context: context,
+				state: state,
+				child: CreateBlogView(),
+			)
 		),
 	],
 );
