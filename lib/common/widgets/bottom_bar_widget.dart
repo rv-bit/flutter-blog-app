@@ -50,7 +50,7 @@ class StaticBottomBar extends StatelessWidget {
 											colorFilter: ColorFilter.mode(
 												currentIndex == 0
 													? Palette.whiteColor
-													: const Color.fromARGB(255, 114, 68, 68),
+													: Palette.greyColor,
 												BlendMode.srcIn,
 											),
 											height: 20,
