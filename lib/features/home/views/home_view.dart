@@ -1,30 +1,25 @@
-import 'package:go_router/go_router.dart';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 
-import 'package:flutter_blog_app/config/theme_pallet.dart';
-import 'package:flutter_blog_app/constants/assets_constants.dart';
-
 import 'package:flutter_blog_app/core/utils/index.dart' as utils;
 import 'package:flutter_blog_app/common/controllers/index.dart' as controllers;
-import 'package:flutter_blog_app/common/widgets/action_buttons_widget.dart' as widgets;
 
+import 'package:flutter_blog_app/features/home/widgets/action_buttons_widget.dart';
 import 'package:flutter_blog_app/features/home/widgets/app_bar_widget.dart';
 import 'package:flutter_blog_app/features/home/widgets/indicator_widget.dart';
 
-class HomeView extends StatefulWidget {
+class HomeView extends ConsumerStatefulWidget {
 	const HomeView({super.key});
 
-	@override
-	State<HomeView> createState() => _HomeViewState();
+	@override ConsumerState<ConsumerStatefulWidget> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _HomeViewState extends ConsumerState<HomeView> {
 	final ScrollController _controller = ScrollController();
 
 	static const double _indicatorHeight = 35.0;
@@ -164,42 +159,8 @@ class _HomeViewState extends State<HomeView> {
 				),
 
 				const CustomAppBar(),
-				_AnimatedFAB(currentIndex: currentIndex)
+				AnimatedFAB(currentIndex: currentIndex)
 			],
-		);
-	}
-}
-
-
-class _AnimatedFAB extends StatelessWidget {
-	final int currentIndex;
-
-	const _AnimatedFAB({
-		required this.currentIndex,
-	});
-
-	@override
-	Widget build(BuildContext context) {
-		final bottomInset = MediaQuery.of(context).viewPadding.bottom;
-
-		return AnimatedBuilder(
-			animation: controllers.scrollUIController,
-			builder: (_, _) {
-				return AnimatedPositioned(
-					right: 15,
-					bottom: controllers.scrollUIController.isHidden ? controllers.kFabSize / 5 + bottomInset : controllers.kBottomBarHeight + controllers.kFabBasePadding + bottomInset,
-					duration: const Duration(milliseconds: 200),
-					curve: Curves.easeIn,
-					child: widgets.StaticFAB(
-						onPressed: () => context.push('/create'),
-						icon: SvgPicture.asset(
-							AssetsConstants.blogInsert,
-							colorFilter: ColorFilter.mode(Palette.whiteColor, BlendMode.srcIn),
-							height: 24,
-						),
-					),
-				);
-			},
 		);
 	}
 }
