@@ -1,5 +1,9 @@
 import 'dart:io';
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter/widgets.dart';
 
 Future<List<File>> pickImages() async {
 	List<File> images = [];
@@ -29,4 +33,16 @@ Future<File?> pickImageCamera() async {
 		return File(imageFile.path);
 	}
 	return null;
+}
+
+Image imageFromBase64String(String base64String) {
+	return Image.memory(base64Decode(base64String));
+}
+
+Uint8List dataFromBase64String(String base64String) {
+	return base64Decode(base64String);
+}
+
+String base64String(Uint8List data) {
+	return base64Encode(data);
 }
