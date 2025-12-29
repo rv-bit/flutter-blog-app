@@ -25,7 +25,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
 	static const double _indicatorHeight = 35.0;
 	static const double _offsetToArmed = 15.0;
 
-	bool _showSpinner = false;
 	bool _hasTriggeredArmedHaptic = false;
 
 	double _dragDistance = 0.0;
@@ -33,25 +32,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 	List<String> _items = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
 	Future<void> _handleRefresh() async {
-		// Delay spinner appearance (Twitter-like)
-		await Future.delayed(const Duration(milliseconds: 200));
-
-		if (mounted) {
-			setState(() {
-				_showSpinner = true;
-			});
-		}
-
 		await Future.delayed(const Duration(milliseconds: 800));
-
-		if (mounted) {
-			setState(() {
-				_showSpinner = false;
-			});
-						
-			// 🔔 Haptic on release/completion
-			HapticFeedback.lightImpact();
-		}
 
 		_items = List.generate(50, (index) => 'Item $index');
 	}
@@ -118,10 +99,13 @@ class _HomeViewState extends ConsumerState<HomeView> {
 												left: 0,
 												right: 0,
 												height: _indicatorHeight,
-												child: Center(
-													child: Indicator(
-														value: rawValue > 0 ? eased : 0,
-														showSpinner: _showSpinner,
+												child: Padding(
+													padding: const EdgeInsets.only(top: 10), 
+													child: Center(
+														child: Indicator(
+															state: controller.state,
+															value: rawValue > 0 ? eased : 0,
+														),
 													),
 												),
 											),
@@ -146,7 +130,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 								parent: BouncingScrollPhysics(),
 							),
 							padding: EdgeInsets.only(
-								top: _showSpinner ? _indicatorHeight : 10,
+								top: controllers.scrollUIController.isRefreshing ? _indicatorHeight : 10,
 								bottom: controllers.kBottomBarHeight + bottomInset + 15,
 							),
 							itemCount: _items.length,
