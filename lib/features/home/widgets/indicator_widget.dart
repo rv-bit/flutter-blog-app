@@ -16,7 +16,6 @@ class Indicator extends StatelessWidget {
 
 	@override
 	Widget build(BuildContext context) {
-		print('isArmed ${state}');
 		if (value > 0 && (!state.isArmed && !state.isLoading && !state.isFinalizing && !state.isSettling)) {
 			return Opacity(
 				opacity: value,
