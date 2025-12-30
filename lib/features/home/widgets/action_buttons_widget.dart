@@ -1,10 +1,11 @@
 
-import 'package:flutter_blog_app/config/theme_pallet.dart';
-import 'package:flutter_blog_app/constants/assets_constants.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
+
+import 'package:flutter_blog_app/config/theme_pallet.dart';
+import 'package:flutter_blog_app/constants/assets_constants.dart';
 
 import 'package:flutter_blog_app/common/controllers/ui_controller.dart' as controllers;
 import 'package:flutter_blog_app/common/widgets/action_buttons_widget.dart' as widgets;
