@@ -181,7 +181,10 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 											margin: const EdgeInsets.symmetric(
 												horizontal: 5,
 											),
-											child: Image.file(file),
+											child: ClipRRect(
+												borderRadius: BorderRadius.circular(8.0),
+												child: Image.file(file, fit: BoxFit.cover),
+											),
 										);
 									}).toList(),
 									options: CarouselOptions(
