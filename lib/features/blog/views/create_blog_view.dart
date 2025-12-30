@@ -232,7 +232,7 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 												Palette.blueColor,
 												BlendMode.srcIn
 											),
-											height: 24,	
+											height: 20,	
 										),
 									),
 								),
