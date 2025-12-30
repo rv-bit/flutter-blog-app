@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_blog_app/features/home/widgets/indicator_widget.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 
+import 'package:flutter_blog_app/config/theme.dart';
+
 import 'package:flutter_blog_app/core/utils/index.dart' as utils;
 import 'package:flutter_blog_app/common/controllers/index.dart' as common_controllers;
 import 'package:flutter_blog_app/common/providers/index.dart' as common_providers;
 
+import 'package:flutter_blog_app/features/home/widgets/indicator_widget.dart';
 import 'package:flutter_blog_app/features/home/widgets/blog_list_widget.dart';
 import 'package:flutter_blog_app/features/home/widgets/action_buttons_widget.dart';
 import 'package:flutter_blog_app/features/home/widgets/app_bar_widget.dart';
@@ -176,11 +178,11 @@ class _HomeViewState extends ConsumerState<HomeView> {
 													child: Column(
 														mainAxisAlignment: MainAxisAlignment.center,
 														children: [
-															Icon(Icons.error_outline, size: 64, color: Theme.of(context).colorScheme.error),
+															Icon(Icons.error_outline, size: 64, color: AppTheme.theme.colorScheme.error),
 															const SizedBox(height: 16),
-															Text('Error loading blogs', style: Theme.of(context).textTheme.titleMedium),
+															Text('Error loading blogs', style: AppTheme.theme.textTheme.titleMedium),
 															const SizedBox(height: 8),
-															Text(err.toString(), style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center),
+															Text(err.toString(), style: AppTheme.theme.textTheme.bodySmall, textAlign: TextAlign.center),
 															const SizedBox(height: 16),
 															ElevatedButton.icon(
 																onPressed: () => ref.invalidate(homeViewProvider),
