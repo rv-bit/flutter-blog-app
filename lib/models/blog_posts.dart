@@ -1,8 +1,9 @@
+import 'package:flutter_blog_app/models/images.dart';
+
 class BlogPost {
 	final String id;
-	final String title;
 	final String content;
-	final String? image;
+	final List<String>? images;
 	final String createdAt;
 	final String? updatedAt;
 	final String? deletedAt;
@@ -10,10 +11,9 @@ class BlogPost {
 
 	BlogPost({
 		required this.id,
-		required this.title,
 		required this.content,
 		required this.createdAt,
-		this.image,
+		this.images,
 		this.updatedAt,
 		this.deletedAt,
 		this.isDeleted = false,
@@ -21,23 +21,30 @@ class BlogPost {
 
 	factory BlogPost.fromMap(Map<String, dynamic> map) => BlogPost(
 		id: map['id'],
-		title: map['title'],
 		content: map['content'],
-		createdAt: map['createdAt'],
-		image: map['image'],
-		updatedAt: map['updatedAt'],
-		deletedAt: map['deletedAt'],
-		isDeleted: map['isDeleted'] == 1,
+		createdAt: map['created_at'],
+		images: const [],
+		updatedAt: map['updated_at'],
+		deletedAt: map['deleted_at'],
+		isDeleted: map['is_deleted'] == 1,
+	);
+
+	factory BlogPost.fromMapWithImages(Map<String, dynamic> map, List<Images> allImages) => BlogPost(
+		id: map['id'],
+		content: map['content'],
+		createdAt: map['created_at'],
+		images: Images.getImagesForBlogId(map['id'], allImages),
+		updatedAt: map['updated_at'],
+		deletedAt: map['deleted_at'],
+		isDeleted: map['is_deleted'] == 1,
 	);
 
 	Map<String, dynamic> toMap() => {
 		'id': id,
-		'title': title,
 		'content': content,
 		'created_at': createdAt,
-		'image': image,
 		'updated_at': updatedAt,
 		'deleted_at': deletedAt,
-		'isDeleted': isDeleted ? 1 : 0,
+		'is_deleted': isDeleted ? 1 : 0,
 	};
 }
