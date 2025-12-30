@@ -31,7 +31,6 @@ class HomeController extends AsyncNotifier<List<BlogPost>> {
 		_currentOffset = blogs.length;
 
 		_hasMore = blogs.length == _pageSize;
-		
 		return blogs;
 	}
 
@@ -88,11 +87,19 @@ class HomeController extends AsyncNotifier<List<BlogPost>> {
 	bool get hasMore => _hasMore;
 	bool get isLoadingMore => _isLoadingMore;
 
-	// Delete a blog post by id and refresh
 	Future<void> deleteBlog(String id) async {
-		await _repository.deleteBlog(id);
-		await refresh();
+		final current = state.value ?? [];
 
-		ref.invalidate(homeViewProvider);
+		state = AsyncValue.data(
+			current.where((b) => b.id != id).toList(),
+		);
+
+		try {
+			await _repository.deleteBlog(id);
+		} catch (e, stack) {
+			log.severe('❌ Error deleting blog', e, stack);
+			ref.invalidateSelf(); // rollback by refetch
+			rethrow;
+		}
 	}
 }

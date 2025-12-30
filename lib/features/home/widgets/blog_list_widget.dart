@@ -5,14 +5,18 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
 import 'package:flutter_blog_app/config/theme_pallet.dart';
 import 'package:flutter_blog_app/models/blog_posts.dart';
+import 'package:flutter_blog_app/config/theme.dart';
+
+import 'package:flutter_blog_app/features/home/controllers/home_controller.dart';
 
 import 'package:flutter_blog_app/features/home/widgets/blog_list_text_widget.dart';
 
-class BlogList extends StatelessWidget {
+class BlogList extends ConsumerWidget {
 	final ScrollController scrollController;
 	final List<BlogPost> blogs;
 	final AsyncValue<dynamic> appDirAsync;
@@ -32,13 +36,116 @@ class BlogList extends StatelessWidget {
 		this.padding = EdgeInsets.zero,
 	});
 
-	@override
-	Widget build(BuildContext context) {
-		final leadingWidgetAvatar = CircleAvatar(
-			backgroundColor: Palette.blueColor,
-			radius: 15,
+	void _showActionSheet(BuildContext context, WidgetRef ref, BlogPost blog) {
+		showMaterialModalBottomSheet(
+			context: context,
+			useRootNavigator: true,
+			backgroundColor: Colors.transparent,
+			builder: (sheetContext) => Container(
+				decoration: BoxDecoration(
+					color: AppTheme.theme.scaffoldBackgroundColor,
+					borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+				),
+				child: SafeArea(
+					child: Column(
+						mainAxisSize: MainAxisSize.min,
+						children: [
+							const SizedBox(height: 8),
+							Container(
+								width: 40,
+								height: 4,
+								decoration: BoxDecoration(
+									color: Colors.grey[300],
+									borderRadius: BorderRadius.circular(2),
+								),
+							),
+							const SizedBox(height: 16),
+							ListTile(
+								leading: const Icon(Icons.edit_outlined),
+								title: const Text('Edit'),
+								onTap: () {
+									Navigator.pop(context);
+									debugPrint('Edit blog: ${blog.id}');
+								},
+							),
+							const SizedBox(height: 16),
+							ListTile(
+								leading: const Icon(
+									Icons.restore_from_trash_sharp,
+									color: Palette.redColor,
+								),
+								title: const Text(
+									'Delete', 
+									style: TextStyle(
+										fontSize: 14,
+										color: Palette.redColor,
+										fontWeight: FontWeight.bold,
+									),
+								),
+								onTap: () {
+									Navigator.pop(sheetContext);
+									_showDeleteConfirmation(context, ref, blog);
+								},
+							),
+							const SizedBox(height: 16),
+						],
+					),
+				),
+			),
 		);
+	}
 
+	void _showDeleteConfirmation(BuildContext context, WidgetRef ref, BlogPost blog) {
+		showDialog(
+			context: context,
+			builder: (dialogContext) => AlertDialog(
+				title: const Text('Delete Post?'),
+				content: const Text('Are you sure you want to delete this blog post? This action cannot be undone.'),
+				actions: [
+					TextButton(
+						onPressed: () => Navigator.pop(dialogContext),
+						child: const Text('Cancel'),
+					),
+					TextButton(
+						onPressed: () async {
+							Navigator.pop(dialogContext);
+							late BuildContext loadingDialogContext;
+
+							// Show loading indicator
+							showDialog(
+								context: context,
+								barrierDismissible: false,
+								builder: (ctx) {
+									loadingDialogContext = ctx;
+
+									return const Center(
+										child: CircularProgressIndicator(),
+									);
+								}
+							);
+							
+							// Delete the blog
+							await ref.read(homeViewProvider.notifier).deleteBlog(blog.id);
+							
+							// Close loading indicator
+							if (loadingDialogContext.mounted) {
+								Navigator.pop(loadingDialogContext);
+							}
+							
+							debugPrint('Deleted blog: ${blog.id}');
+						},
+						style: TextButton.styleFrom(
+							foregroundColor: Palette.redColor,
+						),
+						child: const Text('Delete'),
+					),
+				],
+			),
+		);
+	}
+
+	@override
+	Widget build(BuildContext context, WidgetRef ref) {
 		if (blogs.isEmpty) {
 			return Center(
 				child: Column(
@@ -47,12 +154,12 @@ class BlogList extends StatelessWidget {
 						Icon(
 							Icons.article_outlined,
 							size: 64,
-							color: Theme.of(context).colorScheme.onSurface.withAlpha(80),
+							color: AppTheme.theme.colorScheme.onSurface.withAlpha(80),
 						),
 						const SizedBox(height: 16),
 						Text(
 							'No blog posts yet',
-							style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface.withAlpha(120)),
+							style: AppTheme.theme.textTheme.titleMedium?.copyWith(color: AppTheme.theme.colorScheme.onSurface.withAlpha(120)),
 						),
 					],
 				),
@@ -80,7 +187,6 @@ class BlogList extends StatelessWidget {
 						);
 					}
 
-					// fallback: simple placeholder
 					return SizedBox(height: indicatorHeight);
 				}
 
@@ -108,8 +214,11 @@ class BlogList extends StatelessWidget {
 							children: [
 								BlogListItem(
 									content: contentText,
-									leading: leadingWidgetAvatar,
-									trailing: Text('2h')
+									leading: CircleAvatar(
+										backgroundColor: Palette.blueColor,
+										radius: 15,
+									),
+									onActionPressed: (ctx) => _showActionSheet(ctx, ref, blog),
 								),
 
 								if (hasImages)
