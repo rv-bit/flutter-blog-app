@@ -189,16 +189,47 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 
 							if (images.isNotEmpty) 
 								CarouselSlider(
-									items: images.map((file) {
-										return Container(
-											width: MediaQuery.of(context).size.width,
-											margin: const EdgeInsets.symmetric(
-												horizontal: 5,
-											),
-											child: ClipRRect(
-												borderRadius: BorderRadius.circular(8.0),
-												child: Image.file(file, fit: BoxFit.cover),
-											),
+									items: images.asMap().entries.map((entry) {
+										final index = entry.key;
+										final file = entry.value;
+
+										return Stack(
+											children: [
+												Container(
+													width: MediaQuery.of(context).size.width,
+													margin: const EdgeInsets.symmetric(
+														horizontal: 5,
+													),
+													child: ClipRRect(
+														borderRadius: BorderRadius.circular(8.0),
+														child: Image.file(file, fit: BoxFit.cover),
+													),
+												),
+
+												Positioned(
+													top: 8,
+													right: 8,
+													child: GestureDetector(
+														onTap: () {
+															setState(() {
+																images.removeAt(index);
+															});
+														},
+														child: Container(
+															decoration: BoxDecoration(
+																color: Colors.black.withValues(alpha: 0.6),
+																shape: BoxShape.circle,
+															),
+															padding: const EdgeInsets.all(6),
+															child: const Icon(
+																Icons.close,
+																size: 18,
+																color: Colors.white,
+															),
+														),
+													),
+												),
+											],
 										);
 									}).toList(),
 									options: CarouselOptions(
