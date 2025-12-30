@@ -70,6 +70,20 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 
 		final router = GoRouter.of(context);
 
+		if (images.isEmpty) {
+			FocusManager.instance.primaryFocus?.unfocus();
+
+			final snackBar = SnackBar(
+				content: const Text('Images is a required field, please add at least one image'),
+				duration: Duration(milliseconds: 5000),
+			);
+
+			// Find the ScaffoldMessenger in the widget tree
+			// and use it to show a SnackBar.
+			ScaffoldMessenger.of(context).showSnackBar(snackBar);
+			return;
+		}
+
 		await ref.read(createBlogProvider.notifier).createBlog(
 			content: blogTextBlockController.text,
 			imageFiles: images,
