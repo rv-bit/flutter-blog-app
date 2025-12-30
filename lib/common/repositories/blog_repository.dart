@@ -5,7 +5,7 @@ import 'package:flutter_blog_app/models/index.dart';
 import 'package:flutter_blog_app/common/dao/blog_dao.dart';
 
 final blogRepositoryProvider = Provider<BlogRepository>((ref) {
-	return BlogRepository(dao: ref.watch(blogDAOProvider));
+	return BlogRepository(dao: ref.read(blogDAOProvider));
 });
 
 class BlogRepository {
