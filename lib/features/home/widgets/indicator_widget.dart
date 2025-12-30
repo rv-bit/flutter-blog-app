@@ -34,8 +34,8 @@ class Indicator extends StatelessWidget {
 					transitionBuilder: (child, animation) {
 						// You can combine fade+scale (or rotate) for a nice effect:
 						return FadeTransition(
-						opacity: animation,
-						child: ScaleTransition(scale: animation, child: child),
+							opacity: animation,
+							child: ScaleTransition(scale: animation, child: child),
 						);
 					},
 					child: Icon(
