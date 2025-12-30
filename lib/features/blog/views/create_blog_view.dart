@@ -39,6 +39,16 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 		blogTextBlockController.dispose();
 	}
 
+	void onHandleCloseButton() {
+		final router = GoRouter.of(context);
+
+		if (router.canPop()) { // handle go back in history, only if there is any history to go back to
+			router.pop();
+		} else {
+			router.go('/'); // Navigate to home if no previous route
+		}
+	}
+
 	void onPickImages() async {
 		List<File> pickedImages = await utils.pickImages();
 		setState(() {
@@ -80,13 +90,7 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 			appBar: AppBar(
 				backgroundColor: Palette.backgroundColor,
 				leading: IconButton(
-					onPressed: () {
-						if (context.canPop()) {
-							context.pop();
-						} else {
-							context.go('/'); // Navigate to home if no previous route
-						}
-					},
+					onPressed: () => onHandleCloseButton(),
 					icon: const Icon(Icons.close, size: 25),
 				),
 				title: GestureDetector(
