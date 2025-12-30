@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -116,14 +116,13 @@ class BlogList extends StatelessWidget {
 									appDirAsync.when(data: (dir) {
 										if (blog.images != null) {
 											return CarouselSlider(
-												items: blog.images!.map((file) {
-													final filePath = File(file);
+												items: blog.images!.map((imagePath) {
 													return Container(
 														width: MediaQuery.of(context).size.width,
 														margin: const EdgeInsets.symmetric(horizontal: 5),
 														child: ClipRRect(
 															borderRadius: BorderRadius.circular(8.0),
-															child: Image.file(filePath, fit: BoxFit.cover),
+															child: Image.memory(base64Decode(imagePath), fit: BoxFit.cover),
 														)
 													);
 												}).toList(),

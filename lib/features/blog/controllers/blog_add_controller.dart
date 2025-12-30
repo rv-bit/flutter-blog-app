@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import 'package:uuid/uuid.dart';
 import 'package:logging/logging.dart';
@@ -8,8 +11,7 @@ import 'package:logging/logging.dart';
 import 'package:flutter_blog_app/models/images.dart';
 import 'package:flutter_blog_app/models/blog_posts.dart';
 
-import 'package:flutter_blog_app/core/utils/image_utils.dart';
-import 'package:flutter_blog_app/common/repositories/index.dart';
+import 'package:flutter_blog_app/common/repositories/index.dart' as common_repositories;
 
 import 'package:flutter_blog_app/features/home/controllers/home_controller.dart';
 
@@ -20,12 +22,24 @@ final createBlogProvider = NotifierProvider<CreateBlogController, AsyncValue<voi
 );
 
 class CreateBlogController extends Notifier<AsyncValue<void>> {
-	late final BlogRepository _repository;
+	late final common_repositories.BlogRepository _repository;
 
 	@override
 	AsyncValue<void> build() {
-		_repository = ref.read(blogRepositoryProvider);
+		_repository = ref.read(common_repositories.blogRepositoryProvider);
 		return const AsyncValue.data(null);
+	}
+
+	Future<Uint8List> compressImage(File file) async {
+		// Compress image to reduce size
+		final result = await FlutterImageCompress.compressWithFile(
+			file.absolute.path,
+			minWidth: 1920,
+			minHeight: 1080,
+			quality: 85, // Adjust quality (0-100)
+		);
+		
+		return result ?? await file.readAsBytes();
 	}
 
 	Future<void> createBlog({
@@ -47,14 +61,15 @@ class CreateBlogController extends Notifier<AsyncValue<void>> {
 			final List<Images> images = [];
 			if (imageFiles != null) {
 				for (final file in imageFiles) {
-					final path = await saveImageToAppDir(file);
+					final compressedBytes = await compressImage(file);
+					final base64Image = base64Encode(compressedBytes);
 
 					images.add(
 						Images(
-						id: const Uuid().v4(),
-						blogId: blogId,
-						image: path, // file path, NOT base64
-						createdAt: now,
+							id: const Uuid().v4(),
+							blogId: blogId,
+							image: base64Image, // Store as base64 string
+							createdAt: now,
 						),
 					);
 				}

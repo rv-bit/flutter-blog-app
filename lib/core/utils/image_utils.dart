@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:flutter/widgets.dart' as widgets;
 
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:uuid/uuid.dart';
 
 Future<List<File>> pickImages() async {
 	List<File> images = [];
@@ -34,11 +36,14 @@ Future<File?> pickImageCamera() async {
 	return null;
 }
 
-Future<String> saveImageToAppDir(File file) async {
-	final dir = await getApplicationDocumentsDirectory();
-	final name = '${const Uuid().v4()}.jpg';
-	final path = '${dir.path}/$name';
+widgets.Image imageFromBase64String(String base64String) {
+    return widgets.Image.memory(base64Decode(base64String));
+}
 
-	await file.copy(path);
-	return path;
+Uint8List dataFromBase64String(String base64String) {
+    return base64Decode(base64String);
+}
+
+String base64String(Uint8List data) {
+    return base64Encode(data);
 }

@@ -81,7 +81,7 @@ class _Migration2 implements Migration {
 			CREATE TABLE IF NOT EXISTS images (
 				id TEXT PRIMARY KEY,
 				blog_id TEXT NOT NULL,
-				image TEXT NOT NULL,
+				image BLOB NOT NULL,
 				created_at TEXT NOT NULL,
 				FOREIGN KEY (blog_id) REFERENCES blog_posts (id) ON DELETE CASCADE
 			)
