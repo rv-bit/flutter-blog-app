@@ -55,6 +55,22 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 		}
 	}
 
+	void onPostBlog(bool isPosting) async {
+		if (isPosting) return;
+
+		final router = GoRouter.of(context);
+
+		await ref.read(createBlogProvider.notifier).createBlog(
+			content: blogTextBlockController.text,
+			imageFiles: images,
+		);
+
+		if (!mounted) return;
+		
+		ref.read(homeViewProvider.notifier).refresh();
+		router.pop();
+	}
+
 	@override
 	Widget build(BuildContext context) {
 		final createState = ref.watch(createBlogProvider);
@@ -74,21 +90,7 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 					icon: const Icon(Icons.close, size: 25),
 				),
 				title: GestureDetector(
-					onTap: () async {
-						if (isPosting) return;
-
-						final router = GoRouter.of(context);
-
-						await ref.read(createBlogProvider.notifier).createBlog(
-							content: blogTextBlockController.text,
-							imageFiles: images,
-						);
-
-						if (!mounted) return;
-						
-						ref.read(homeViewProvider.notifier).refresh();
-        				router.pop();
-					},
+					onTap: () => onPostBlog(isPosting),
 					child: Container(
 						alignment: Alignment.centerRight,
 						child: Opacity(
