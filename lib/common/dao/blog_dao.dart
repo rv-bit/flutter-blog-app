@@ -34,9 +34,9 @@ class BlogDAO {
 		if (blog.isEmpty) return;
 		if (images.isEmpty) return;
 
-		final db = await databaseHelper.database;
+		final database = await databaseHelper.database;
 
-		await db.transaction((txn) async {
+		await database.transaction((txn) async {
 			await txn.insert(
 				'blog_posts',
 				blog,
@@ -125,24 +125,39 @@ class BlogDAO {
 
 	Future<int> deleteBlog(String id) async {
 		final database = await databaseHelper.database;
-		return database.update(
-			'blog_posts', 
-			{'is_deleted': 1},
-			where: 'id = ?',
-			whereArgs: [id]
-		);
+
+		return await database.transaction((txn) async {
+			await txn.delete(
+				'images',
+				where: 'blog_id = ?',
+				whereArgs: [id],
+			);
+
+			return await txn.delete(
+				'blog_posts', 
+				where: 'id = ?',
+				whereArgs: [id]
+			);
+		});
 	}
 
 	Future<int> deleteMultiple(List<String> ids) async {
 		final database = await databaseHelper.database;
 		final placeholders = List.filled(ids.length, '?').join(',');
 
-		return database.update(
-			'blog_posts', 
-			{'is_deleted': 1},
-			where: 'id IN ($placeholders)',
-			whereArgs: [ids]
-		);
+		return await database.transaction((txn) async {
+			await txn.delete(
+				'images',
+				where: 'blog_id IN ($placeholders)',
+				whereArgs: ids,
+			);
+
+			return database.delete(
+				'blog_posts', 
+				where: 'id IN ($placeholders)',
+				whereArgs: [ids]
+			);
+		});
 	}
 
 	Future<List<Map<String, dynamic>>> searchBlogs(String query) async {
