@@ -10,21 +10,6 @@ final homeViewProvider = AsyncNotifierProvider<HomeController, List<BlogPost>>((
 	return HomeController();
 });
 
-final refreshBlogsProvider = FutureProvider((ref) {
-	final blogController = ref.watch(homeViewProvider.notifier);
-	return blogController.refresh();
-});
-
-final loadMoreBlogsProvider = FutureProvider((ref) {
-	final blogController = ref.watch(homeViewProvider.notifier);
-	return blogController.loadMore();
-});
-
-final deleteBlogProvider = FutureProvider.family((ref, String id) {
-	final blogController = ref.watch(homeViewProvider.notifier);
-	return blogController.deleteBlog(id);
-});
-
 class HomeController extends AsyncNotifier<List<BlogPost>> {
 	BlogRepository get _repository => ref.read(blogRepositoryProvider);
 	
@@ -107,5 +92,7 @@ class HomeController extends AsyncNotifier<List<BlogPost>> {
 	Future<void> deleteBlog(String id) async {
 		await _repository.deleteBlog(id);
 		await refresh();
+
+		ref.invalidate(homeViewProvider);
 	}
 }
