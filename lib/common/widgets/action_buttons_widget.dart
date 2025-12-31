@@ -6,6 +6,7 @@ class StaticFAB extends StatelessWidget {
 
 	const StaticFAB({
 		super.key,
+
 		required this.onPressed,
 		required this.icon,
 	});
