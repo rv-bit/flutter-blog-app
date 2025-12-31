@@ -65,8 +65,8 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 		}
 	}
 
-	void onPostBlog(bool isPosting) async {
-		if (isPosting) return;
+	void onPostBlog(bool isSubmitting) async {
+		if (isSubmitting) return;
 
 		final router = GoRouter.of(context);
 
@@ -98,7 +98,7 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 	@override
 	Widget build(BuildContext context) {
 		final createState = ref.watch(createBlogProvider);
-		final isPosting = createState.isLoading;
+		final isSubmitting = createState.isLoading;
 
 		return Scaffold(
 			appBar: AppBar(
@@ -108,7 +108,7 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 					icon: const Icon(Icons.close, size: 25),
 				),
 				title: GestureDetector(
-					onTap: () => onPostBlog(isPosting),
+					onTap: () => onPostBlog(isSubmitting),
 					child: Container(
 						alignment: Alignment.centerRight,
 						child: Opacity(
