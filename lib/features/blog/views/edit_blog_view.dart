@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:go_router/go_router.dart';
@@ -13,25 +14,36 @@ import 'package:flutter_blog_app/config/theme_pallet.dart';
 
 import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 
+import 'package:flutter_blog_app/models/blog_posts.dart';
+import 'package:flutter_blog_app/models/payloads/update_blog_post_payload.dart';
+
 import 'package:flutter_blog_app/features/blog/widgets/character_indicator_widget.dart';
 
+import 'package:flutter_blog_app/features/blog/controllers/blog_edit_controller.dart';
 import 'package:flutter_blog_app/features/home/controllers/home_controller.dart';
-import 'package:flutter_blog_app/features/blog/controllers/blog_add_controller.dart';
 
-class CreateBlogView extends ConsumerStatefulWidget {
-	const CreateBlogView({super.key});
+class EditBlogView extends ConsumerStatefulWidget {
+	final String blogId;
 
-  	@override ConsumerState<ConsumerStatefulWidget> createState() => _CreateBlogViewState();
+	const EditBlogView({
+		super.key, 
+		required this.blogId
+	});
+
+  	@override ConsumerState<ConsumerStatefulWidget> createState() => _EditBlogViewState();
 }
 
-class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
+class _EditBlogViewState extends ConsumerState<EditBlogView> {
 	final blogTextBlockController = TextEditingController();
-	bool _textInField = false;
-
 	static const int maxCharacters = 100;
+
+	bool _initialized = false;
+
+	bool _textInField = false;
 	int _currentCharCount = 0;
 
-	List<File> images = [];
+	List<String> networkImages = []; // existing blog images
+	List<File> localImages = []; // newly picked images
 
 	@override
 	void dispose() {
@@ -50,27 +62,28 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 	}
 
 	void onPickImages() async {
-		List<File> pickedImages = await common_utils.pickImages();
+		final pickedImages = await common_utils.pickImages();
 		setState(() {
-			images = [...images, ...pickedImages];
+			localImages.addAll(pickedImages);
 		});
 	}
 
 	void onPickImageFromCamera() async {
-		File? pickedImage = await common_utils.pickImageCamera();
+		final pickedImage = await common_utils.pickImageCamera();
 		if (pickedImage != null) {
 			setState(() {
-				images.add(pickedImage);
+				localImages.add(pickedImage);
 			});
 		}
 	}
 
-	void onPostBlog(bool isSubmitting) async {
+	void onEditBlog(bool isSubmitting) async {
 		if (isSubmitting) return;
 
 		final router = GoRouter.of(context);
+		final allImagesCount = networkImages.length + localImages.length;
 
-		if (images.isEmpty) {
+		if (allImagesCount <= 0) {
 			FocusManager.instance.primaryFocus?.unfocus();
 
 			final snackBar = SnackBar(
@@ -78,15 +91,20 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 				duration: Duration(milliseconds: 5000),
 			);
 
-			// Find the ScaffoldMessenger in the widget tree
-			// and use it to show a SnackBar.
 			ScaffoldMessenger.of(context).showSnackBar(snackBar);
 			return;
 		}
 
-		await ref.read(createBlogProvider.notifier).createBlog(
-			content: blogTextBlockController.text,
-			imageFiles: images,
+		final blog = ref.read(editBlogProvider(widget.blogId)).value;
+		if (blog == null) return;
+
+		await ref.read(editBlogProvider(widget.blogId).notifier).updateBlog(
+			UpdateBlogPayload(
+				blogId: blog.id,
+				content: blogTextBlockController.text,
+				savedImages: networkImages,
+				newImages: localImages,
+			),
 		);
 
 		if (!mounted) return;
@@ -95,10 +113,51 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 		router.pop();
 	}
 
+	Widget _removeButton(VoidCallback onTap) {
+		return Positioned(
+			top: 8,
+			right: 8,
+			child: GestureDetector(
+			onTap: onTap,
+			child: Container(
+				decoration: BoxDecoration(
+					color: Colors.black.withValues(alpha: 0.6),
+					shape: BoxShape.circle,
+				),
+				padding: const EdgeInsets.all(6),
+				child: const Icon(Icons.close, size: 18, color: Colors.white),
+			),
+			),
+		);
+	}
+
 	@override
 	Widget build(BuildContext context) {
-		final createState = ref.watch(createBlogProvider);
-		final isSubmitting = createState.isLoading;
+		ref.listen<AsyncValue<BlogPost?>>(
+			editBlogProvider(widget.blogId),
+			(previous, next) {
+				next.whenOrNull(
+					data: (blog) {
+						if (blog == null || _initialized) return;
+
+						print('blog.images ${blog.images.length}');
+
+						blogTextBlockController.text = blog.content;
+						_currentCharCount = blog.content.length;
+						_textInField = blog.content.isNotEmpty;
+
+						networkImages = blog.images;
+
+						_initialized = true;
+					},
+				);
+			},
+		);
+
+		final blogAsync = ref.watch(editBlogProvider(widget.blogId));
+		final isSubmitting = blogAsync.isLoading;
+
+		final allImagesCount = networkImages.length + localImages.length;
 
 		return Scaffold(
 			appBar: AppBar(
@@ -108,7 +167,7 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 					icon: const Icon(Icons.close, size: 25),
 				),
 				title: GestureDetector(
-					onTap: () => onPostBlog(isSubmitting),
+					onTap: () => onEditBlog(isSubmitting),
 					child: Container(
 						alignment: Alignment.centerRight,
 						child: Opacity(
@@ -124,10 +183,10 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 								child: Padding(
 									padding: const EdgeInsets.only(left: 5, right: 5),
 									child: Text(
-										'Post',
+										'Submit',
 										textAlign: TextAlign.center,
 										style: const TextStyle(
-											fontSize: 14,
+											fontSize: 11,
 											fontWeight: FontWeight.bold,
 										),
 									),
@@ -186,52 +245,62 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 									],
 								),
 							),
-
-							if (images.isNotEmpty) 
+							
+							if (allImagesCount > 0) 
 								CarouselSlider(
-									items: images.asMap().entries.map((entry) {
-										final index = entry.key;
-										final file = entry.value;
+									items: [
+										// Network images (existing)
+										...networkImages.asMap().entries.map((entry) {
+											final index = entry.key;
+											final url = entry.value;
 
-										return Stack(
-											children: [
-												Container(
-													width: MediaQuery.of(context).size.width,
-													margin: const EdgeInsets.symmetric(
-														horizontal: 5,
-													),
-													child: ClipRRect(
-														borderRadius: BorderRadius.circular(8.0),
-														child: Image.file(file, fit: BoxFit.cover),
-													),
-												),
-
-												Positioned(
-													top: 8,
-													right: 8,
-													child: GestureDetector(
-														onTap: () {
-															setState(() {
-																images.removeAt(index);
-															});
-														},
-														child: Container(
-															decoration: BoxDecoration(
-																color: Colors.black.withValues(alpha: 0.6),
-																shape: BoxShape.circle,
-															),
-															padding: const EdgeInsets.all(6),
-															child: const Icon(
-																Icons.close,
-																size: 18,
-																color: Colors.white,
-															),
+											return Stack(
+												children: [
+													Container(
+														width: MediaQuery.of(context).size.width,
+														margin: const EdgeInsets.symmetric(
+															horizontal: 5,
+														),
+														child: ClipRRect(
+															borderRadius: BorderRadius.circular(8.0),
+															child: Image.memory(base64Decode(url), fit: BoxFit.cover),
 														),
 													),
-												),
-											],
-										);
-									}).toList(),
+													_removeButton(() {
+														setState(() {
+															networkImages.removeAt(index);
+														});
+													}),
+												],
+											);
+										}),
+
+										// Local images (new)
+										...localImages.asMap().entries.map((entry) {
+											final index = entry.key;
+											final file = entry.value;
+
+											return Stack(
+												children: [
+													Container(
+														width: MediaQuery.of(context).size.width,
+														margin: const EdgeInsets.symmetric(
+															horizontal: 5,
+														),
+														child: ClipRRect(
+															borderRadius: BorderRadius.circular(8.0),
+															child: Image.file(file, fit: BoxFit.cover),
+														),
+													),
+													_removeButton(() {
+														setState(() {
+															localImages.removeAt(index);
+														});
+													}),
+												],
+											);
+										}),
+									],
 									options: CarouselOptions(
 										height: 400,
 										enableInfiniteScroll: false,

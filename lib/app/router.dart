@@ -6,6 +6,7 @@ import 'package:flutter_blog_app/app/shell.dart';
 
 import 'package:flutter_blog_app/features/home/views/home_view.dart';
 import 'package:flutter_blog_app/features/blog/views/create_blog_view.dart';
+import 'package:flutter_blog_app/features/blog/views/edit_blog_view.dart';
 
 // This code was taken from a stack overflow page, as wanted transitions for page / router changes, as go router currently doesn't support for this, the quickest and easier fix was this
 CustomTransitionPage buildPageWithDefaultTransition<T>({
@@ -53,6 +54,7 @@ final appRouter = GoRouter(
 			},
 			routes: [
 				GoRoute(
+					name: 'home',
 					path: '/',
 					pageBuilder: (context, state) => buildPageWithDefaultTransition<void>(
 						context: context,
@@ -61,6 +63,7 @@ final appRouter = GoRouter(
 					)
 				),
 				GoRoute(
+					name: 'search',
 					path: '/search',
 					pageBuilder: (context, state) => buildPageWithDefaultTransition<void>(
 						context: context,
@@ -72,11 +75,22 @@ final appRouter = GoRouter(
 		),
 
 		GoRoute(
+			name: 'create',
 			path: '/create',
 			pageBuilder: (context, state) => buildPageWithDefaultTransition<void>(
 				context: context,
 				state: state,
 				child: CreateBlogView(),
+			)
+		),
+
+		GoRoute(
+			name: 'edit',
+			path: '/edit/:blogId',
+			pageBuilder: (context, state) => buildPageWithDefaultTransition<void>(
+				context: context,
+				state: state,
+				child: EditBlogView(blogId: state.pathParameters['blogId']!),
 			)
 		),
 	],

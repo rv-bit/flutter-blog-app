@@ -1,7 +1,12 @@
-import 'package:flutter_blog_app/models/images.dart';
+import 'dart:convert';
+
+import 'package:uuid/uuid.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:flutter_blog_app/models/index.dart';
+import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
+import 'package:flutter_blog_app/models/index.dart' as common_models;
+
 import 'package:flutter_blog_app/common/dao/blog_dao.dart';
 
 final blogRepositoryProvider = Provider<BlogRepository>((ref) {
@@ -13,7 +18,7 @@ class BlogRepository {
 
 	BlogRepository({required this.dao});
 
-	Future<List<BlogPost>> fetchBlogs({required int limit, required int offset}) async {
+	Future<List<common_models.BlogPost>> fetchBlogs({required int limit, required int offset}) async {
 		final blogRows = await dao.getBlogPosts(limit: limit, offset: offset);
 
 		if (blogRows.isEmpty) return [];
@@ -21,13 +26,13 @@ class BlogRepository {
 		final blogIds = blogRows.map((row) => row['id'] as String).toList();
 		final imageRows = await dao.getImagesByBlogIds(blogIds);
 
-		final images = imageRows.map(Images.fromMap).toList();
-		final imageMap = Images.groupByBlog(images);
+		final images = imageRows.map(common_models.Images.fromMap).toList();
+		final imageMap = common_models.Images.groupByBlog(images);
 
 		return blogRows.map((blogMap) {
 			final blogId = blogMap['id'];
 
-			return BlogPost(
+			return common_models.BlogPost(
 				id: blogId,
 				images: imageMap[blogId] ?? const [], 
 				content: blogMap['content'], 
@@ -39,33 +44,58 @@ class BlogRepository {
 		}).toList();
 	}
 
-	Future<BlogPost?> fetchBlogById(String id) async {
+	Future<common_models.BlogPost?> fetchBlogById(String id) async {
 		final blog = await dao.getBlog(id);
 		if (blog == null) return null;
 
 		final imageRows = await dao.getImagesByBlogId(id);
-		final images = imageRows.map(Images.fromMap).toList();
+		final images = imageRows.map(common_models.Images.fromMap).toList();
 
-		return BlogPost.fromMapWithImages(blog, images);
+		return common_models.BlogPost.fromMapWithImages(blog, images);
 	}
 
-	Future<void> addBlogWithImages({
-		required BlogPost blog,
-		required List<Images> images,
+	Future<void> addBlog({
+		required common_models.BlogPost blog,
+		required List<common_models.Images> images,
 	}) async {
-		await dao.insertBlogWithImages(
+		await dao.insertBlog(
 			blog: blog.toMap(),
 			images: images.map((e) => e.toMap()).toList(),
 		);
 	}
 
-	Future<void> addBlog(BlogPost blog) async {
-		await dao.insertBlogPost(blog.toMap());
+	Future<void> updateBlog(common_models.UpdateBlogPayload payload) async {
+		final now = DateTime.now().toIso8601String();
+
+		await dao.updateBlog(
+			payload.blogId,
+			{
+				'content': payload.content,
+				'updated_at': now,
+			},
+		);
+
+		await dao.deleteSavedImages(
+			blogId: payload.blogId,
+			savedImages: payload.savedImages,
+		);
+
+		for (final file in payload.newImages) {
+			final imageId = const Uuid().v4();
+			final compressedBytes = await common_utils.compressImage(file);
+			final base64Image = base64Encode(compressedBytes);
+
+			await dao.insertImage(
+				common_models.Images(
+					id: imageId,
+					blogId: payload.blogId,
+					image: base64Image,
+					createdAt: now,
+				).toMap(),
+			);
+		}
 	}
 
-	Future<void> updateBlog(BlogPost blog) async {
-		await dao.updateBlog(blog.id, blog.toMap());
-	}
 
 	Future<void> deleteBlog(String id) async {
 		await dao.deleteBlog(id);
@@ -75,8 +105,8 @@ class BlogRepository {
 		await dao.deleteMultiple(ids);
 	}
 
-	Future<List<BlogPost>> searchBlogs(String query) async {
+	Future<List<common_models.BlogPost>> searchBlogs(String query) async {
 		final rows = await dao.searchBlogs(query);
-		return rows.map(BlogPost.fromMap).toList();
+		return rows.map(common_models.BlogPost.fromMap).toList();
 	}
 }

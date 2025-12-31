@@ -1,4 +1,5 @@
 import 'package:sqflite/sqflite.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_blog_app/core/database/database.dart';
@@ -11,46 +12,35 @@ final blogDAOProvider = Provider<BlogDAO>((ref) {
 class BlogDAO {
 	final databaseHelper = DatabaseHelper();
 
-	Future<void> insertBlogPost(Map<String, dynamic> blog) async {
-		if (blog.isEmpty) return;
-
-		try {
-			final database = await databaseHelper.database;
-			await database.insert(
-				'blog_posts',
-				blog,
-				conflictAlgorithm: ConflictAlgorithm.replace,
-			);
-		} catch (e) {
-			log.severe('Insert failed: $e');
-			throw MyDatabaseException('Insert failed: $e');
-		}
-	}
-
-	Future<void> insertBlogWithImages({
+	Future<void> insertBlog({
 		required Map<String, dynamic> blog,
 		required List<Map<String, dynamic>> images,
 	}) async {
-		if (blog.isEmpty) return;
-		if (images.isEmpty) return;
+		try {
+			if (blog.isEmpty) return;
+			if (images.isEmpty) return;
 
-		final database = await databaseHelper.database;
+			final database = await databaseHelper.database;
 
-		await database.transaction((txn) async {
-			await txn.insert(
-				'blog_posts',
-				blog,
-				conflictAlgorithm: ConflictAlgorithm.abort,
-			);
-
-			for (final image in images) {
+			await database.transaction((txn) async {
 				await txn.insert(
-					'images',
-					image,
+					'blog_posts',
+					blog,
 					conflictAlgorithm: ConflictAlgorithm.abort,
 				);
-			}
-		});
+
+				for (final image in images) {
+					await txn.insert(
+						'images',
+						image,
+						conflictAlgorithm: ConflictAlgorithm.abort,
+					);
+				}
+			});
+		} catch(e) {
+			log.severe('Insert failed: $e');
+			throw MyDatabaseException('Insert failed: $e');
+		}
 	}
 
 	// Return a List of multiple objects aka posts, and each post will include all data like content, image etc.
@@ -87,7 +77,7 @@ class BlogDAO {
 		final database = await databaseHelper.database;
 		return await database.query(
 			'images',
-			where: 'blog_id IN ($blogId)',
+			where: 'blog_id = ?',
 			whereArgs: [blogId],
 			orderBy: 'created_at DESC',
 		);
@@ -120,6 +110,30 @@ class BlogDAO {
 			data,
 			where: 'id = ?',
 			whereArgs: [id]
+		);
+	}
+
+	Future<void> deleteSavedImages({
+		required String blogId,
+		required List<String> savedImages,
+	}) async {
+		final database = await databaseHelper.database;
+
+		if (savedImages.isEmpty) {
+			await database.delete(
+				'images',
+				where: 'blog_id = ?',
+				whereArgs: [blogId],
+			);
+			return;
+		}
+
+		final placeholders = List.filled(savedImages.length, '?').join(',');
+
+		await database.delete(
+			'images',
+			where: 'blog_id = ? AND url NOT IN ($placeholders)',
+			whereArgs: [blogId, ...savedImages],
 		);
 	}
 
@@ -164,8 +178,8 @@ class BlogDAO {
 		final database = await databaseHelper.database;
 		return await database.query(
 			'blog_posts',
-			where: '(title LIKE ? OR content LIKE ?) and is_deleted = 0',
-			whereArgs: ['%$query%', '%$query%']
+			where: '(content LIKE ?) and is_deleted = 0',
+			whereArgs: ['%$query%']
 		);
 	}
 }
