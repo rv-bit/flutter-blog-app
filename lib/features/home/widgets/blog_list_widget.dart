@@ -20,11 +20,20 @@ import 'package:flutter_blog_app/features/home/controllers/home_controller.dart'
 
 class BlogList extends ConsumerWidget {
 	final ScrollController scrollController;
-	final List<BlogPost> blogs;
 	final AsyncValue<dynamic> appDirAsync;
-	final double indicatorHeight;
 	final ValueListenable<Widget?>? headerNotifier;
+	
+	// data
+	final List<BlogPost> blogs;
+	
+	// styles
+	final double indicatorHeight;
 	final EdgeInsets padding;
+
+	// selection mode 
+	final bool isSelectionMode;
+	final Set<String> selectedBlogIds;
+	final ValueChanged<String>? onBlogSelectionToggle;
 
 	const BlogList({
 		super.key,
@@ -33,6 +42,10 @@ class BlogList extends ConsumerWidget {
 		required this.blogs,
 		required this.appDirAsync,
 		required this.indicatorHeight,
+		
+		this.isSelectionMode = false,
+		this.selectedBlogIds = const {},
+		this.onBlogSelectionToggle,
 
 		this.headerNotifier,
 		this.padding = EdgeInsets.zero,
@@ -227,6 +240,11 @@ class BlogList extends ConsumerWidget {
 										backgroundColor: Palette.blueColor,
 										radius: 15,
 									),
+									isSelectionMode: isSelectionMode,
+									isSelected: selectedBlogIds.contains(blog.id),
+									onSelectionToggle: () {
+										onBlogSelectionToggle?.call(blog.id);
+									},
 									onActionPressed: (ctx) => _showActionSheet(ctx, ref, blog),
 								),
 

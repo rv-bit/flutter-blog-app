@@ -9,7 +9,26 @@ import 'package:flutter_blog_app/constants/assets_constants.dart';
 import 'package:flutter_blog_app/common/controllers/ui_controller.dart';
 
 class CustomAppBar extends StatelessWidget {
-	const CustomAppBar({super.key});
+	final bool isSelectionMode;
+	final int selectedCount;
+	final int totalCount;
+	final VoidCallback? onEnterSelectionMode;
+	final VoidCallback? onExitSelectionMode;
+	final VoidCallback? onSelectAll;
+	final VoidCallback? onDeselectAll;
+	final VoidCallback? onDelete;
+
+	const CustomAppBar({
+		super.key,
+		this.isSelectionMode = false,
+		this.selectedCount = 0,
+		this.totalCount = 0,
+		this.onEnterSelectionMode,
+		this.onExitSelectionMode,
+		this.onSelectAll,
+		this.onDeselectAll,
+		this.onDelete,
+	});
 
 	@override
 	Widget build(BuildContext context) {
@@ -41,12 +60,9 @@ class CustomAppBar extends StatelessWidget {
 									bottom: false,
 									child: SizedBox(
 										height: kAppBarHeight,
-										child: Center(
-											child: SvgPicture.asset(
-												AssetsConstants.logoIcon,
-												height: 25,
-											),
-										),
+										child: isSelectionMode 
+											? _buildSelectionAppBar(context)
+											: _buildNormalAppBar(context),
 									),
 								),
 							),
@@ -54,6 +70,82 @@ class CustomAppBar extends StatelessWidget {
 					),
 				);
 			},
+		);
+	}
+
+	Widget _buildNormalAppBar(BuildContext context) {
+		return SizedBox(
+			height: kToolbarHeight,
+			child: Stack(
+				alignment: Alignment.center,
+				children: [
+					// Center logo (true center)
+					Center(
+						child: SvgPicture.asset(
+							AssetsConstants.logoIcon,
+							height: 25,
+						),
+					),
+
+					// Left action
+					Align(
+						alignment: Alignment.centerLeft,
+						child: onEnterSelectionMode != null ? 
+							IconButton(
+								icon: const Icon(Icons.checklist_rounded, size: 24),
+								onPressed: onEnterSelectionMode,
+								tooltip: 'Select posts',
+							) : const SizedBox.shrink(),
+					),
+				],
+			),
+		);
+	}
+
+
+	Widget _buildSelectionAppBar(BuildContext context) {
+		final allSelected = selectedCount == totalCount && totalCount > 0;
+
+		return Padding(
+			padding: const EdgeInsets.symmetric(horizontal: 8),
+			child: Row(
+				children: [
+					IconButton(
+						icon: const Icon(Icons.close, size: 24),
+						onPressed: onExitSelectionMode,
+						tooltip: 'Cancel',
+					),
+					const SizedBox(width: 8),
+					Expanded(
+						child: Text(
+							'$selectedCount selected',
+							style: const TextStyle(
+								fontSize: 16,
+								fontWeight: FontWeight.w600,
+							),
+						),
+					),
+					if (totalCount > 0) ...[
+						IconButton(
+							icon: Icon(
+								allSelected ? Icons.deselect : Icons.select_all,
+								size: 22,
+							),
+							onPressed: allSelected ? onDeselectAll : onSelectAll,
+							tooltip: allSelected ? 'Deselect all' : 'Select all',
+						),
+					],
+					IconButton(
+						icon: Icon(
+							Icons.delete_outline,
+							size: 22,
+							color: selectedCount > 0 ? Colors.red : Colors.grey,
+						),
+						onPressed: selectedCount > 0 ? onDelete : null,
+						tooltip: 'Delete',
+					),
+				],
+			),
 		);
 	}
 }

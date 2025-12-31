@@ -34,6 +34,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
 	bool _hasTriggeredArmedHaptic = false;
 	double _dragDistance = 0.0;
 
+	bool _isSelectionMode = false;
+	Set<String> _selectedBlogIds = {};
+
 	@override
 	void dispose() {
 		_controller.dispose();
@@ -59,6 +62,96 @@ class _HomeViewState extends ConsumerState<HomeView> {
 		await ref.read(homeViewProvider.notifier).refresh();
 	}
 
+	void _enterSelectionMode() {
+		setState(() {
+			_isSelectionMode = true;
+			_selectedBlogIds.clear();
+		});
+	}
+
+	void _exitSelectionMode() {
+		setState(() {
+			_isSelectionMode = false;
+			_selectedBlogIds.clear();
+		});
+	}
+
+	void _toggleBlogSelection(String blogId) {
+		setState(() {
+			if (_selectedBlogIds.contains(blogId)) {
+				_selectedBlogIds.remove(blogId);
+			} else {
+				_selectedBlogIds.add(blogId);
+			}
+		});
+	}
+
+	void _selectAll() {
+		final blogState = ref.read(homeViewProvider);
+		final blogs = blogState.asData?.value ?? [];
+		
+		setState(() {
+			_selectedBlogIds = blogs.map((blog) => blog.id).toSet();
+		});
+	}
+
+	void _deselectAll() {
+		setState(() {
+			_selectedBlogIds.clear();
+		});
+	}
+
+	Future<void> _deleteSelectedBlogs() async {
+		if (_selectedBlogIds.isEmpty) {
+			final snackBar = SnackBar(
+				content: const Text('At least one blog should be selected'),
+				duration: Duration(milliseconds: 5000),
+			);
+
+			ScaffoldMessenger.of(context).showSnackBar(snackBar);
+			return;
+		}
+
+		final confirm = await showDialog<bool>(
+			context: context,
+			builder: (context) => AlertDialog(
+				title: const Text('Delete Posts'),
+				content: Text(
+					'Are you sure you want to delete ${_selectedBlogIds.length} post${_selectedBlogIds.length > 1 ? 's' : ''}?',
+				),
+				actions: [
+					TextButton(
+						onPressed: () => Navigator.pop(context, false),
+						child: const Text('Cancel'),
+					),
+					TextButton(
+						onPressed: () => Navigator.pop(context, true),
+						style: TextButton.styleFrom(
+							foregroundColor: Colors.red,
+						),
+						child: const Text('Delete'),
+					),
+				],
+			),
+		);
+
+		if (!mounted || confirm != true) return;
+
+		await ref.read(homeViewProvider.notifier).deleteMultipleBlogs(_selectedBlogIds);
+		await ref.read(homeViewProvider.notifier).refresh();
+
+		if (!mounted) return;
+
+		_exitSelectionMode();
+
+		ScaffoldMessenger.of(context).showSnackBar(
+			SnackBar(
+				content: Text('${_selectedBlogIds.length} post(s) deleted'),
+				duration: const Duration(seconds: 2),
+			),
+		);
+	}
+
 	@override
 	Widget build(BuildContext context) {
 		final bottomMediaInset = MediaQuery.of(context).viewPadding.bottom;
@@ -69,7 +162,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
 		final blogState = ref.watch(homeViewProvider);
 		final appDirAsync = ref.watch(common_providers.appDirectoryProvider);
-
+		
 		final blogListChild = BlogList(
 			scrollController: _controller,
 			blogs: blogState.asData?.value ?? [],
@@ -80,6 +173,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
 				top: topInset ,
 				bottom: common_controllers.kBottomBarHeight + bottomMediaInset,
 			),
+			isSelectionMode: _isSelectionMode,
+			selectedBlogIds: _selectedBlogIds,
+			onBlogSelectionToggle: _toggleBlogSelection,
 		);
 
 		return Stack(
@@ -201,8 +297,18 @@ class _HomeViewState extends ConsumerState<HomeView> {
 					),
 				),
 
-				const CustomAppBar(),
-				AnimatedFAB(currentIndex: currentIndex),
+				CustomAppBar(
+					isSelectionMode: _isSelectionMode,
+					selectedCount: _selectedBlogIds.length,
+					totalCount: blogState.asData?.value.length ?? 0,
+					onEnterSelectionMode: _enterSelectionMode,
+					onExitSelectionMode: _exitSelectionMode,
+					onSelectAll: _selectAll,
+					onDeselectAll: _deselectAll,
+					onDelete: _deleteSelectedBlogs,
+				),
+				
+				if (!_isSelectionMode) AnimatedFAB(currentIndex: currentIndex),
 			],
 		);
 	}

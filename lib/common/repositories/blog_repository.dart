@@ -101,7 +101,7 @@ class BlogRepository {
 		await dao.deleteBlog(id);
 	}
 
-	Future<void> deleteMultipleBlogs(List<String> ids) async {
+	Future<void> deleteMultipleBlogs(Set<String> ids) async {
 		await dao.deleteMultiple(ids);
 	}
 

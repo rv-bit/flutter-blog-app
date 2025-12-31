@@ -170,7 +170,7 @@ class BlogDAO {
 				whereArgs: idList,
 			);
 
-			return database.delete(
+			return txn.delete(
 				'blog_posts', 
 				where: 'id IN ($placeholders)',
 				whereArgs: idList

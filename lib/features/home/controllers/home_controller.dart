@@ -89,6 +89,8 @@ class HomeController extends AsyncNotifier<List<BlogPost>> {
 	bool get isLoadingMore => _isLoadingMore;
 
 	Future<void> deleteBlog(String id) async {
+		if (id.isEmpty) return;
+
 		final current = state.value ?? [];
 
 		state = AsyncValue.data(
@@ -97,6 +99,24 @@ class HomeController extends AsyncNotifier<List<BlogPost>> {
 
 		try {
 			await _repository.deleteBlog(id);
+		} catch (e, stack) {
+			log.severe('❌ Error deleting blog', e, stack);
+			ref.invalidateSelf(); // rollback by refetch
+			rethrow;
+		}
+	}
+
+	Future<void> deleteMultipleBlogs(Set<String> ids) async {
+		if (ids.isEmpty) return;
+
+		final current = state.value ?? [];
+
+		state = AsyncValue.data(
+			current.where((b) => !ids.contains(b.id)).toList(),
+		);
+
+		try {
+			await _repository.deleteMultipleBlogs(ids);
 		} catch (e, stack) {
 			log.severe('❌ Error deleting blog', e, stack);
 			ref.invalidateSelf(); // rollback by refetch

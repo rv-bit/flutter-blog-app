@@ -14,6 +14,10 @@ class BlogListItem extends StatefulWidget {
 
 	final Function(BuildContext) onActionPressed;
 
+	final bool isSelectionMode;
+	final bool isSelected;
+	final VoidCallback? onSelectionToggle;
+
 	const BlogListItem({
 		super.key,
 		
@@ -23,6 +27,10 @@ class BlogListItem extends StatefulWidget {
 		required this.avatarWidget,
 		required this.username,
 		required this.time,
+
+		this.isSelectionMode = false,
+		this.isSelected = false,
+		this.onSelectionToggle,
 
 		this.collapsedMaxLines = 1,
 	});
@@ -59,6 +67,12 @@ class _BlogListItemState extends State<BlogListItem> with TickerProviderStateMix
 		});
 	}
 
+	void _handleTap() {
+		if (widget.isSelectionMode && widget.onSelectionToggle != null) {
+			widget.onSelectionToggle?.call();
+		}
+	}
+
 	@override
 	Widget build(BuildContext context) {
 		final textStyle = DefaultTextStyle.of(context).style;
@@ -68,7 +82,24 @@ class _BlogListItemState extends State<BlogListItem> with TickerProviderStateMix
 			child: Row(
 				crossAxisAlignment: CrossAxisAlignment.start,
 				children: [
-					widget.avatarWidget,
+					if (widget.isSelectionMode)
+						Padding(
+							padding: const EdgeInsets.only(top: 2),
+							child: SizedBox(
+								width: 40,
+								height: 40,
+								child: Checkbox(
+									value: widget.isSelected,
+									onChanged: (_) => widget.onSelectionToggle?.call(),
+									shape: RoundedRectangleBorder(
+										borderRadius: BorderRadius.circular(4),
+									),
+								),
+							),
+						)
+					else
+						widget.avatarWidget,
+
 					const SizedBox(width: 10),
 
 					Expanded(
@@ -101,24 +132,27 @@ class _BlogListItemState extends State<BlogListItem> with TickerProviderStateMix
 										),
 
 										// Right: menu icon
-										SizedBox(
-											width: 36,
-											height: 20,
-											child: InkWell(
-												onTap: () => widget.onActionPressed(context),
-												borderRadius: BorderRadius.circular(20),
-												child: Icon(
-													Icons.more_horiz,
-													size: 20,
-													color: Colors.grey[600],
+										if (!widget.isSelectionMode)
+											SizedBox(
+												width: 36,
+												height: 20,
+												child: InkWell(
+													onTap: () => widget.onActionPressed(context),
+													borderRadius: BorderRadius.circular(20),
+													child: Icon(
+														Icons.more_horiz,
+														size: 20,
+														color: Colors.grey[600],
+													),
 												),
 											),
-										),
 									],
 								),
 
 								GestureDetector(
-									onTap: _showMoreNeeded ? () => setState(() => _expanded = !_expanded) : null,
+									onTap: widget.isSelectionMode 
+										? _handleTap 
+										: (_showMoreNeeded ? () => setState(() => _expanded = !_expanded) : null),
 									child: SizedBox(
 										child: Text(
 											widget.content,
@@ -129,7 +163,7 @@ class _BlogListItemState extends State<BlogListItem> with TickerProviderStateMix
 									),
 								),
 
-								if (_showMoreNeeded)
+								if (_showMoreNeeded && !widget.isSelectionMode)
 									GestureDetector(
 										onTap: () => setState(() => _expanded = !_expanded),
 										child: Text(
