@@ -4,16 +4,13 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
 
-import 'package:flutter_blog_app/constants/assets_constants.dart';
 import 'package:flutter_blog_app/config/theme_pallet.dart';
-
 import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 
-import 'package:flutter_blog_app/features/blog/widgets/character_indicator_widget.dart';
+import 'package:flutter_blog_app/features/blog/widgets/bottom_bar_actions_widget.dart';
 
 import 'package:flutter_blog_app/features/home/controllers/home_controller.dart';
 import 'package:flutter_blog_app/features/blog/controllers/blog_add_controller.dart';
@@ -26,9 +23,8 @@ class CreateBlogView extends ConsumerStatefulWidget {
 
 class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 	final blogTextBlockController = TextEditingController();
-	bool _textInField = false;
 
-	static const int maxCharacters = 100;
+	bool _textInField = false;
 	int _currentCharCount = 0;
 
 	List<File> images = [];
@@ -242,69 +238,11 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 					),
 				),
 			),
-			bottomNavigationBar: Transform.translate(
-				offset: Offset(0.0, -1 * MediaQuery.of(context).viewInsets.bottom),
-				child: Container(
-					padding: const EdgeInsets.only(bottom: 10),
-					decoration: BoxDecoration(
-						border: Border(
-							top: BorderSide(color: Palette.greyColor.withValues(alpha: 0.5))
-						),
-						color: Palette.backgroundColor
-					),
-					child: SafeArea(
-						top: false,
-						child: Row(
-							children: [
-								Padding(
-									padding: const EdgeInsets.all(8.0).copyWith(
-										left: 15,
-										right: 15,
-									),
-									child: GestureDetector(
-										onTap: onPickImages,
-										child: SvgPicture.asset(
-											AssetsConstants.addImageIcon,
-											colorFilter: ColorFilter.mode(
-												Palette.blueColor,
-												BlendMode.srcIn
-											),
-											height: 24,		
-										),
-									),
-								),
-								Padding(
-									padding: const EdgeInsets.all(8.0).copyWith(
-										left: 0,
-										right: 15,
-									),
-									child: GestureDetector(
-										onTap: onPickImageFromCamera,
-										child: SvgPicture.asset(
-											AssetsConstants.camera,
-											colorFilter: ColorFilter.mode(
-												Palette.blueColor,
-												BlendMode.srcIn
-											),
-											height: 20,	
-										),
-									),
-								),
-								
-								const Spacer(),
-								Padding(
-									padding: const EdgeInsets.only(right: 15, top: 5),
-									child: CharacterLimitIndicator(
-										currentLength: _currentCharCount,
-										maxLength: maxCharacters,
-										size: 25,
-									),
-								),
-							],
-						),
-					),
-				),
-			),
+			bottomNavigationBar: BottomBarActions(
+				onPickImages: onPickImages, 
+				onPickImageFromCamera: onPickImageFromCamera, 
+				currentCharCount: _currentCharCount
+			)
 		);
 	}
 }

@@ -11,6 +11,7 @@ class CharacterLimitIndicator extends StatelessWidget {
 
 		required this.currentLength,
 		required this.maxLength,
+
 		this.size = 30.0,
 	});
 
