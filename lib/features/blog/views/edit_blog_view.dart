@@ -38,7 +38,7 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 	bool _textInField = false;
 	int _currentCharCount = 0;
 
-	List<String> networkImages = []; // existing blog images
+	List<String> savedImages = []; // existing blog images
 	List<File> localImages = []; // newly picked images
 
 	@override
@@ -77,7 +77,7 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 		if (isSubmitting) return;
 
 		final router = GoRouter.of(context);
-		final allImagesCount = networkImages.length + localImages.length;
+		final allImagesCount = savedImages.length + localImages.length;
 
 		if (allImagesCount <= 0) {
 			FocusManager.instance.primaryFocus?.unfocus();
@@ -98,7 +98,7 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 			UpdateBlogPayload(
 				blogId: blog.id,
 				content: blogTextBlockController.text,
-				savedImages: networkImages,
+				savedImages: savedImages,
 				newImages: localImages,
 			),
 		);
@@ -140,7 +140,7 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 						_currentCharCount = blog.content.length;
 						_textInField = blog.content.isNotEmpty;
 
-						networkImages = blog.images;
+						savedImages = blog.images;
 
 						_initialized = true;
 					},
@@ -151,7 +151,7 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 		final blogAsync = ref.watch(editBlogProvider(widget.blogId));
 		final isSubmitting = blogAsync.isLoading;
 
-		final allImagesCount = networkImages.length + localImages.length;
+		final allImagesCount = savedImages.length + localImages.length;
 
 		return Scaffold(
 			appBar: AppBar(
@@ -244,11 +244,12 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 								CarouselSlider(
 									items: [
 										// Network images (existing)
-										...networkImages.asMap().entries.map((entry) {
+										...savedImages.asMap().entries.map((entry) {
 											final index = entry.key;
 											final url = entry.value;
 
 											return Stack(
+												key: ValueKey('saved_$index'),
 												children: [
 													Container(
 														width: MediaQuery.of(context).size.width,
@@ -257,12 +258,16 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 														),
 														child: ClipRRect(
 															borderRadius: BorderRadius.circular(8.0),
-															child: Image.memory(base64Decode(url), fit: BoxFit.cover),
+															child: Image.memory(
+																base64Decode(url), 
+																fit: BoxFit.cover,
+																gaplessPlayback: true, // Prevents flicker
+															),
 														),
 													),
 													_removeButton(() {
 														setState(() {
-															networkImages.removeAt(index);
+															savedImages.removeAt(index);
 														});
 													}),
 												],
@@ -275,6 +280,7 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 											final file = entry.value;
 
 											return Stack(
+												key: ValueKey('local_$index'),
 												children: [
 													Container(
 														width: MediaQuery.of(context).size.width,
@@ -283,7 +289,11 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 														),
 														child: ClipRRect(
 															borderRadius: BorderRadius.circular(8.0),
-															child: Image.file(file, fit: BoxFit.cover),
+															child: Image.file(
+																file,
+																fit: BoxFit.cover,
+																gaplessPlayback: true, // Prevents flicker
+															),
 														),
 													),
 													_removeButton(() {
