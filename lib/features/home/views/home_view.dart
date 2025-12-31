@@ -112,6 +112,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
 			return;
 		}
 
+		final countSelectedBlogs = _selectedBlogIds.length;
+
 		final confirm = await showDialog<bool>(
 			context: context,
 			builder: (context) => AlertDialog(
@@ -146,7 +148,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
 		ScaffoldMessenger.of(context).showSnackBar(
 			SnackBar(
-				content: Text('${_selectedBlogIds.length} post(s) deleted'),
+				content: Text('$countSelectedBlogs post(s) deleted'),
 				duration: const Duration(seconds: 2),
 			),
 		);
