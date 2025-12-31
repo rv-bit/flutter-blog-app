@@ -4,20 +4,31 @@ import 'package:flutter_blog_app/config/theme_pallet.dart';
 
 class BlogListItem extends StatefulWidget {
 	final String content;
-	final Widget leading;
+
+	final Widget avatarWidget;
+
+	final String username;
+	final String time;
+
 	final int collapsedMaxLines;	
-	final Function(BuildContext) onActionPressed; // 🔑 Changed to accept BuildContext
+
+	final Function(BuildContext) onActionPressed;
 
 	const BlogListItem({
 		super.key,
+		
 		required this.content,
 		required this.onActionPressed,
-		required this.leading,
+
+		required this.avatarWidget,
+		required this.username,
+		required this.time,
 
 		this.collapsedMaxLines = 1,
 	});
 
-	@override State<BlogListItem> createState() => _BlogListItemState();
+	@override
+	State<BlogListItem> createState() => _BlogListItemState();
 }
 
 class _BlogListItemState extends State<BlogListItem> with TickerProviderStateMixin {
@@ -25,97 +36,111 @@ class _BlogListItemState extends State<BlogListItem> with TickerProviderStateMix
 	bool _showMoreNeeded = false;
 
 	@override
+	void didChangeDependencies() {
+		super.didChangeDependencies();
+
+		_checkTextOverflow();
+	}
+
+	void _checkTextOverflow() {
+		final textStyle = DefaultTextStyle.of(context).style;
+
+		final tp = TextPainter(
+			text: TextSpan(text: widget.content, style: textStyle),
+			maxLines: widget.collapsedMaxLines,
+			textDirection: TextDirection.ltr,
+			ellipsis: '...',
+		);
+
+		tp.layout(maxWidth: MediaQuery.of(context).size.width - 80); // Adjust for padding + icon width
+
+		setState(() {
+			_showMoreNeeded = tp.didExceedMaxLines;
+		});
+	}
+
+	@override
 	Widget build(BuildContext context) {
 		final textStyle = DefaultTextStyle.of(context).style;
 
 		return Padding(
-			padding: const EdgeInsets.only(left: 10, right: 10, bottom: 15),
+			padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
 			child: Row(
 				crossAxisAlignment: CrossAxisAlignment.start,
 				children: [
-					widget.leading,
-					const SizedBox(width: 12),
+					widget.avatarWidget,
+					const SizedBox(width: 10),
 
 					Expanded(
-						child: Row(
+						child: Column(
 							crossAxisAlignment: CrossAxisAlignment.start,
+							mainAxisSize: MainAxisSize.min, // to shrink-wrap content
 							children: [
-								Expanded(
-									child: AnimatedSize(
-										duration: const Duration(milliseconds: 250),
-										curve: Curves.easeInOut,
-										child: Column(
-											crossAxisAlignment: CrossAxisAlignment.start,
-											children: [
-												LayoutBuilder(
-													builder: (context, constraints) {
-														final textPainter = TextPainter(
-															text: TextSpan(text: widget.content, style: textStyle),
-															maxLines: widget.collapsedMaxLines,
-															textDirection: TextDirection.ltr,
-														)..layout(maxWidth: constraints.maxWidth);
+								Row(
+									crossAxisAlignment: CrossAxisAlignment.center,
+									mainAxisAlignment: MainAxisAlignment.spaceBetween,
+									children: [
+										Expanded(
+											child: Row(
+												children: [
+													Flexible(
+														child: Text(
+															widget.username,
+															maxLines: 1,
+															overflow: TextOverflow.ellipsis,
+															style: textStyle.copyWith(fontWeight: FontWeight.bold),
+														),
+													),
+													const SizedBox(width: 6),
+													Text(
+														widget.time,
+														style: textStyle.copyWith(fontSize: 12, color: Colors.grey[600]),
+													),
+												],
+											),
+										),
 
-														final exceeds = textPainter.didExceedMaxLines;
-														
-														WidgetsBinding.instance.addPostFrameCallback((_) {
-															if (_showMoreNeeded != exceeds) {
-																setState(() => _showMoreNeeded = exceeds);
-															}
-														});
-
-														return GestureDetector(
-															onTap: exceeds ? () => setState(() => _expanded = !_expanded) : null,
-															child: RichText(
-																text: TextSpan(
-																	style: textStyle,
-																	children: [
-																		TextSpan(text: widget.content),
-																		if (exceeds && !_expanded)
-																			TextSpan(
-																				text: ' Show More',
-																				style: textStyle.copyWith(
-																					fontSize: 11,
-																					color: Palette.blueColor,
-																					fontWeight: FontWeight.w500,
-																				),
-																			),
-																		if (_expanded && exceeds)
-																			TextSpan(
-																				text: ' Show less',
-																				style: textStyle.copyWith(
-																					fontSize: 11,
-																					color: Palette.blueColor,
-																					fontWeight: FontWeight.w500,
-																				),
-																			),
-																	],
-																),
-																maxLines: _expanded ? null : widget.collapsedMaxLines,
-																overflow: _expanded ? TextOverflow.visible : TextOverflow.clip,
-															),
-														);
-													},
+										// Right: menu icon
+										SizedBox(
+											width: 36,
+											height: 20,
+											child: InkWell(
+												onTap: () => widget.onActionPressed(context),
+												borderRadius: BorderRadius.circular(20),
+												child: Icon(
+													Icons.more_horiz,
+													size: 20,
+													color: Colors.grey[600],
 												),
-											],
+											),
+										),
+									],
+								),
+
+								GestureDetector(
+									onTap: _showMoreNeeded ? () => setState(() => _expanded = !_expanded) : null,
+									child: SizedBox(
+										child: Text(
+											widget.content,
+											maxLines: _expanded ? null : widget.collapsedMaxLines,
+											softWrap: true,
+											overflow: _expanded ? TextOverflow.visible : TextOverflow.ellipsis,
 										),
 									),
 								),
-								
-								Material(
-									color: Colors.transparent,
-									child: InkWell(
-										onTap: () => widget.onActionPressed(context),
-										borderRadius: BorderRadius.circular(20),
-										child: Padding(
-											padding: const EdgeInsets.all(4),
-											child: Icon(
-												Icons.more_horiz,
-												size: 20,
-												color: Colors.grey[600],
+
+								if (_showMoreNeeded)
+									GestureDetector(
+										onTap: () => setState(() => _expanded = !_expanded),
+										child: Text(
+											_expanded ? 'Show less' : 'Show More',
+											style: textStyle.copyWith(
+												fontSize: 11,
+												fontWeight: FontWeight.w500,
+												color: Palette.blueColor.withAlpha(180),
 											),
 										),
 									),
-								),
 							],
 						),
 					),

@@ -10,12 +10,13 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
 import 'package:flutter_blog_app/config/theme_pallet.dart';
-import 'package:flutter_blog_app/models/blog_posts.dart';
 import 'package:flutter_blog_app/config/theme.dart';
+import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 
-import 'package:flutter_blog_app/features/home/controllers/home_controller.dart';
+import 'package:flutter_blog_app/models/blog_posts.dart';
 
 import 'package:flutter_blog_app/features/home/widgets/blog_list_text_widget.dart';
+import 'package:flutter_blog_app/features/home/controllers/home_controller.dart';
 
 class BlogList extends ConsumerWidget {
 	final ScrollController scrollController;
@@ -220,12 +221,16 @@ class BlogList extends ConsumerWidget {
 							children: [
 								BlogListItem(
 									content: contentText,
-									leading: CircleAvatar(
+									username: 'username_example',
+									time: common_utils.formatPostTime(blog.createdAt),
+									avatarWidget: CircleAvatar(
 										backgroundColor: Palette.blueColor,
 										radius: 15,
 									),
 									onActionPressed: (ctx) => _showActionSheet(ctx, ref, blog),
 								),
+
+								const SizedBox(height: 5),
 
 								if (hasImages)
 									appDirAsync.when(data: (dir) {
