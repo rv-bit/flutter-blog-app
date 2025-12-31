@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/widgets.dart' as widgets;
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import 'package:image_picker/image_picker.dart';
 
@@ -34,6 +35,17 @@ Future<File?> pickImageCamera() async {
 		return File(imageFile.path);
 	}
 	return null;
+}
+
+Future<Uint8List> compressImage(File file) async {
+	final result = await FlutterImageCompress.compressWithFile(
+		file.absolute.path,
+		minWidth: 1920,
+		minHeight: 1080,
+		quality: 85, // Adjust quality (0-100)
+	);
+	
+	return result ?? await file.readAsBytes();
 }
 
 widgets.Image imageFromBase64String(String base64String) {

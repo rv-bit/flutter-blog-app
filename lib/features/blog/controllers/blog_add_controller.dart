@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import 'package:uuid/uuid.dart';
 import 'package:logging/logging.dart';
@@ -11,6 +9,7 @@ import 'package:logging/logging.dart';
 import 'package:flutter_blog_app/models/images.dart';
 import 'package:flutter_blog_app/models/blog_posts.dart';
 
+import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 import 'package:flutter_blog_app/common/repositories/index.dart' as common_repositories;
 
 import 'package:flutter_blog_app/features/home/controllers/home_controller.dart';
@@ -30,18 +29,6 @@ class CreateBlogController extends Notifier<AsyncValue<void>> {
 		return const AsyncValue.data(null);
 	}
 
-	Future<Uint8List> compressImage(File file) async {
-		// Compress image to reduce size
-		final result = await FlutterImageCompress.compressWithFile(
-			file.absolute.path,
-			minWidth: 1920,
-			minHeight: 1080,
-			quality: 85, // Adjust quality (0-100)
-		);
-		
-		return result ?? await file.readAsBytes();
-	}
-
 	Future<void> createBlog({
 		required String content,
 		List<File>? imageFiles,
@@ -55,13 +42,14 @@ class CreateBlogController extends Notifier<AsyncValue<void>> {
 			final blog = BlogPost(
 				id: blogId,
 				content: content,
+				images: const [], // empty for now
 				createdAt: now,
 			);
 
 			final List<Images> images = [];
 			if (imageFiles != null) {
 				for (final file in imageFiles) {
-					final compressedBytes = await compressImage(file);
+					final compressedBytes = await common_utils.compressImage(file);
 					final base64Image = base64Encode(compressedBytes);
 
 					images.add(
@@ -75,7 +63,7 @@ class CreateBlogController extends Notifier<AsyncValue<void>> {
 				}
 			}
 
-			await _repository.addBlogWithImages(
+			await _repository.addBlog(
 				blog: blog,
 				images: images,
 			);
