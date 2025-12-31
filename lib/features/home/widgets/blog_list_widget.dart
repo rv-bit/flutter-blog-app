@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -64,8 +65,13 @@ class BlogList extends ConsumerWidget {
 								leading: const Icon(Icons.edit_outlined),
 								title: const Text('Edit'),
 								onTap: () {
-									Navigator.pop(context);
-									debugPrint('Edit blog: ${blog.id}');
+									final router = GoRouter.of(context);
+
+									Navigator.pop(sheetContext);
+
+									router.pushNamed('edit', pathParameters: {
+										'blogId': blog.id
+									});
 								},
 							),
 							const SizedBox(height: 16),
@@ -196,7 +202,7 @@ class BlogList extends ConsumerWidget {
 				}
 
 				final blog = blogs[i];
-				final images = blog.images ?? <String>[];
+				final images = blog.images;
 				final hasImages = images.isNotEmpty;
 				final contentText = blog.content;
 
@@ -223,26 +229,23 @@ class BlogList extends ConsumerWidget {
 
 								if (hasImages)
 									appDirAsync.when(data: (dir) {
-										if (blog.images != null) {
-											return CarouselSlider(
-												items: blog.images!.map((imagePath) {
-													return Container(
-														width: MediaQuery.of(context).size.width,
-														margin: const EdgeInsets.symmetric(horizontal: 5),
-														child: ClipRRect(
-															borderRadius: BorderRadius.circular(8.0),
-															child: Image.memory(base64Decode(imagePath), fit: BoxFit.cover),
-														)
-													);
-												}).toList(),
-												options: CarouselOptions(
-													height: 400,
-													enableInfiniteScroll: false,
-													scrollPhysics: const PageScrollPhysics(),
-												),
-											);
-										}
-										return const SizedBox.shrink();
+										return CarouselSlider(
+											items: blog.images.map((imagePath) {
+												return Container(
+													width: MediaQuery.of(context).size.width,
+													margin: const EdgeInsets.symmetric(horizontal: 5),
+													child: ClipRRect(
+														borderRadius: BorderRadius.circular(8.0),
+														child: Image.memory(base64Decode(imagePath), fit: BoxFit.cover),
+													)
+												);
+											}).toList(),
+											options: CarouselOptions(
+												height: 400,
+												enableInfiniteScroll: false,
+												scrollPhysics: const PageScrollPhysics(),
+											),
+										);
 									},
 									loading: () => const Padding(
 									padding: EdgeInsets.symmetric(vertical: 16.0),
