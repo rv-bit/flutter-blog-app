@@ -28,8 +28,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
 	final ScrollController _controller = ScrollController();
 	final ValueNotifier<Widget?> _headerNotifier = ValueNotifier<Widget?>(const SizedBox.shrink());
 
-	static const double _indicatorHeight = 35.0;
-	static const double _offsetToArmed = 20.0;
+	static const double _indicatorHeight = 40.0;
+	static const double _offsetToArmed = 30.0;
 
 	bool _hasTriggeredArmedHaptic = false;
 	double _dragDistance = 0.0;
@@ -63,7 +63,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 	Widget build(BuildContext context) {
 		final bottomMediaInset = MediaQuery.of(context).viewPadding.bottom;
 		final topMediaInset = MediaQuery.of(context).padding.top;
-		final topInset = common_controllers.kAppBarHeight + topMediaInset + 10.0;
+		final topInset = common_controllers.kAppBarHeight + topMediaInset + 5.0;
 
 		final currentIndex = common_utils.locationToIndex(context);
 
@@ -77,7 +77,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 			indicatorHeight: _indicatorHeight,
 			headerNotifier: _headerNotifier,
 			padding: EdgeInsets.only(
-				top: topInset,
+				top: topInset ,
 				bottom: common_controllers.kBottomBarHeight + bottomMediaInset,
 			),
 		);
@@ -133,8 +133,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
 								animation: controller,
 								builder: (context, _) {
 									final rawValue = controller.value;
-									final dragContribution = (_dragDistance / _offsetToArmed) * 0.5;
-									final biased = (rawValue + dragContribution).clamp(0.0, 1.0);
+									final dragContribution = (_dragDistance / _offsetToArmed) * 0.9;
+									final biased = (rawValue + dragContribution).clamp(0.0, 1.5);
 									final eased = Curves.easeOut.transform(biased.clamp(0.0, 1.0));
 
 									final expandFactor = (rawValue > 0 ? eased : 0.0).clamp(0.0, 1.0);

@@ -17,8 +17,8 @@ class Indicator extends StatelessWidget {
 	@override
 	Widget build(BuildContext context) {
 		final st = state;
-		final bool isActiveArrow = value > 0 && value < 0.8 && !(st?.isArmed == true || st?.isLoading == true || st?.isFinalizing == true || st?.isSettling == true);
-  		final iconSwitchValue = value >= 0.6;
+		final bool isActiveArrow = value > 0 && value < 0.9 && !(st?.isArmed == true || st?.isLoading == true || st?.isFinalizing == true || st?.isSettling == true);
+  		final iconSwitchValue = value >= 0.8;
 		
 		if (isActiveArrow) {
 			return Opacity(
@@ -50,7 +50,7 @@ class Indicator extends StatelessWidget {
 		}
 
 		// ARMED / LOADING → spinner
-		if (value > 0.8 || st?.isArmed == true || st?.isLoading == true || st?.isSettling == true || st?.isFinalizing == true) {
+		if (value > 0.9 || st?.isArmed == true || st?.isLoading == true || st?.isSettling == true || st?.isFinalizing == true) {
 			return const SizedBox(
 				width: 15,
 				height: 15,
