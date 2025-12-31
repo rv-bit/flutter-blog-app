@@ -1,8 +1,9 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:flutter_blog_app/models/blog_posts.dart';
-import 'package:flutter_blog_app/common/repositories/index.dart';
+import 'package:flutter_blog_app/common/repositories/index.dart' as common_repositories;
 
 final log = Logger('HomeController');
 
@@ -11,7 +12,7 @@ final homeViewProvider = AsyncNotifierProvider<HomeController, List<BlogPost>>((
 });
 
 class HomeController extends AsyncNotifier<List<BlogPost>> {
-	BlogRepository get _repository => ref.read(blogRepositoryProvider);
+	common_repositories.BlogRepository get _repository => ref.read(common_repositories.blogRepositoryProvider);
 	
 	static const int _pageSize = 10;
 	int _currentOffset = 0;
