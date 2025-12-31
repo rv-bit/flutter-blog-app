@@ -155,21 +155,25 @@ class BlogDAO {
 		});
 	}
 
-	Future<int> deleteMultiple(List<String> ids) async {
+	Future<int> deleteMultiple(Set<String> ids) async {
+		if (ids.isEmpty) return 0;
+
 		final database = await databaseHelper.database;
-		final placeholders = List.filled(ids.length, '?').join(',');
+
+		final idList = ids.toList();
+		final placeholders = List.filled(idList.length, '?').join(',');
 
 		return await database.transaction((txn) async {
 			await txn.delete(
 				'images',
 				where: 'blog_id IN ($placeholders)',
-				whereArgs: ids,
+				whereArgs: idList,
 			);
 
 			return database.delete(
 				'blog_posts', 
 				where: 'id IN ($placeholders)',
-				whereArgs: [ids]
+				whereArgs: idList
 			);
 		});
 	}
