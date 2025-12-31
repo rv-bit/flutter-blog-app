@@ -11,7 +11,7 @@ import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 import 'package:flutter_blog_app/common/controllers/index.dart' as common_controllers;
 import 'package:flutter_blog_app/common/providers/index.dart' as common_providers;
 
-import 'package:flutter_blog_app/features/home/widgets/indicator_widget.dart';
+import 'package:flutter_blog_app/common/widgets/indicator_widget.dart';
 import 'package:flutter_blog_app/features/home/widgets/blog_list_widget.dart';
 import 'package:flutter_blog_app/features/home/widgets/action_buttons_widget.dart';
 import 'package:flutter_blog_app/features/home/widgets/app_bar_widget.dart';
