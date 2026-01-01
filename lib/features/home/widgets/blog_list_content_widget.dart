@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_blog_app/config/theme_pallet.dart';
 
-class BlogListItem extends StatefulWidget {
+class BlogListContent extends StatefulWidget {
 	final String content;
 
 	final Widget avatarWidget;
@@ -18,7 +18,7 @@ class BlogListItem extends StatefulWidget {
 	final bool isSelected;
 	final VoidCallback? onSelectionToggle;
 
-	const BlogListItem({
+	const BlogListContent({
 		super.key,
 		
 		required this.content,
@@ -36,10 +36,10 @@ class BlogListItem extends StatefulWidget {
 	});
 
 	@override
-	State<BlogListItem> createState() => _BlogListItemState();
+	State<BlogListContent> createState() => _BlogListContentState();
 }
 
-class _BlogListItemState extends State<BlogListItem> with TickerProviderStateMixin {
+class _BlogListContentState extends State<BlogListContent> with TickerProviderStateMixin {
 	bool _expanded = false;
 	bool _showMoreNeeded = false;
 

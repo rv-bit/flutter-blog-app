@@ -15,7 +15,7 @@ import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 
 import 'package:flutter_blog_app/models/blog_posts.dart';
 
-import 'package:flutter_blog_app/features/home/widgets/blog_list_text_widget.dart';
+import 'package:flutter_blog_app/features/home/widgets/blog_list_content_widget.dart';
 import 'package:flutter_blog_app/features/home/controllers/home_controller.dart';
 
 class BlogList extends ConsumerWidget {
@@ -220,63 +220,67 @@ class BlogList extends ConsumerWidget {
 				final hasImages = images.isNotEmpty;
 				final contentText = blog.content;
 
-				return Container(
-					decoration: BoxDecoration(
-						color: Palette.backgroundColor.withValues(alpha: 0.5),
-						border: Border(
-							top: i > 0 ? BorderSide(color: Palette.greyColor.withValues(alpha: 0.2)) : BorderSide.none,
+				return GestureDetector(
+					onTap: () => {},
+					onLongPress: () => {},
+					child: Container(
+						decoration: BoxDecoration(
+							color: Palette.backgroundColor.withValues(alpha: 0.5),
+							border: Border(
+								top: i > 0 ? BorderSide(color: Palette.greyColor.withValues(alpha: 0.2)) : BorderSide.none,
+							),
 						),
-					),
-					child: Padding(
-						padding: const EdgeInsets.symmetric(vertical: 10),
-						child: Column(
-							crossAxisAlignment: CrossAxisAlignment.stretch,
-							children: [
-								BlogListItem(
-									content: contentText,
-									username: 'username_example',
-									time: common_utils.formatPostTime(blog.createdAt),
-									avatarWidget: CircleAvatar(
-										backgroundColor: Palette.blueColor,
-										radius: 15,
+						child: Padding(
+							padding: const EdgeInsets.symmetric(vertical: 10),
+							child: Column(
+								crossAxisAlignment: CrossAxisAlignment.stretch,
+								children: [
+									BlogListContent(
+										content: contentText,
+										username: 'username_example',
+										time: common_utils.formatPostTime(blog.createdAt),
+										avatarWidget: CircleAvatar(
+											backgroundColor: Palette.blueColor,
+											radius: 15,
+										),
+										isSelectionMode: isSelectionMode,
+										isSelected: selectedBlogIds.contains(blog.id),
+										onSelectionToggle: () {
+											onBlogSelectionToggle?.call(blog.id);
+										},
+										onActionPressed: (ctx) => _showActionSheet(ctx, ref, blog),
 									),
-									isSelectionMode: isSelectionMode,
-									isSelected: selectedBlogIds.contains(blog.id),
-									onSelectionToggle: () {
-										onBlogSelectionToggle?.call(blog.id);
-									},
-									onActionPressed: (ctx) => _showActionSheet(ctx, ref, blog),
-								),
 
-								const SizedBox(height: 5),
+									const SizedBox(height: 5),
 
-								if (hasImages)
-									appDirAsync.when(data: (dir) {
-										return CarouselSlider(
-											items: blog.imageData.map((base64String) {
-												return Container(
-													width: MediaQuery.of(context).size.width,
-													margin: const EdgeInsets.symmetric(horizontal: 5),
-													child: ClipRRect(
-														borderRadius: BorderRadius.circular(8.0),
-														child: Image.memory(base64Decode(base64String), fit: BoxFit.cover),
-													)
-												);
-											}).toList(),
-											options: CarouselOptions(
-												height: 400,
-												enableInfiniteScroll: false,
-												scrollPhysics: const PageScrollPhysics(),
-											),
-										);
-									},
-									loading: () => const Padding(
-									padding: EdgeInsets.symmetric(vertical: 16.0),
-										child: Center(child: CircularProgressIndicator()),
+									if (hasImages)
+										appDirAsync.when(data: (dir) {
+											return CarouselSlider(
+												items: blog.imageData.map((base64String) {
+													return Container(
+														width: MediaQuery.of(context).size.width,
+														margin: const EdgeInsets.symmetric(horizontal: 5),
+														child: ClipRRect(
+															borderRadius: BorderRadius.circular(8.0),
+															child: Image.memory(base64Decode(base64String), fit: BoxFit.cover),
+														)
+													);
+												}).toList(),
+												options: CarouselOptions(
+													height: 400,
+													enableInfiniteScroll: false,
+													scrollPhysics: const PageScrollPhysics(),
+												),
+											);
+										},
+										loading: () => const Padding(
+										padding: EdgeInsets.symmetric(vertical: 16.0),
+											child: Center(child: CircularProgressIndicator()),
+										),
+										error: (_, _) => const Icon(Icons.error)
 									),
-									error: (_, _) => const Icon(Icons.error)
-								),
-							],
+								],
+							)
 						)
 					)
 				);
