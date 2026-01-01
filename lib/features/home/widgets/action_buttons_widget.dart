@@ -11,12 +11,7 @@ import 'package:flutter_blog_app/common/controllers/ui_controller.dart' as commo
 import 'package:flutter_blog_app/common/widgets/action_buttons_widget.dart' as common_widgets;
 
 class AnimatedFAB extends StatelessWidget {
-	final int currentIndex;
-
-	const AnimatedFAB({
-		super.key,
-		required this.currentIndex,
-	});
+	const AnimatedFAB({super.key});
 
 	@override
 	Widget build(BuildContext context) {

@@ -7,7 +7,6 @@ import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 
 import 'package:flutter_blog_app/config/theme.dart';
 
-import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 import 'package:flutter_blog_app/common/controllers/index.dart' as common_controllers;
 import 'package:flutter_blog_app/common/providers/index.dart' as common_providers;
 
@@ -42,7 +41,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 	void dispose() {
 		_controller.dispose();
 		_headerNotifier.dispose();
-
+		
 		super.dispose();
 	}
 
@@ -161,8 +160,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
 		final bottomMediaInset = MediaQuery.of(context).viewPadding.bottom;
 		final topMediaInset = MediaQuery.of(context).padding.top;
 		final topInset = common_controllers.kAppBarHeight + topMediaInset + 5.0;
-
-		final currentIndex = common_utils.locationToIndex(context);
 
 		final blogState = ref.watch(homeViewProvider);
 		final appDirAsync = ref.watch(common_providers.appDirectoryProvider);
@@ -312,7 +309,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 					onDelete: _deleteSelectedBlogs,
 				),
 				
-				if (!_isSelectionMode) AnimatedFAB(currentIndex: currentIndex),
+				if (!_isSelectionMode) AnimatedFAB(),
 			],
 		);
 	}
