@@ -1,12 +1,12 @@
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide AppBar;
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:flutter_blog_app/config/theme_pallet.dart';
 import 'package:flutter_blog_app/constants/assets_constants.dart';
 
-import 'package:flutter_blog_app/common/controllers/ui_controller.dart';
+import 'package:flutter_blog_app/common/controllers/index.dart' as common_controllers;
 
 class AppBar extends StatelessWidget {
 	final bool isSelectionMode;
@@ -33,13 +33,13 @@ class AppBar extends StatelessWidget {
 	@override
 	Widget build(BuildContext context) {
 		return AnimatedBuilder(
-			animation: scrollUIController,
+			animation: common_controllers.scrollUIController,
 			builder: (context, _) {
 				final topInset = MediaQuery.of(context).viewPadding.top;
-				final totalHeight = kAppBarHeight + topInset;
+				final totalHeight = common_controllers.kAppBarHeight + topInset;
 				
 				return AnimatedPositioned(
-					top: scrollUIController.isHidden ? -totalHeight : 0,
+					top: common_controllers.scrollUIController.isHidden ? -totalHeight : 0,
 					left: 0,
 					right: 0,
 					duration: const Duration(milliseconds: 200),
@@ -59,7 +59,7 @@ class AppBar extends StatelessWidget {
 								child: SafeArea(
 									bottom: false,
 									child: SizedBox(
-										height: kAppBarHeight,
+										height: common_controllers.kAppBarHeight,
 										child: isSelectionMode 
 											? _buildSelectionAppBar(context)
 											: _buildNormalAppBar(context),
