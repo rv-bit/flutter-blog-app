@@ -15,7 +15,7 @@ import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 
 import 'package:flutter_blog_app/models/blog_posts.dart';
 
-import 'package:flutter_blog_app/features/home/widgets/blog_list_content_widget.dart';
+import 'package:flutter_blog_app/features/home/widgets/blog_widgets/blog_list_content_widget.dart';
 import 'package:flutter_blog_app/features/home/controllers/home_controller.dart';
 
 class BlogList extends ConsumerWidget {
