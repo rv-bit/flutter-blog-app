@@ -8,7 +8,7 @@ import 'package:flutter_blog_app/constants/assets_constants.dart';
 
 import 'package:flutter_blog_app/common/controllers/ui_controller.dart';
 
-class CustomAppBar extends StatelessWidget {
+class AppBar extends StatelessWidget {
 	final bool isSelectionMode;
 	final int selectedCount;
 	final int totalCount;
@@ -18,7 +18,7 @@ class CustomAppBar extends StatelessWidget {
 	final VoidCallback? onDeselectAll;
 	final VoidCallback? onDelete;
 
-	const CustomAppBar({
+	const AppBar({
 		super.key,
 		this.isSelectionMode = false,
 		this.selectedCount = 0,

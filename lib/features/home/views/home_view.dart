@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide AppBar;
 import 'package:flutter/services.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,6 +12,7 @@ import 'package:flutter_blog_app/common/controllers/index.dart' as common_contro
 import 'package:flutter_blog_app/common/providers/index.dart' as common_providers;
 
 import 'package:flutter_blog_app/common/widgets/indicator_widget.dart';
+
 import 'package:flutter_blog_app/features/home/widgets/blog_list_widget.dart';
 import 'package:flutter_blog_app/features/home/widgets/action_buttons_widget.dart';
 import 'package:flutter_blog_app/features/home/widgets/app_bar_widget.dart';
@@ -299,7 +300,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 					),
 				),
 
-				CustomAppBar(
+				AppBar(
 					isSelectionMode: _isSelectionMode,
 					selectedCount: _selectedBlogIds.length,
 					totalCount: blogState.asData?.value.length ?? 0,
