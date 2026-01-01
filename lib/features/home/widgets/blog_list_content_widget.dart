@@ -12,7 +12,7 @@ class BlogListContent extends StatefulWidget {
 
 	final int collapsedMaxLines;	
 
-	final Function(BuildContext) onActionPressed;
+	final Function(BuildContext)? onActionPressed;
 
 	final bool isSelectionMode;
 	final bool isSelected;
@@ -22,12 +22,12 @@ class BlogListContent extends StatefulWidget {
 		super.key,
 		
 		required this.content,
-		required this.onActionPressed,
 
 		required this.avatarWidget,
 		required this.username,
 		required this.time,
 
+		this.onActionPressed,
 		this.isSelectionMode = false,
 		this.isSelected = false,
 		this.onSelectionToggle,
@@ -132,12 +132,12 @@ class _BlogListContentState extends State<BlogListContent> with TickerProviderSt
 										),
 
 										// Right: menu icon
-										if (!widget.isSelectionMode)
+										if (!widget.isSelectionMode && widget.onActionPressed != null)
 											SizedBox(
 												width: 36,
 												height: 15,
 												child: InkWell(
-													onTap: () => widget.onActionPressed(context),
+													onTap: () => widget.onActionPressed!(context),
 													borderRadius: BorderRadius.circular(20),
 													child: Icon(
 														Icons.more_horiz,
