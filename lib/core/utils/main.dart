@@ -1,11 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:flutter_blog_app/config/navigation_config.dart';
+
 int locationToIndex(BuildContext context) {
 	final location = GoRouterState.of(context).uri.path;
+	return ShellRoutes.fromPath(location).index;
+}
 
-	if (location.startsWith('/search')) return 1;
-	return 0;
+void onNavItemTapped(BuildContext context, int index) {
+	context.go(ShellRoutes.fromIndex(index).path);
 }
 
 String formatPostTime(String dateString) {

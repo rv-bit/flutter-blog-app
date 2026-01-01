@@ -4,7 +4,9 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:flutter_blog_app/app/shell.dart';
 
-import 'package:flutter_blog_app/features/home/views/home_view.dart';
+import 'package:flutter_blog_app/config/navigation_config.dart' as shell_navigations;
+
+import 'package:flutter_blog_app/features/blog/views/individual_blog_view.dart';
 import 'package:flutter_blog_app/features/blog/views/create_blog_view.dart';
 import 'package:flutter_blog_app/features/blog/views/edit_blog_view.dart';
 
@@ -53,24 +55,15 @@ final appRouter = GoRouter(
 				return AppShell(child: child);
 			},
 			routes: [
-				GoRoute(
-					name: 'home',
-					path: '/',
+				...shell_navigations.ShellRoutes.values.map((tab) => GoRoute(
+					name: tab.name,
+					path: tab.path,
 					pageBuilder: (context, state) => buildPageWithDefaultTransition<void>(
 						context: context,
 						state: state,
-						child: HomeView(),
-					)
-				),
-				GoRoute(
-					name: 'search',
-					path: '/search',
-					pageBuilder: (context, state) => buildPageWithDefaultTransition<void>(
-						context: context,
-						state: state,
-						child: HomeView(),
-					)
-				),
+						child: tab.builder(),
+					),
+				)),
 			],
 		),
 
@@ -91,7 +84,35 @@ final appRouter = GoRouter(
 				context: context,
 				state: state,
 				child: EditBlogView(blogId: state.pathParameters['blogId']!),
-			)
+			),
+			redirect: (context, state) {
+				final blogId = state.pathParameters['blogId'];
+
+				if (blogId == null || blogId.isEmpty) {
+					return '/';
+				}
+
+				return null;
+			},
+		),
+
+		GoRoute(
+			name: 'individual_blog',
+			path: '/blog/:blogId',
+			pageBuilder: (context, state) => buildPageWithDefaultTransition<void>(
+				context: context,
+				state: state,
+				child: IndividualBlogView(blogId: state.pathParameters['blogId']!),
+			),
+			redirect: (context, state) {
+				final blogId = state.pathParameters['blogId'];
+
+				if (blogId == null || blogId.isEmpty) {
+					return '/';
+				}
+
+				return null;
+			},
 		),
 	],
 );

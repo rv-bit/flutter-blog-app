@@ -1,36 +1,52 @@
 import 'package:go_router/go_router.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'package:flutter_blog_app/config/navigation_config.dart';
 
 import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 import 'package:flutter_blog_app/common/controllers/index.dart' as common_controllers;
 import 'package:flutter_blog_app/common/widgets/index.dart' as common_widgets;
 
-class AppShell extends StatelessWidget {
+class AppShell extends ConsumerStatefulWidget {
 	final Widget child;
 	const AppShell({super.key, required this.child});
 
-	void _onItemTapped(BuildContext context, int index) {
-		switch (index) {
-			case 0:
-				context.go('/');
-				break;
-			case 1:
-				context.go('/search');
-				break;
-		}
+	@override
+	ConsumerState<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends ConsumerState<AppShell> {
+	@override
+	void initState() {
+		super.initState();
+
+		WidgetsBinding.instance.addPostFrameCallback((_) {
+			if (mounted) {
+				final currentIndex = common_utils.locationToIndex(context);
+				ref.read(common_controllers.navigationControllerProvider.notifier).setActiveTab(currentIndex);
+			}
+		});
+	}
+	
+	void _onItemTapped(BuildContext context, WidgetRef ref, int index) {
+		ref.read(common_controllers.navigationControllerProvider.notifier).setActiveTab(index);
+		context.go(ShellRoutes.fromIndex(index).path);
 	}
 
 	@override
 	Widget build(BuildContext context) {
+		final activeTabIndex = ref.watch(common_controllers.navigationControllerProvider);
+
 		return Scaffold(
 			resizeToAvoidBottomInset: false,
 			body: Stack(
 				children: [
-					child, // The routed content
+					widget.child, // The routed content
 					_AnimatedBottomBar(
-						onTap: _onItemTapped,
-						currentIndex: common_utils.locationToIndex(context),
+						onTap: (index) => _onItemTapped(context, ref, index),
+						currentIndex: activeTabIndex,
 					),
 				],
 			),
@@ -40,7 +56,7 @@ class AppShell extends StatelessWidget {
 
 class _AnimatedBottomBar extends StatelessWidget {
 	final int currentIndex;
-	final void Function(BuildContext, int) onTap;
+	final void Function(int) onTap;
 
 	const _AnimatedBottomBar({
 		required this.currentIndex,
@@ -63,7 +79,7 @@ class _AnimatedBottomBar extends StatelessWidget {
 					bottom: common_controllers.scrollUIController.isHidden ? -totalHeight : 0,
 					child: common_widgets.StaticBottomBar(
 						currentIndex: currentIndex,
-						onTap: (index) => onTap(context, index),
+						onTap: onTap,
 					),
 				);
 			},

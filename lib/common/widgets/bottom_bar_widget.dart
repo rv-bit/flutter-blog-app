@@ -2,11 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:flutter_blog_app/config/theme_pallet.dart';
-import 'package:flutter_blog_app/constants/assets_constants.dart';
-
+import 'package:flutter_blog_app/config/navigation_config.dart';
 import 'package:flutter_blog_app/common/controllers/ui_controller.dart';
 
 class StaticBottomBar extends StatelessWidget {
@@ -41,34 +41,20 @@ class StaticBottomBar extends StatelessWidget {
 								height: kBottomBarHeight,
 								backgroundColor: Colors.transparent,
 								border: const Border(),
-								items: [
-									BottomNavigationBarItem(
+								items: ShellRoutes.values.map((tab) {
+									final isActive = currentIndex == tab.index;
+
+									return BottomNavigationBarItem(
 										icon: SvgPicture.asset(
-											currentIndex == 0
-												? AssetsConstants.homeFilledIcon
-												: AssetsConstants.homeOutlinedIcon,
+											isActive ? tab.activeIcon : tab.inactiveIcon,
 											colorFilter: ColorFilter.mode(
-												currentIndex == 0
-													? Palette.whiteColor
-													: Palette.greyColor,
+												isActive ? Palette.whiteColor : Palette.greyColor,
 												BlendMode.srcIn,
 											),
 											height: 20,
 										),
-									),
-									BottomNavigationBarItem(
-										icon: SvgPicture.asset(
-											AssetsConstants.searchIcon,
-											colorFilter: ColorFilter.mode(
-												currentIndex == 1
-													? Palette.whiteColor
-													: Palette.greyColor,
-												BlendMode.srcIn,
-											),
-											height: 20,
-										),
-									),
-								],
+									);
+								}).toList(),
 							),
 						),
 					),
