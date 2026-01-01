@@ -19,7 +19,7 @@ import 'package:flutter_blog_app/features/home/widgets/blog_list_content_widget.
 import 'package:flutter_blog_app/features/home/controllers/home_controller.dart';
 
 class BlogList extends ConsumerWidget {
-	final ScrollController scrollController;
+  	final ScrollController scrollController;
 	final AsyncValue<dynamic> appDirAsync;
 	final ValueListenable<Widget?>? headerNotifier;
 	
@@ -218,43 +218,95 @@ class BlogList extends ConsumerWidget {
 				final blog = blogs[i];
 				final images = blog.images;
 				final hasImages = images.isNotEmpty;
-				final contentText = blog.content;
 
-				return GestureDetector(
-					onTap: () => {},
-					onLongPress: () => {},
-					child: Container(
-						decoration: BoxDecoration(
-							color: Palette.backgroundColor.withValues(alpha: 0.5),
-							border: Border(
-								top: i > 0 ? BorderSide(color: Palette.greyColor.withValues(alpha: 0.2)) : BorderSide.none,
-							),
-						),
-						child: Padding(
+				return _BlogListItem(
+					indexItem: i,
+					blog: blog,
+					hasImages: hasImages,
+					isSelectionMode: isSelectionMode,
+					isSelected: selectedBlogIds.contains(blog.id),
+					onSelectionToggle: () => onBlogSelectionToggle?.call(blog.id),
+					onActionPressed: (ctx) => _showActionSheet(ctx, ref, blog),
+					appDirAsync: appDirAsync,
+				);
+			},
+		);
+	}
+}
+
+class _BlogListItem extends StatefulWidget {
+	const _BlogListItem({
+		required this.indexItem,
+
+		required this.blog,
+		required this.hasImages,
+		required this.isSelectionMode,
+		required this.isSelected,
+		required this.onSelectionToggle,
+		required this.onActionPressed,
+		required this.appDirAsync,
+	});
+
+	final int indexItem;
+
+	final BlogPost blog;
+	final bool hasImages;
+	final bool isSelectionMode;
+	final bool isSelected;
+	final VoidCallback onSelectionToggle;
+	final ValueChanged<BuildContext> onActionPressed;
+	final AsyncValue<dynamic> appDirAsync;
+
+	@override
+	State<_BlogListItem> createState() => _BlogListItemState();
+}
+
+class _BlogListItemState extends State<_BlogListItem> {
+	bool _isLongPressed = false;
+
+	@override
+	Widget build(BuildContext context) {
+		final blog = widget.blog;
+
+		return GestureDetector(
+			onLongPressStart: (_) => setState(() => _isLongPressed = true),
+			onLongPressEnd: (_) => setState(() => _isLongPressed = false),
+			child: AnimatedContainer(
+				duration: const Duration(milliseconds: 100),
+  				curve: Curves.linear,
+				decoration: BoxDecoration(
+					color: _isLongPressed
+						? Palette.greyColor.withValues(alpha: 0.2)
+						: Palette.backgroundColor.withValues(alpha: 0.5),
+					border: Border(
+						top: widget.indexItem > 0 ? BorderSide(color: Palette.greyColor.withValues(alpha: 0.2)) : BorderSide.none,
+					),
+				),
+				child: Column(
+					children: [
+						Padding(
 							padding: const EdgeInsets.symmetric(vertical: 10),
 							child: Column(
 								crossAxisAlignment: CrossAxisAlignment.stretch,
 								children: [
 									BlogListContent(
-										content: contentText,
+										content: widget.blog.content,
 										username: 'username_example',
 										time: common_utils.formatPostTime(blog.createdAt),
 										avatarWidget: CircleAvatar(
 											backgroundColor: Palette.blueColor,
 											radius: 15,
 										),
-										isSelectionMode: isSelectionMode,
-										isSelected: selectedBlogIds.contains(blog.id),
-										onSelectionToggle: () {
-											onBlogSelectionToggle?.call(blog.id);
-										},
-										onActionPressed: (ctx) => _showActionSheet(ctx, ref, blog),
+										isSelectionMode: widget.isSelectionMode,
+										isSelected: widget.isSelected,
+										onSelectionToggle: widget.onSelectionToggle,
+										onActionPressed: (ctx) => widget.onActionPressed(ctx),
 									),
 
 									const SizedBox(height: 5),
 
-									if (hasImages)
-										appDirAsync.when(data: (dir) {
+									if (widget.hasImages)
+										widget.appDirAsync.when(data: (dir) {
 											return CarouselSlider(
 												items: blog.imageData.map((base64String) {
 													return Container(
@@ -262,7 +314,11 @@ class BlogList extends ConsumerWidget {
 														margin: const EdgeInsets.symmetric(horizontal: 5),
 														child: ClipRRect(
 															borderRadius: BorderRadius.circular(8.0),
-															child: Image.memory(base64Decode(base64String), fit: BoxFit.cover),
+															child: Image.memory(
+																base64Decode(base64String), 
+																fit: BoxFit.cover,
+																gaplessPlayback: true, // prevents flicker when change of state
+															),
 														)
 													);
 												}).toList(),
@@ -282,9 +338,9 @@ class BlogList extends ConsumerWidget {
 								],
 							)
 						)
-					)
-				);
-			},
+					],
+				),
+			),
 		);
 	}
 }

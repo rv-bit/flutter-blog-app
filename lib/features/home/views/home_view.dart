@@ -42,6 +42,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 	void dispose() {
 		_controller.dispose();
 		_headerNotifier.dispose();
+
 		super.dispose();
 	}
 
