@@ -69,6 +69,7 @@ class BlogRepository {
 		await dao.updateBlog(
 			payload.blogId,
 			{
+				'title': payload.title,
 				'content': payload.content,
 				'updated_at': now,
 			},

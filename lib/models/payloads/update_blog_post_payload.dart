@@ -3,6 +3,7 @@ import 'dart:io';
 class UpdateBlogPayload {
 	final String blogId;
 	final String content;
+	final String title;
 
 	// Images already in DB that should remain
 	final List<String> savedImages;
@@ -12,6 +13,7 @@ class UpdateBlogPayload {
 	UpdateBlogPayload({
 		required this.blogId,
 		required this.content,
+		required this.title,
 		required this.savedImages,
 		required this.newImages,
 	});
