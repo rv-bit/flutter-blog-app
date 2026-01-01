@@ -263,17 +263,53 @@ class _BlogListItem extends StatefulWidget {
 
 class _BlogListItemState extends State<_BlogListItem> {
 	bool _isLongPressed = false;
+	bool _longPressCanceled = false;
+
+	void _onItemTap(String blogId) {
+		GoRouter.of(context).pushNamed('individual_blog', 
+			pathParameters: {
+				'blogId': blogId
+			}
+		);
+	}
 
 	@override
 	Widget build(BuildContext context) {
 		final blog = widget.blog;
 
 		return GestureDetector(
-			onLongPressStart: (_) => setState(() => _isLongPressed = true),
-			onLongPressEnd: (_) => setState(() => _isLongPressed = false),
+			behavior: HitTestBehavior.opaque,
+			onTap: () => _onItemTap(blog.id),
+			onLongPressStart: (_) {
+				setState(() {
+					_isLongPressed = true;
+					_longPressCanceled = false;
+				});
+			},
+
+			onLongPressMoveUpdate: (details) {
+				// Cancel if user moves finger vertically (scroll intent)
+				if (details.offsetFromOrigin.dy.abs() > 10 || details.offsetFromOrigin.dx.abs() > 10) {
+					_longPressCanceled = true;
+					setState(() => _isLongPressed = false);
+				}
+			},
+
+			onLongPressEnd: (_) {
+				setState(() => _isLongPressed = false);
+
+				if (!_longPressCanceled) {
+					_onItemTap(blog.id);
+				}
+			},
+
+			onLongPressCancel: () {
+				_longPressCanceled = true;
+				setState(() => _isLongPressed = false);
+			},
 			child: AnimatedContainer(
-				duration: const Duration(milliseconds: 100),
-  				curve: Curves.linear,
+				duration: const Duration(milliseconds: 20),
+				curve: Curves.linear,
 				decoration: BoxDecoration(
 					color: _isLongPressed
 						? Palette.greyColor.withValues(alpha: 0.2)
@@ -340,7 +376,7 @@ class _BlogListItemState extends State<_BlogListItem> {
 						)
 					],
 				),
-			),
+			)
 		);
 	}
 }
