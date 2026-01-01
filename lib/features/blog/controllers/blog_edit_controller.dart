@@ -6,7 +6,7 @@ import 'package:flutter_blog_app/models/payloads/update_blog_post_payload.dart';
 
 import 'package:flutter_blog_app/common/repositories/index.dart' as common_repositories;
 
-part 'blog_edit_controller.g.dart';
+part 'generators/blog_edit_controller.g.dart';
 
 final log = Logger('EditBlogController');
 

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'blog_edit_controller.dart';
+part of '../blog_edit_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -50,7 +50,7 @@ final class EditBlogProvider
   }
 }
 
-String _$editBlogHash() => r'0afdb9707d77f564dd3c7db5016d2d4e169c51ba';
+String _$editBlogHash() => r'8ae1819016f42b097436afe47d2ec6e00cdb8440';
 
 final class EditBlogFamily extends $Family
     with
