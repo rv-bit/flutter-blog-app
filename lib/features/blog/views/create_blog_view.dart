@@ -22,9 +22,12 @@ class CreateBlogView extends ConsumerStatefulWidget {
 }
 
 class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
-	final blogTextBlockController = TextEditingController();
+	final contentTextController = TextEditingController();
+	final titleTextController = TextEditingController();
 
-	bool _textInField = false;
+	bool _contentInField = false;
+	bool _titleInField = false;
+
 	int _currentCharCount = 0;
 
 	List<File> images = [];
@@ -32,7 +35,8 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 	@override
 	void dispose() {
 		super.dispose();
-		blogTextBlockController.dispose();
+		contentTextController.dispose();
+		titleTextController.dispose();
 	}
 
 	void onHandleCloseButton() {
@@ -71,17 +75,16 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 
 			final snackBar = SnackBar(
 				content: const Text('Images is a required field, please add at least one image'),
-				duration: Duration(milliseconds: 5000),
+				duration: Duration(seconds: 5),
 			);
 
-			// Find the ScaffoldMessenger in the widget tree
-			// and use it to show a SnackBar.
 			ScaffoldMessenger.of(context).showSnackBar(snackBar);
 			return;
 		}
 
 		await ref.read(createBlogProvider.notifier).createBlog(
-			content: blogTextBlockController.text,
+			title: titleTextController.text,
+			content: contentTextController.text,
 			imageFiles: images,
 		);
 
@@ -98,39 +101,78 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 
 		return Scaffold(
 			appBar: AppBar(
+				titleSpacing: 0,
+				leadingWidth: 50,
 				backgroundColor: Palette.backgroundColor,
-				leading: IconButton(
-					onPressed: () => onHandleCloseButton(),
-					icon: const Icon(Icons.close, size: 25),
-				),
-				title: GestureDetector(
-					onTap: () => onPostBlog(isSubmitting),
-					child: Container(
-						alignment: Alignment.centerRight,
-						child: Opacity(
-							opacity: !_textInField ? 0.5 : 1.0,
-							child: Container(
-								width: 60,
-								height: 30,
-								alignment: Alignment.center,
-								decoration: BoxDecoration(
-									borderRadius: BorderRadius.circular(15),
-									color: Palette.blueColor,
-								),
-								child: Padding(
-									padding: const EdgeInsets.only(left: 5, right: 5),
-									child: Text(
-										'Post',
-										textAlign: TextAlign.center,
-										style: const TextStyle(
-											fontSize: 14,
-											fontWeight: FontWeight.bold,
-										),
-									),
-								) 
-							)
-						),
+				leading: Padding(
+					padding: const EdgeInsets.only(left: 5),
+					child: IconButton(
+						onPressed: () => onHandleCloseButton(),
+						icon: const Icon(Icons.close, size: 25),
 					),
+				),
+				title: Row(
+					crossAxisAlignment: CrossAxisAlignment.center,
+					mainAxisAlignment: MainAxisAlignment.spaceBetween,
+					children: [
+						Expanded(
+							child: TextField(
+								controller: titleTextController,
+								onChanged: (val) => {
+									setState(() {
+										_titleInField = val.isNotEmpty;
+									})
+								},
+								maxLength: 30,
+								style: const TextStyle(
+									fontSize: 13,
+								),
+								textAlignVertical: TextAlignVertical.top,
+								decoration: const InputDecoration(
+									counterText: "", // hides the auto maxLength from TextField
+									hintText: "Title",
+									hintStyle: TextStyle(
+										color: Palette.greyColor,
+										fontSize: 13,
+										fontWeight: FontWeight.w500,
+									),
+									border: InputBorder.none,
+									isDense: false,
+								),
+								maxLines: null,
+							),
+						),
+						GestureDetector(
+							onTap: () => onPostBlog(isSubmitting),
+							child: Container(
+								alignment: Alignment.centerRight,
+								padding: const EdgeInsets.only(right: 15),
+								child: Opacity(
+									opacity: (_contentInField && _titleInField && images.isNotEmpty) ? 1.0 : 0.5,
+									child: Container(
+										width: 60,
+										height: 30,
+										alignment: Alignment.center,
+										decoration: BoxDecoration(
+											borderRadius: BorderRadius.circular(15),
+											color: Palette.blueColor,
+										),
+										child: Padding(
+											padding: const EdgeInsets.only(left: 5, right: 5),
+											child: Text(
+												'Post',
+												textAlign: TextAlign.center,
+												style: const TextStyle(
+													fontSize: 14,
+													fontWeight: FontWeight.bold,
+												),
+											),
+										) 
+									)
+								),
+							),
+						),
+					],
 				),
 			),
 			body: SafeArea(
@@ -138,7 +180,7 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 					child: Column(
 						children: [
 							Padding(
-								padding: const EdgeInsets.only(left: 20, right: 20, top: 5),
+								padding: const EdgeInsets.only(left: 15, right: 20),
 								child: Row(
 									crossAxisAlignment: CrossAxisAlignment.start,
 									children: [
@@ -153,11 +195,11 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 										const SizedBox(width: 8),
 										Expanded(
 											child: TextField(
-												controller: blogTextBlockController,
+												controller: contentTextController,
 												onChanged: (val) => {
 													setState(() {
 														_currentCharCount = val.length;
-														_textInField = val.isNotEmpty;
+														_contentInField = val.isNotEmpty;
 													})
 												},
 												maxLength: maxCharacters,
