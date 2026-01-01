@@ -11,7 +11,7 @@ import 'package:flutter_blog_app/config/theme_pallet.dart';
 import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 
 import 'package:flutter_blog_app/features/blog/widgets/bottom_bar_actions_widget.dart';
-import 'package:flutter_blog_app/features/blog/widgets/app_bar_widget.dart';
+import 'package:flutter_blog_app/features/blog/widgets/app_bars/general_widget.dart';
 
 import 'package:flutter_blog_app/features/home/controllers/home_controller.dart';
 import 'package:flutter_blog_app/features/blog/controllers/blog_add_controller.dart';

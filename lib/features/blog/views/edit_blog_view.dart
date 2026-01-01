@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter_blog_app/features/blog/widgets/app_bar_widget.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,6 +14,7 @@ import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 import 'package:flutter_blog_app/models/blog_posts.dart';
 import 'package:flutter_blog_app/models/payloads/update_blog_post_payload.dart';
 
+import 'package:flutter_blog_app/features/blog/widgets/app_bars/general_widget.dart';
 import 'package:flutter_blog_app/features/blog/widgets/bottom_bar_actions_widget.dart';
 
 import 'package:flutter_blog_app/features/home/controllers/home_controller.dart';
