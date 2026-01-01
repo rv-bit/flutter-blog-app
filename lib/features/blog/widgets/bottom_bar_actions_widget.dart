@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+
 import 'package:flutter_blog_app/config/theme_pallet.dart';
 import 'package:flutter_blog_app/constants/assets_constants.dart';
+
 import 'package:flutter_blog_app/features/blog/widgets/character_indicator_widget.dart';
-import 'package:flutter_svg/svg.dart';
 
 const int maxCharacters = 100;
 
