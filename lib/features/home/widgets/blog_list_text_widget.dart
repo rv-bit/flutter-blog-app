@@ -135,7 +135,7 @@ class _BlogListItemState extends State<BlogListItem> with TickerProviderStateMix
 										if (!widget.isSelectionMode)
 											SizedBox(
 												width: 36,
-												height: 20,
+												height: 15,
 												child: InkWell(
 													onTap: () => widget.onActionPressed(context),
 													borderRadius: BorderRadius.circular(20),
