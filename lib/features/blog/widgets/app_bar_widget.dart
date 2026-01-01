@@ -1,0 +1,100 @@
+import 'package:flutter/material.dart' as m;
+
+import 'package:flutter_blog_app/config/theme_pallet.dart';
+
+class AppBar extends m.StatelessWidget implements m.PreferredSizeWidget {
+	final m.VoidCallback onLeadingButton;
+	final m.ValueChanged<String>? onControllerChanged;
+	final m.VoidCallback onSubmit;
+	final m.TextEditingController controller;
+
+	final double opacity;
+
+  	const AppBar({
+		super.key,
+
+		required this.controller,
+		required this.onLeadingButton,
+		required this.onControllerChanged,
+		required this.onSubmit,
+		required this.opacity,
+	});
+
+	@override
+	m.Size get preferredSize => const m.Size.fromHeight(m.kToolbarHeight);
+
+	@override
+	m.Widget build(m.BuildContext context) {
+		return m.AppBar(
+			titleSpacing: 0,
+			leadingWidth: 50,
+			backgroundColor: Palette.backgroundColor,
+			leading: m.Padding(
+				padding: const m.EdgeInsets.only(left: 5),
+				child: m.IconButton(
+					onPressed: onLeadingButton,
+					icon: const m.Icon(m.Icons.close, size: 25),
+				),
+			),
+			title: m.Row(
+				crossAxisAlignment: m.CrossAxisAlignment.center,
+				mainAxisAlignment: m.MainAxisAlignment.spaceBetween,
+				children: [
+					m.Expanded(
+						child: m.TextField(
+							controller: controller,
+							onChanged: onControllerChanged,
+							maxLength: 30,
+							style: const m.TextStyle(
+								fontSize: 13,
+							),
+							textAlignVertical: m.TextAlignVertical.top,
+							decoration: const m.InputDecoration(
+								counterText: "", // hides the auto maxLength from TextField
+								hintText: "Title",
+								hintStyle: m.TextStyle(
+									color: Palette.greyColor,
+									fontSize: 13,
+									fontWeight: m.FontWeight.w500,
+								),
+								border: m.InputBorder.none,
+								isDense: false,
+							),
+							maxLines: null,
+						),
+					),
+					m.GestureDetector(
+						onTap: onSubmit,
+						child: m.Container(
+							alignment: m.Alignment.centerRight,
+							padding: const m.EdgeInsets.only(right: 15),
+							child: m.Opacity(
+								opacity: opacity,
+								child: m.Container(
+									width: 60,
+									height: 30,
+									alignment: m.Alignment.center,
+									decoration: m.BoxDecoration(
+										borderRadius: m.BorderRadius.circular(15),
+										color: Palette.blueColor,
+									),
+									child: m.Padding(
+										padding: const m.EdgeInsets.only(left: 5, right: 5),
+										child: m.Text(
+											'Post',
+											textAlign: m.TextAlign.center,
+											style: const m.TextStyle(
+												fontSize: 14,
+												fontWeight: m.FontWeight.bold,
+											),
+										),
+									) 
+								)
+							),
+						),
+					),
+				],
+			),
+		);
+	}
+}

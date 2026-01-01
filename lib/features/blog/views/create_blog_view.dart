@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide AppBar;
 
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -11,6 +11,7 @@ import 'package:flutter_blog_app/config/theme_pallet.dart';
 import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 
 import 'package:flutter_blog_app/features/blog/widgets/bottom_bar_actions_widget.dart';
+import 'package:flutter_blog_app/features/blog/widgets/app_bar_widget.dart';
 
 import 'package:flutter_blog_app/features/home/controllers/home_controller.dart';
 import 'package:flutter_blog_app/features/blog/controllers/blog_add_controller.dart';
@@ -101,79 +102,15 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 
 		return Scaffold(
 			appBar: AppBar(
-				titleSpacing: 0,
-				leadingWidth: 50,
-				backgroundColor: Palette.backgroundColor,
-				leading: Padding(
-					padding: const EdgeInsets.only(left: 5),
-					child: IconButton(
-						onPressed: () => onHandleCloseButton(),
-						icon: const Icon(Icons.close, size: 25),
-					),
-				),
-				title: Row(
-					crossAxisAlignment: CrossAxisAlignment.center,
-					mainAxisAlignment: MainAxisAlignment.spaceBetween,
-					children: [
-						Expanded(
-							child: TextField(
-								controller: titleTextController,
-								onChanged: (val) => {
-									setState(() {
-										_titleInField = val.isNotEmpty;
-									})
-								},
-								maxLength: 30,
-								style: const TextStyle(
-									fontSize: 13,
-								),
-								textAlignVertical: TextAlignVertical.top,
-								decoration: const InputDecoration(
-									counterText: "", // hides the auto maxLength from TextField
-									hintText: "Title",
-									hintStyle: TextStyle(
-										color: Palette.greyColor,
-										fontSize: 13,
-										fontWeight: FontWeight.w500,
-									),
-									border: InputBorder.none,
-									isDense: false,
-								),
-								maxLines: null,
-							),
-						),
-						GestureDetector(
-							onTap: () => onPostBlog(isSubmitting),
-							child: Container(
-								alignment: Alignment.centerRight,
-								padding: const EdgeInsets.only(right: 15),
-								child: Opacity(
-									opacity: (_contentInField && _titleInField && images.isNotEmpty) ? 1.0 : 0.5,
-									child: Container(
-										width: 60,
-										height: 30,
-										alignment: Alignment.center,
-										decoration: BoxDecoration(
-											borderRadius: BorderRadius.circular(15),
-											color: Palette.blueColor,
-										),
-										child: Padding(
-											padding: const EdgeInsets.only(left: 5, right: 5),
-											child: Text(
-												'Post',
-												textAlign: TextAlign.center,
-												style: const TextStyle(
-													fontSize: 14,
-													fontWeight: FontWeight.bold,
-												),
-											),
-										) 
-									)
-								),
-							),
-						),
-					],
-				),
+				controller: titleTextController,
+				onControllerChanged: (val) => {
+					setState(() {
+						_titleInField = val.isNotEmpty;
+					})
+				},
+				onLeadingButton: () => onHandleCloseButton(),
+				onSubmit: () => onPostBlog(isSubmitting),
+				opacity: (_contentInField && _titleInField && images.isNotEmpty) ? 1.0 : 0.5,
 			),
 			body: SafeArea(
 				child: SingleChildScrollView(

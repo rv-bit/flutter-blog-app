@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter_blog_app/features/blog/widgets/app_bar_widget.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide AppBar;
 
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -31,11 +32,14 @@ class EditBlogView extends ConsumerStatefulWidget {
 }
 
 class _EditBlogViewState extends ConsumerState<EditBlogView> {
-	final blogTextBlockController = TextEditingController();
+	final contentTextController = TextEditingController();
+	final titleTextController = TextEditingController();
 
 	bool _initialized = false;
 
-	bool _textInField = false;
+	bool _contentInField = false;
+	bool _titleInField = false;
+
 	int _currentCharCount = 0;
 	
 	List<String> savedImageIds = []; // Store IDs for deletion
@@ -46,7 +50,7 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 	@override
 	void dispose() {
 		super.dispose();
-		blogTextBlockController.dispose();
+		contentTextController.dispose();
 	}
 
 	void onHandleCloseButton() {
@@ -99,7 +103,8 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 		await ref.read(editBlogProvider(widget.blogId).notifier).updateBlog(
 			UpdateBlogPayload(
 				blogId: blog.id,
-				content: blogTextBlockController.text,
+				title: titleTextController.text,
+				content: contentTextController.text,
 				savedImages: savedImageIds, // Pass IDs, not data
 				newImages: localImages,
 			),
@@ -138,9 +143,12 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 					data: (blog) {
 						if (blog == null || _initialized) return;
 
-						blogTextBlockController.text = blog.content;
+						contentTextController.text = blog.content;
+						titleTextController.text = blog.title;
+
 						_currentCharCount = blog.content.length;
-						_textInField = blog.content.isNotEmpty;
+						_contentInField = blog.content.isNotEmpty;
+						_titleInField = blog.title.isNotEmpty;
 
 						// Using the getters created in the model, easier to not have to compute more heavy logic inside this
 						savedImageIds = blog.imageIds;
@@ -159,40 +167,15 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 
 		return Scaffold(
 			appBar: AppBar(
-				backgroundColor: Palette.backgroundColor,
-				leading: IconButton(
-					onPressed: () => onHandleCloseButton(),
-					icon: const Icon(Icons.close, size: 25),
-				),
-				title: GestureDetector(
-					onTap: () => onEditBlog(isSubmitting),
-					child: Container(
-						alignment: Alignment.centerRight,
-						child: Opacity(
-							opacity: !_textInField ? 0.5 : 1.0,
-							child: Container(
-								width: 60,
-								height: 30,
-								alignment: Alignment.center,
-								decoration: BoxDecoration(
-									borderRadius: BorderRadius.circular(15),
-									color: Palette.blueColor,
-								),
-								child: Padding(
-									padding: const EdgeInsets.only(left: 5, right: 5),
-									child: Text(
-										'Submit',
-										textAlign: TextAlign.center,
-										style: const TextStyle(
-											fontSize: 11,
-											fontWeight: FontWeight.bold,
-										),
-									),
-								) 
-							)
-						),
-					),
-				),
+				controller: titleTextController,
+				onControllerChanged: (val) => {
+					setState(() {
+						_titleInField = val.isNotEmpty;
+					})
+				},
+				onLeadingButton: () => onHandleCloseButton(),
+				onSubmit: () => onEditBlog(isSubmitting),
+				opacity: (_contentInField && _titleInField && (localImages.length + savedImageData.length > 0)) ? 1.0 : 0.5,
 			),
 			body: SafeArea(
 				child: SingleChildScrollView(
@@ -214,11 +197,11 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 										const SizedBox(width: 8),
 										Expanded(
 											child: TextField(
-												controller: blogTextBlockController,
+												controller: contentTextController,
 												onChanged: (val) => {
 													setState(() {
 														_currentCharCount = val.length;
-														_textInField = val.isNotEmpty;
+														_contentInField = val.isNotEmpty;
 													})
 												},
 												maxLength: maxCharacters,
