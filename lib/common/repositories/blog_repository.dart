@@ -35,11 +35,10 @@ class BlogRepository {
 			return common_models.BlogPost(
 				id: blogId,
 				images: imageMap[blogId] ?? const [], 
+				title: blogMap['title'],
 				content: blogMap['content'], 
 				createdAt: blogMap['created_at'],
 				updatedAt: blogMap['updated_at'],
-				deletedAt: blogMap['deleted_at'],
-				isDeleted: blogMap['is_deleted'] == 1,
 			);
 		}).toList();
 	}

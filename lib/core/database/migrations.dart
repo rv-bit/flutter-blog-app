@@ -42,11 +42,10 @@ class _Migration1 implements Migration {
 		await db.execute('''
 			CREATE TABLE IF NOT EXISTS blog_posts (
 				id TEXT PRIMARY KEY,
+				title TEXT NOT NULL,
 				content TEXT NOT NULL,
 				created_at TEXT NOT NULL,
-				updated_at TEXT,
-				deleted_at TEXT,
-				is_deleted INTEGER DEFAULT 0
+				updated_at TEXT
 			)
 		''');
 
@@ -57,10 +56,6 @@ class _Migration1 implements Migration {
 		
 		await db.execute('''
 			CREATE INDEX IF NOT EXISTS idx_blog_created_at ON blog_posts(created_at)
-		''');
-
-		await db.execute('''
-			CREATE INDEX IF NOT EXISTS idx_blog_is_deleted ON blog_posts(is_deleted)
 		''');
 	}
 }
