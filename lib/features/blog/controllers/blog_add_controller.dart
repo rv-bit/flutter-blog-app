@@ -41,6 +41,7 @@ class CreateBlogController extends Notifier<AsyncValue<void>> {
 
 			final blog = BlogPost(
 				id: blogId,
+				title: '',
 				content: content,
 				images: const [], // empty for now
 				createdAt: now,

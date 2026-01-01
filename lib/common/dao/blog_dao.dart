@@ -54,7 +54,6 @@ class BlogDAO {
 			'blog_posts',
 			limit: limit,
 			offset: offset,
-			where: 'is_deleted = 0',
 			orderBy: 'created_at DESC',
 		);
 	}
@@ -87,7 +86,7 @@ class BlogDAO {
 		final database = await databaseHelper.database;
 		final res = await database.query(
 			'blog_posts',
-			where: 'id = ? AND is_deleted = 0',
+			where: 'id = ?',
 			whereArgs: [id],
 			orderBy: 'created_at DESC',
 		);
@@ -132,7 +131,7 @@ class BlogDAO {
 
 		await database.delete(
 			'images',
-			where: 'blog_id = ? AND url NOT IN ($placeholders)',
+		    where: 'blog_id = ? AND id NOT IN ($placeholders)',
 			whereArgs: [blogId, ...savedImages],
 		);
 	}
@@ -182,7 +181,7 @@ class BlogDAO {
 		final database = await databaseHelper.database;
 		return await database.query(
 			'blog_posts',
-			where: '(content LIKE ?) and is_deleted = 0',
+			where: '(content LIKE ?)',
 			whereArgs: ['%$query%']
 		);
 	}

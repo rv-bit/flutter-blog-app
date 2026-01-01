@@ -37,14 +37,16 @@ class Images {
 		return allImages.where((img) => img.blogId == blogId).map((img) => img.image).toList();
 	}
 
-	static Map<String, List<String>> groupByBlog(
-		List<Images> images,
-	) {
-		final Map<String, List<String>> grouped = {};
-
-		for (final img in images) {
-			grouped.putIfAbsent(img.blogId, () => []).add(img.image);
+	static Map<String, List<Images>> groupByBlog(List<Images> images) {
+		final Map<String, List<Images>> map = {};
+		
+		for (final image in images) {
+			if (!map.containsKey(image.blogId)) {
+				map[image.blogId] = [];
+			}
+			map[image.blogId]!.add(image);
 		}
-		return grouped;
+		
+		return map;
 	}
 }

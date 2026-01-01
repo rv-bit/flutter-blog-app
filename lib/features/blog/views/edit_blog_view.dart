@@ -37,8 +37,10 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 
 	bool _textInField = false;
 	int _currentCharCount = 0;
+	
+	List<String> savedImageIds = []; // Store IDs for deletion
+	List<String> savedImageData = []; // Store base64 for display
 
-	List<String> savedImages = []; // existing blog images
 	List<File> localImages = []; // newly picked images
 
 	@override
@@ -77,7 +79,7 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 		if (isSubmitting) return;
 
 		final router = GoRouter.of(context);
-		final allImagesCount = savedImages.length + localImages.length;
+		final allImagesCount = savedImageIds.length + localImages.length;
 
 		if (allImagesCount <= 0) {
 			FocusManager.instance.primaryFocus?.unfocus();
@@ -98,7 +100,7 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 			UpdateBlogPayload(
 				blogId: blog.id,
 				content: blogTextBlockController.text,
-				savedImages: savedImages,
+				savedImages: savedImageIds, // Pass IDs, not data
 				newImages: localImages,
 			),
 		);
@@ -140,7 +142,9 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 						_currentCharCount = blog.content.length;
 						_textInField = blog.content.isNotEmpty;
 
-						savedImages = blog.images;
+						// Using the getters created in the model, easier to not have to compute more heavy logic inside this
+						savedImageIds = blog.imageIds;
+						savedImageData = blog.imageData;
 
 						_initialized = true;
 					},
@@ -151,7 +155,7 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 		final blogAsync = ref.watch(editBlogProvider(widget.blogId));
 		final isSubmitting = blogAsync.isLoading;
 
-		final allImagesCount = savedImages.length + localImages.length;
+		final allImagesCount = savedImageIds.length + localImages.length;
 
 		return Scaffold(
 			appBar: AppBar(
@@ -244,7 +248,7 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 								CarouselSlider(
 									items: [
 										// Network images (existing)
-										...savedImages.asMap().entries.map((entry) {
+										...savedImageData.asMap().entries.map((entry) {
 											final index = entry.key;
 											final url = entry.value;
 
@@ -267,7 +271,8 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 													),
 													_removeButton(() {
 														setState(() {
-															savedImages.removeAt(index);
+															savedImageData.removeAt(index);
+															savedImageIds.removeAt(index);
 														});
 													}),
 												],

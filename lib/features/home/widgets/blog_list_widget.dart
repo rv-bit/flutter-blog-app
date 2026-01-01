@@ -253,13 +253,13 @@ class BlogList extends ConsumerWidget {
 								if (hasImages)
 									appDirAsync.when(data: (dir) {
 										return CarouselSlider(
-											items: blog.images.map((imagePath) {
+											items: blog.imageData.map((base64String) {
 												return Container(
 													width: MediaQuery.of(context).size.width,
 													margin: const EdgeInsets.symmetric(horizontal: 5),
 													child: ClipRRect(
 														borderRadius: BorderRadius.circular(8.0),
-														child: Image.memory(base64Decode(imagePath), fit: BoxFit.cover),
+														child: Image.memory(base64Decode(base64String), fit: BoxFit.cover),
 													)
 												);
 											}).toList(),
