@@ -98,6 +98,8 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 				},
 				onLeadingButton: () => onHandleCloseButton(),
 				onSubmit: () => onPostBlog(isSubmitting),
+				trailingButtonTitle: 'Post',
+				trailingButtonTitleSize: 15,
 				opacity: (_contentInField && _titleInField) ? 1.0 : 0.5,
 			),
 			body: SafeArea(

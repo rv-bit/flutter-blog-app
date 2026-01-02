@@ -162,6 +162,8 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 				},
 				onLeadingButton: () => onHandleCloseButton(),
 				onSubmit: () => onEditBlog(isSubmitting),
+				trailingButtonTitle: 'Submit',
+				trailingButtonTitleSize: 13,
 				opacity: (_contentInField && _titleInField) ? 1.0 : 0.5,
 			),
 			body: SafeArea(

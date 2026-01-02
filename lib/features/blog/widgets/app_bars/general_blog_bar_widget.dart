@@ -8,6 +8,8 @@ class AppBar extends m.StatelessWidget implements m.PreferredSizeWidget {
 	final m.VoidCallback onSubmit;
 	final m.TextEditingController controller;
 
+	final String trailingButtonTitle;
+	final double trailingButtonTitleSize;
 	final double opacity;
 
   	const AppBar({
@@ -18,7 +20,11 @@ class AppBar extends m.StatelessWidget implements m.PreferredSizeWidget {
 		required this.onControllerChanged,
 		required this.onSubmit,
 		required this.opacity,
+
+		this.trailingButtonTitle = 'Post',
+		this.trailingButtonTitleSize = 15
 	});
+
 
 	@override
 	m.Size get preferredSize => const m.Size.fromHeight(m.kToolbarHeight);
@@ -81,10 +87,10 @@ class AppBar extends m.StatelessWidget implements m.PreferredSizeWidget {
 									child: m.Padding(
 										padding: const m.EdgeInsets.only(left: 5, right: 5),
 										child: m.Text(
-											'Post',
+											trailingButtonTitle,
 											textAlign: m.TextAlign.center,
-											style: const m.TextStyle(
-												fontSize: 14,
+											style: m.TextStyle(
+												fontSize: trailingButtonTitleSize,
 												fontWeight: m.FontWeight.bold,
 											),
 										),
