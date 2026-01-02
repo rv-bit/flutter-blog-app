@@ -1,10 +1,13 @@
 import 'package:go_router/go_router.dart';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_blog_app/app/shell.dart';
 
 import 'package:flutter_blog_app/config/navigation_config.dart' as shell_navigations;
+
+import 'package:flutter_blog_app/common/controllers/blog_checks_controller.dart';
 
 import 'package:flutter_blog_app/features/blog/views/individual_blog_view.dart';
 import 'package:flutter_blog_app/features/blog/views/create_blog_view.dart';
@@ -80,39 +83,57 @@ final appRouter = GoRouter(
 		GoRoute(
 			name: 'edit',
 			path: '/edit/:blogId',
+			redirect: (context, state) async {
+				final blogId = state.pathParameters['blogId'];
+
+				// invalid URL -> home should be 404 but no page exist
+				if (blogId == null || blogId.isEmpty) {
+					return '/';
+				}
+
+				final container = ProviderScope.containerOf(context);
+				final exists = await container.read(blogExistsProvider(blogId).future);
+
+				// invalid URL -> home should be 404 but no page exist
+				if (!exists) {
+					return '/';
+				}
+
+				return null;
+			},
 			pageBuilder: (context, state) => buildPageWithDefaultTransition<void>(
 				context: context,
 				state: state,
 				child: EditBlogView(blogId: state.pathParameters['blogId']!),
 			),
-			redirect: (context, state) {
-				final blogId = state.pathParameters['blogId'];
-
-				if (blogId == null || blogId.isEmpty) {
-					return '/';
-				}
-
-				return null;
-			},
 		),
 
 		GoRoute(
 			name: 'individual_blog',
 			path: '/blog/:blogId',
-			pageBuilder: (context, state) => buildPageWithDefaultTransition<void>(
-				context: context,
-				state: state,
-				child: IndividualBlogView(blogId: state.pathParameters['blogId']!),
-			),
-			redirect: (context, state) {
+			redirect: (context, state) async {
 				final blogId = state.pathParameters['blogId'];
 
+				// invalid URL -> home should be 404 but no page exist
 				if (blogId == null || blogId.isEmpty) {
+					return '/';
+				}
+
+				final container = ProviderScope.containerOf(context);
+				final exists = await container.read(blogExistsProvider(blogId).future);
+
+				// invalid URL -> home should be 404 but no page exist
+				if (!exists) {
 					return '/';
 				}
 
 				return null;
 			},
+			pageBuilder: (context, state) => buildPageWithDefaultTransition<void>(
+				context: context,
+				state: state,
+				child: IndividualBlogView(blogId: state.pathParameters['blogId']!),
+			),
 		),
 	],
 );
