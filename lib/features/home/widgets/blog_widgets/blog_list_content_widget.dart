@@ -83,22 +83,22 @@ class _BlogListContentState extends State<BlogListContent> with TickerProviderSt
 				crossAxisAlignment: CrossAxisAlignment.start,
 				children: [
 					if (widget.isSelectionMode)
-						Padding(
-							padding: const EdgeInsets.only(top: 2),
-							child: SizedBox(
-								width: 40,
-								height: 40,
-								child: Checkbox(
-									value: widget.isSelected,
-									onChanged: (_) => widget.onSelectionToggle?.call(),
-									shape: RoundedRectangleBorder(
-										borderRadius: BorderRadius.circular(4),
-									),
+						SizedBox(
+							width: 40,
+							height: 40,
+							child: Checkbox(
+								value: widget.isSelected,
+								onChanged: (_) => widget.onSelectionToggle?.call(),
+								shape: RoundedRectangleBorder(
+									borderRadius: BorderRadius.circular(4),
 								),
 							),
 						)
 					else
-						widget.avatarWidget,
+						Padding(
+							padding: const EdgeInsets.only(top: 5), 
+							child: widget.avatarWidget
+						),
 
 					const SizedBox(width: 10),
 
@@ -122,29 +122,29 @@ class _BlogListContentState extends State<BlogListContent> with TickerProviderSt
 															style: textStyle.copyWith(fontWeight: FontWeight.bold),
 														),
 													),
-													const SizedBox(width: 6),
-													Text(
-														widget.time,
-														style: textStyle.copyWith(fontSize: 12, color: Colors.grey[600]),
-													),
+													Padding(
+														padding: const EdgeInsets.only(left: 5),
+														child: Text(
+															widget.time,
+															style: textStyle.copyWith(fontSize: 12, color: Colors.grey[600]),
+														),
+													)
 												],
 											),
 										),
 
 										// Right: menu icon
 										if (!widget.isSelectionMode && widget.onActionPressed != null)
-											SizedBox(
-												width: 36,
-												height: 15,
-												child: InkWell(
-													onTap: () => widget.onActionPressed!(context),
-													borderRadius: BorderRadius.circular(20),
+											GestureDetector(
+												onTap: () => widget.onActionPressed!(context),
+												child: Padding(
+													padding: const EdgeInsets.symmetric(horizontal: 5),
 													child: Icon(
 														Icons.more_horiz,
 														size: 20,
 														color: Colors.grey[600],
 													),
-												),
+												) 
 											),
 									],
 								),
