@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter_blog_app/config/theme_pallet.dart';
+import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 import 'package:flutter_blog_app/constants/assets_constants.dart';
 
 import 'package:flutter_blog_app/common/controllers/ui_controller.dart' as common_controllers;
@@ -29,7 +29,7 @@ class AnimatedFAB extends StatelessWidget {
 						onPressed: () => context.push('/create'),
 						icon: SvgPicture.asset(
 							AssetsConstants.blogInsert,
-							colorFilter: ColorFilter.mode(Palette.whiteColor, BlendMode.srcIn),
+							colorFilter: ColorFilter.mode(theme.Palette.whiteColor, BlendMode.srcIn),
 							height: 24,
 						),
 					),
