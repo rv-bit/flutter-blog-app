@@ -19,6 +19,7 @@ import 'package:flutter_blog_app/features/home/controllers/home_controller.dart'
 import '../widgets/app_bars/general_blog_bar_widget.dart';
 import '../widgets/bottom_bar_actions_widget.dart';
 
+import '../controllers/individual_blog_controller.dart';
 import '../controllers/blog_edit_controller.dart';
 
 class EditBlogView extends ConsumerStatefulWidget {
@@ -86,8 +87,6 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 		if (blog == null) return;
 		if (isSubmitting) return;
 
-		final router = GoRouter.of(context);
-
 		await ref.read(editBlogProvider(widget.blogId).notifier).updateBlog(
 			UpdateBlogPayload(
 				blogId: blog.id,
@@ -101,7 +100,10 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 		if (!mounted) return;
 		
 		ref.read(homeViewProvider.notifier).refresh();
-		router.pop();
+
+		ref.invalidate(individualBlogProvider(widget.blogId)); // force refetch individual
+		
+		onHandleCloseButton();
 	}
 
 	Widget _removeButton(VoidCallback onTap) {
