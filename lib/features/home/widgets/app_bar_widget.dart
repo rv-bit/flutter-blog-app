@@ -12,6 +12,7 @@ class AppBar extends StatelessWidget {
 	final bool isSelectionMode;
 	final int selectedCount;
 	final int totalCount;
+
 	final VoidCallback? onEnterSelectionMode;
 	final VoidCallback? onExitSelectionMode;
 	final VoidCallback? onSelectAll;
@@ -33,13 +34,13 @@ class AppBar extends StatelessWidget {
 	@override
 	Widget build(BuildContext context) {
 		return AnimatedBuilder(
-			animation: common_controllers.scrollUIController,
+			animation: common_controllers.globalInterfaceController,
 			builder: (context, _) {
 				final topInset = MediaQuery.of(context).viewPadding.top;
 				final totalHeight = common_controllers.kAppBarHeight + topInset;
 				
 				return AnimatedPositioned(
-					top: common_controllers.scrollUIController.isHidden ? -totalHeight : 0,
+					top: common_controllers.globalInterfaceController.isHidden ? -totalHeight : 0,
 					left: 0,
 					right: 0,
 					duration: const Duration(milliseconds: 200),

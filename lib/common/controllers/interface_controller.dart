@@ -1,19 +1,19 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 
-final scrollUIController = ScrollUIController();
+enum BarVisibility { shown, hidden }
 
 const double kAppBarHeight = 70;
 const double kAppBarLiftThreshold = 5; // used to determine the height of app bar when hidden
 
-const double kBottomBarHeight = 50;
-const double kFabBasePadding = 10;
+const double kBottomBarHeight = 50; 
+const double kFabBasePadding = 10; 
 const double kFabMaxLift = 30; 
 const double kFabSize = 56;
 
-enum BarVisibility { shown, hidden }
+final globalInterfaceController = InterfaceController();
 
-class ScrollUIController extends ChangeNotifier {
+class InterfaceController extends ChangeNotifier {
 	BarVisibility _visibility = BarVisibility.shown;
 	BarVisibility get visibility => _visibility;
 	bool get isHidden => _visibility == BarVisibility.hidden;

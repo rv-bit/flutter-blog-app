@@ -184,7 +184,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 				NotificationListener<ScrollNotification>(
 					onNotification: (notification) {
 						if (notification.metrics.axis == Axis.vertical && notification.depth == 0) {
-							common_controllers.scrollUIController.onScroll(notification);
+							common_controllers.globalInterfaceController.onScroll(notification);
 
 							if (notification is ScrollUpdateNotification) {
 								if (notification.metrics.pixels <= 0) {
@@ -217,9 +217,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
 						onRefresh: _handleRefresh,
 						onStateChanged: (change) {
 							if (change.didChange(to: IndicatorState.dragging) || change.didChange(to: IndicatorState.armed) || change.didChange(to: IndicatorState.loading)) {
-								common_controllers.scrollUIController.setRefreshing(true);
+								common_controllers.globalInterfaceController.setRefreshing(true);
 							} else if (change.didChange(to: IndicatorState.idle)) {
-								common_controllers.scrollUIController.setRefreshing(false);
+								common_controllers.globalInterfaceController.setRefreshing(false);
 								_headerNotifier.value = const SizedBox.shrink();
 							}
 						},

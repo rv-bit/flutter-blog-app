@@ -69,14 +69,14 @@ class _AnimatedBottomBar extends StatelessWidget {
 		final totalHeight = common_controllers.kBottomBarHeight + bottomInset;
 
 		return AnimatedBuilder(
-			animation: common_controllers.scrollUIController,
+			animation: common_controllers.globalInterfaceController,
 			builder: (_, _) {
 				return AnimatedPositioned(
 					left: 0,
 					right: 0,
 					duration: const Duration(milliseconds: 200),
 					curve: Curves.easeIn,
-					bottom: common_controllers.scrollUIController.isHidden ? -totalHeight : 0,
+					bottom: common_controllers.globalInterfaceController.isHidden ? -totalHeight : 0,
 					child: common_widgets.StaticBottomBar(
 						currentIndex: currentIndex,
 						onTap: onTap,

@@ -8,7 +8,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 import 'package:flutter_blog_app/config/navigation_config.dart';
 
-import 'package:flutter_blog_app/common/controllers/ui_controller.dart';
+import 'package:flutter_blog_app/common/controllers/interface_controller.dart';
 
 class StaticBottomBar extends StatelessWidget {
 	final int currentIndex;
