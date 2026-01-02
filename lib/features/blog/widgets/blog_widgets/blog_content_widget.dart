@@ -1,9 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'package:carousel_slider/carousel_slider.dart';
 
 class BlogListContent extends StatefulWidget {
 	final Widget avatarWidget;
@@ -11,10 +7,7 @@ class BlogListContent extends StatefulWidget {
 
 	final String content;
 	final String username;
-	final String time; // could be created_At, or updated_At
-	final List<String> imageData; // the images base64
-
-	final bool isEdited;
+	final List<String>? imageData;
 
 	const BlogListContent({
 		super.key,
@@ -24,10 +17,8 @@ class BlogListContent extends StatefulWidget {
 
 		required this.content,
 		required this.username,
-		required this.time,
-		required this.imageData,
-		
-		required this.isEdited,
+
+		this.imageData,
 	});
 
 	@override
@@ -39,87 +30,54 @@ class _BlogListContentState extends State<BlogListContent> with TickerProviderSt
 	Widget build(BuildContext context) {
 		final textStyle = DefaultTextStyle.of(context).style;
 
-		return Row(
-			crossAxisAlignment: CrossAxisAlignment.start,
-			children: [
-				widget.avatarWidget,
-				const SizedBox(width: 10),
-
-				Expanded(
-					child: Column(
+		return Padding(
+			padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+			child: Column(
+				crossAxisAlignment: CrossAxisAlignment.start,
+				children: [
+					Row(
 						crossAxisAlignment: CrossAxisAlignment.start,
-						mainAxisSize: MainAxisSize.min, // to shrink-wrap content
 						children: [
-							Row(
-								crossAxisAlignment: CrossAxisAlignment.center,
-								mainAxisAlignment: MainAxisAlignment.spaceBetween,
-								children: [
-									Expanded(
-										child: Row(
+							Padding(
+								padding: const EdgeInsets.only(right: 5, top: 5),
+								child: widget.avatarWidget,
+							),
+							Expanded(
+								child: Row(
+									crossAxisAlignment: CrossAxisAlignment.start,
+									children: [
+										Column(
+											crossAxisAlignment: CrossAxisAlignment.start,
+											mainAxisSize: MainAxisSize.min,
 											children: [
-												Flexible(
-													child: Text(
-														widget.username,
-														maxLines: 1,
-														overflow: TextOverflow.ellipsis,
-														style: textStyle.copyWith(fontWeight: FontWeight.bold),
-													),
-												),
-												const SizedBox(width: 6),
 												Text(
-													widget.time,
+													widget.username,
+													maxLines: 1,
+													overflow: TextOverflow.ellipsis,
+													style: textStyle.copyWith(fontWeight: FontWeight.bold),
+												),
+												Text(
+													'@${widget.username}',
 													style: textStyle.copyWith(fontSize: 12, color: Colors.grey[600]),
 												),
 											],
 										),
-									),
-								],
-							),
-
-							SizedBox(
-								child: Text(
-									widget.content,
-									maxLines: null,
-									softWrap: true,
+									],
 								),
-							),
-
-							if (widget.imageData.isNotEmpty)
-								const SizedBox(height: 5),
-
-								widget.appDirAsync.when(data: (dir) {
-									return CarouselSlider(
-										items: widget.imageData.map((base64String) {
-											return Container(
-												width: MediaQuery.of(context).size.width,
-												margin: const EdgeInsets.symmetric(horizontal: 5),
-												child: ClipRRect(
-													borderRadius: BorderRadius.circular(8.0),
-													child: Image.memory(
-														base64Decode(base64String), 
-														fit: BoxFit.cover,
-														gaplessPlayback: true, // prevents flicker when change of state
-													),
-												)
-											);
-										}).toList(),
-										options: CarouselOptions(
-											height: 400,
-											enableInfiniteScroll: false,
-											scrollPhysics: const PageScrollPhysics(),
-										),
-									);
-								},
-								loading: () => const Padding(
-								padding: EdgeInsets.symmetric(vertical: 16.0),
-									child: Center(child: CircularProgressIndicator()),
-								),
-								error: (_, _) => const Icon(Icons.error)
 							),
 						],
 					),
-				),
-			],
+
+					Padding(
+						padding: const EdgeInsets.only(top: 10),
+						child: Text(
+							widget.content,
+							maxLines: null,
+							softWrap: true,
+						),
+					),
+				],
+			),
 		);
 	}
 }
