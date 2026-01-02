@@ -216,8 +216,7 @@ class BlogList extends ConsumerWidget {
 				}
 
 				final blog = blogs[i];
-				final images = blog.images;
-				final hasImages = images.isNotEmpty;
+				final hasImages = blog.images != null && blog.images!.isNotEmpty;
 
 				return _BlogListItem(
 					indexItem: i,
@@ -276,6 +275,9 @@ class _BlogListItemState extends State<_BlogListItem> {
 	@override
 	Widget build(BuildContext context) {
 		final blog = widget.blog;
+
+		final hasImages = blog.images != null && blog.images!.isNotEmpty;
+		final imageData = hasImages ? blog.imageData : null;
 
 		return GestureDetector(
 			behavior: HitTestBehavior.opaque,
@@ -344,7 +346,7 @@ class _BlogListItemState extends State<_BlogListItem> {
 									if (widget.hasImages)
 										widget.appDirAsync.when(data: (dir) {
 											return CarouselSlider(
-												items: blog.imageData.map((base64String) {
+												items: imageData!.map((base64String) {
 													return Container(
 														width: MediaQuery.of(context).size.width,
 														margin: const EdgeInsets.symmetric(horizontal: 5),

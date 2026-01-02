@@ -55,11 +55,11 @@ class BlogRepository {
 
 	Future<void> addBlog({
 		required common_models.BlogPost blog,
-		required List<common_models.Images> images,
+		required List<common_models.Images>? images,
 	}) async {
 		await dao.insertBlog(
 			blog: blog.toMap(),
-			images: images.map((e) => e.toMap()).toList(),
+			images: images?.map((e) => e.toMap()).toList(),
 		);
 	}
 
@@ -75,24 +75,28 @@ class BlogRepository {
 			},
 		);
 
-		await dao.deleteSavedImages(
-			blogId: payload.blogId,
-			savedImages: payload.savedImages,
-		);
-
-		for (final file in payload.newImages) {
-			final imageId = const Uuid().v4();
-			final compressedBytes = await common_utils.compressImage(file);
-			final base64Image = base64Encode(compressedBytes);
-
-			await dao.insertImage(
-				common_models.Images(
-					id: imageId,
-					blogId: payload.blogId,
-					image: base64Image,
-					createdAt: now,
-				).toMap(),
+		if (payload.savedImages != null) {
+			await dao.deleteSavedImages(
+				blogId: payload.blogId,
+				savedImages: payload.savedImages!,
 			);
+		}
+
+		if (payload.newImages != null) {
+			for (final file in payload.newImages!) {
+				final imageId = const Uuid().v4();
+				final compressedBytes = await common_utils.compressImage(file);
+				final base64Image = base64Encode(compressedBytes);
+
+				await dao.insertImage(
+					common_models.Images(
+						id: imageId,
+						blogId: payload.blogId,
+						image: base64Image,
+						createdAt: now,
+					).toMap(),
+				);
+			}
 		}
 	}
 

@@ -71,18 +71,6 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 
 		final router = GoRouter.of(context);
 
-		if (images.isEmpty) {
-			FocusManager.instance.primaryFocus?.unfocus();
-
-			final snackBar = SnackBar(
-				content: const Text('Images is a required field, please add at least one image'),
-				duration: Duration(seconds: 5),
-			);
-
-			ScaffoldMessenger.of(context).showSnackBar(snackBar);
-			return;
-		}
-
 		await ref.read(createBlogProvider.notifier).createBlog(
 			title: titleTextController.text,
 			content: contentTextController.text,
@@ -110,7 +98,7 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 				},
 				onLeadingButton: () => onHandleCloseButton(),
 				onSubmit: () => onPostBlog(isSubmitting),
-				opacity: (_contentInField && _titleInField && images.isNotEmpty) ? 1.0 : 0.5,
+				opacity: (_contentInField && _titleInField) ? 1.0 : 0.5,
 			),
 			body: SafeArea(
 				child: SingleChildScrollView(

@@ -14,11 +14,10 @@ class BlogDAO {
 
 	Future<void> insertBlog({
 		required Map<String, dynamic> blog,
-		required List<Map<String, dynamic>> images,
+		required List<Map<String, dynamic>>? images,
 	}) async {
 		try {
 			if (blog.isEmpty) return;
-			if (images.isEmpty) return;
 
 			final database = await databaseHelper.database;
 
@@ -29,12 +28,14 @@ class BlogDAO {
 					conflictAlgorithm: ConflictAlgorithm.abort,
 				);
 
-				for (final image in images) {
-					await txn.insert(
-						'images',
-						image,
-						conflictAlgorithm: ConflictAlgorithm.abort,
-					);
+				if (images != null && images.isNotEmpty) {
+					for (final image in images) {
+						await txn.insert(
+							'images',
+							image,
+							conflictAlgorithm: ConflictAlgorithm.abort,
+						);
+					}
 				}
 			});
 		} catch(e) {
@@ -68,7 +69,7 @@ class BlogDAO {
 			'images',
 			where: 'blog_id IN ($placeholders)',
 			whereArgs: blogIds,
-			orderBy: 'created_at DESC',
+			orderBy: 'created_at ASC',
 		);
 	}
 
@@ -78,7 +79,7 @@ class BlogDAO {
 			'images',
 			where: 'blog_id = ?',
 			whereArgs: [blogId],
-			orderBy: 'created_at DESC',
+			orderBy: 'created_at ASC',
 		);
 	}
 

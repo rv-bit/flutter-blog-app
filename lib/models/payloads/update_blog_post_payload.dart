@@ -6,15 +6,16 @@ class UpdateBlogPayload {
 	final String title;
 
 	// Images already in DB that should remain
-	final List<String> savedImages;
+	final List<String>? savedImages;
 	// New images picked in UI (File paths)
-	final List<File> newImages;
+	final List<File>? newImages;
 
 	UpdateBlogPayload({
 		required this.blogId,
 		required this.content,
 		required this.title,
-		required this.savedImages,
-		required this.newImages,
+
+		this.savedImages,
+		this.newImages,
 	});
 }

@@ -4,7 +4,7 @@ class BlogPost {
 	final String id;
 	final String content;
 	final String title;
-	final List<Images> images;
+	final List<Images>? images;
 	final String createdAt;
 	final String? updatedAt;
 
@@ -13,15 +13,15 @@ class BlogPost {
 		required this.content,
 		required this.title,
 		required this.createdAt,
-		required this.images,
+		this.images,
 		this.updatedAt,
 	});
 
 	// Convenience getter for UI rendering
-	List<String> get imageData => images.map((img) => img.image).toList();
+	List<String>? get imageData => images?.map((img) => img.image).toList();
 	
 	// Convenience getter for IDs (useful for deletion)
-	List<String> get imageIds => images.map((img) => img.id).toList();
+	List<String>? get imageIds => images?.map((img) => img.id).toList();
 
 	factory BlogPost.fromMap(Map<String, dynamic> map) => BlogPost(
 		id: map['id'],

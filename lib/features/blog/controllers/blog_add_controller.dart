@@ -32,7 +32,7 @@ class CreateBlogController extends Notifier<AsyncValue<void>> {
 	Future<void> createBlog({
 		required String title,
 		required String content,
-		required List<File> imageFiles,
+		required List<File>? imageFiles,
 	}) async {
 		state = const AsyncValue.loading();
 
@@ -49,18 +49,20 @@ class CreateBlogController extends Notifier<AsyncValue<void>> {
 			);
 
 			final List<Images> images = [];
-			for (final file in imageFiles) {
-				final compressedBytes = await common_utils.compressImage(file);
-				final base64Image = base64Encode(compressedBytes);
+			if (imageFiles != null && imageFiles.isNotEmpty) {
+				for (final file in imageFiles) {
+					final compressedBytes = await common_utils.compressImage(file);
+					final base64Image = base64Encode(compressedBytes);
 
-				images.add(
-					Images(
-						id: const Uuid().v4(),
-						blogId: blogId,
-						image: base64Image, // Store as base64 string
-						createdAt: now,
-					),
-				);
+					images.add(
+						Images(
+							id: const Uuid().v4(),
+							blogId: blogId,
+							image: base64Image, // Store as base64 string
+							createdAt: now,
+						),
+					);
+				}
 			}
 
 			await _repository.addBlog(

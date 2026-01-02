@@ -80,25 +80,12 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 	}
 
 	void onEditBlog(bool isSubmitting) async {
+		final blog = ref.read(editBlogProvider(widget.blogId)).value;
+
+		if (blog == null) return;
 		if (isSubmitting) return;
 
 		final router = GoRouter.of(context);
-		final allImagesCount = savedImageIds.length + localImages.length;
-
-		if (allImagesCount <= 0) {
-			FocusManager.instance.primaryFocus?.unfocus();
-
-			final snackBar = SnackBar(
-				content: const Text('Images is a required field, please add at least one image'),
-				duration: Duration(milliseconds: 5000),
-			);
-
-			ScaffoldMessenger.of(context).showSnackBar(snackBar);
-			return;
-		}
-
-		final blog = ref.read(editBlogProvider(widget.blogId)).value;
-		if (blog == null) return;
 
 		await ref.read(editBlogProvider(widget.blogId).notifier).updateBlog(
 			UpdateBlogPayload(
@@ -151,8 +138,8 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 						_titleInField = blog.title.isNotEmpty;
 
 						// Using the getters created in the model, easier to not have to compute more heavy logic inside this
-						savedImageIds = blog.imageIds;
-						savedImageData = blog.imageData;
+						savedImageIds = blog.imageIds ?? [];
+						savedImageData = blog.imageData ?? [];
 
 						_initialized = true;
 					},
@@ -175,7 +162,7 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 				},
 				onLeadingButton: () => onHandleCloseButton(),
 				onSubmit: () => onEditBlog(isSubmitting),
-				opacity: (_contentInField && _titleInField && (localImages.length + savedImageData.length > 0)) ? 1.0 : 0.5,
+				opacity: (_contentInField && _titleInField) ? 1.0 : 0.5,
 			),
 			body: SafeArea(
 				child: SingleChildScrollView(
