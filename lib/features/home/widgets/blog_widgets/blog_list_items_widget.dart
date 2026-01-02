@@ -6,13 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+
+import 'package:flutter_blog_app/models/blog_posts.dart';
 
 import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 
-import 'package:flutter_blog_app/models/blog_posts.dart';
+import 'package:flutter_blog_app/common/widgets/blog_widgets/action_sheet_widget.dart';
 
 import 'package:flutter_blog_app/features/home/widgets/blog_widgets/blog_list_content_widget.dart';
 import 'package:flutter_blog_app/features/home/controllers/home_controller.dart';
@@ -49,119 +50,6 @@ class BlogList extends ConsumerWidget {
 		this.headerNotifier,
 		this.padding = EdgeInsets.zero,
 	});
-
-	void _showActionSheet(BuildContext context, WidgetRef ref, BlogPost blog) {
-		showMaterialModalBottomSheet(
-			context: context,
-			useRootNavigator: true,
-			backgroundColor: Colors.transparent,
-			builder: (sheetContext) => Container(
-				decoration: BoxDecoration(
-					color: theme.AppTheme.theme.scaffoldBackgroundColor,
-					borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-				),
-				child: SafeArea(
-					child: Column(
-						mainAxisSize: MainAxisSize.min,
-						children: [
-							const SizedBox(height: 8),
-							Container(
-								width: 40,
-								height: 4,
-								decoration: BoxDecoration(
-									color: Colors.grey[300],
-									borderRadius: BorderRadius.circular(2),
-								),
-							),
-							const SizedBox(height: 16),
-							ListTile(
-								leading: const Icon(Icons.edit_outlined),
-								title: const Text('Edit'),
-								onTap: () {
-									final router = GoRouter.of(context);
-
-									Navigator.pop(sheetContext);
-
-									router.pushNamed('edit', pathParameters: {
-										'blogId': blog.id
-									});
-								},
-							),
-							const SizedBox(height: 16),
-							ListTile(
-								leading: const Icon(
-									Icons.restore_from_trash_sharp,
-									color: theme.Palette.redColor,
-								),
-								title: const Text(
-									'Delete', 
-									style: TextStyle(
-										fontSize: 14,
-										color: theme.Palette.redColor,
-										fontWeight: FontWeight.bold,
-									),
-								),
-								onTap: () {
-									Navigator.pop(sheetContext);
-									_showDeleteConfirmation(context, ref, blog);
-								},
-							),
-							const SizedBox(height: 16),
-						],
-					),
-				),
-			),
-		);
-	}
-
-	void _showDeleteConfirmation(BuildContext context, WidgetRef ref, BlogPost blog) {
-		showDialog(
-			context: context,
-			builder: (dialogContext) => AlertDialog(
-				title: const Text('Delete Post?'),
-				content: const Text('Are you sure you want to delete this blog post? This action cannot be undone.'),
-				actions: [
-					TextButton(
-						onPressed: () => Navigator.pop(dialogContext),
-						child: const Text('Cancel'),
-					),
-					TextButton(
-						onPressed: () async {
-							Navigator.pop(dialogContext);
-							late BuildContext loadingDialogContext;
-
-							// Show loading indicator
-							showDialog(
-								context: context,
-								barrierDismissible: false,
-								builder: (ctx) {
-									loadingDialogContext = ctx;
-
-									return const Center(
-										child: CircularProgressIndicator(),
-									);
-								}
-							);
-							
-							// Delete the blog
-							await ref.read(homeViewProvider.notifier).deleteBlog(blog.id);
-							
-							// Close loading indicator
-							if (loadingDialogContext.mounted) {
-								Navigator.pop(loadingDialogContext);
-							}
-							
-							debugPrint('Deleted blog: ${blog.id}');
-						},
-						style: TextButton.styleFrom(
-							foregroundColor: theme.Palette.redColor,
-						),
-						child: const Text('Delete'),
-					),
-				],
-			),
-		);
-	}
 
 	@override
 	Widget build(BuildContext context, WidgetRef ref) {
@@ -224,7 +112,38 @@ class BlogList extends ConsumerWidget {
 					isSelectionMode: isSelectionMode,
 					isSelected: selectedBlogIds.contains(blog.id),
 					onSelectionToggle: () => onBlogSelectionToggle?.call(blog.id),
-					onActionPressed: (ctx) => _showActionSheet(ctx, ref, blog),
+					onActionPressed: (ctx) => BlogActionSheet.showActionSheet(
+						context: context, 
+						actions: [
+							ActionSheetItem(
+								title: 'Edit',
+								icon: Icons.edit_outlined,
+								onTap: () {
+									final router = GoRouter.of(context);
+									router.pushNamed('edit', pathParameters: {
+										'blogId': blog.id
+									});
+								},
+							),
+							ActionSheetItem(
+								title: 'Delete',
+								icon: Icons.restore_from_trash_sharp,
+								isDestructive: true,
+								onTap: () {
+									BlogActionSheet.showConfirmationDialog(
+										context: context,
+										title: 'Delete Blog Post',
+										text: 'Are you sure you want to delete this blog post? This action cannot be undone.',
+										cancelTitle: 'Cancel',
+										submitTitle: 'Delete',
+										onSubmit: () async {
+											await ref.read(homeViewProvider.notifier).deleteBlog(blog.id);
+										},
+									);
+								},
+							),
+						]
+					),
 					appDirAsync: appDirAsync,
 				);
 			},
