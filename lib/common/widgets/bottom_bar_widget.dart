@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'package:flutter_blog_app/config/theme_pallet.dart';
+import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 import 'package:flutter_blog_app/config/navigation_config.dart';
+
 import 'package:flutter_blog_app/common/controllers/ui_controller.dart';
 
 class StaticBottomBar extends StatelessWidget {
@@ -26,9 +27,9 @@ class StaticBottomBar extends StatelessWidget {
 				filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
 				child: Container(
 					decoration: BoxDecoration(
-						color: Palette.backgroundColor.withValues(alpha: 0.5),
+						color: theme.Palette.backgroundColor.withValues(alpha: 0.5),
 						border: Border(
-							top: BorderSide(color: Palette.greyColor.withValues(alpha: 0.2)),
+							top: BorderSide(color: theme.Palette.greyColor.withValues(alpha: 0.2)),
 						),
 					),
 					child: SafeArea(
@@ -48,7 +49,7 @@ class StaticBottomBar extends StatelessWidget {
 										icon: SvgPicture.asset(
 											isActive ? tab.activeIcon : tab.inactiveIcon,
 											colorFilter: ColorFilter.mode(
-												isActive ? Palette.whiteColor : Palette.greyColor,
+												isActive ? theme.Palette.whiteColor : theme.Palette.greyColor,
 												BlendMode.srcIn,
 											),
 											height: 20,

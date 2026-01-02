@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-import 'package:flutter_blog_app/config/theme_pallet.dart';
+import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 import 'package:flutter_blog_app/constants/assets_constants.dart';
 
 import 'package:flutter_blog_app/features/blog/widgets/character_indicator_widget.dart';
@@ -30,9 +30,9 @@ class BottomBarActions extends StatelessWidget {
 				padding: const EdgeInsets.only(bottom: 10),
 				decoration: BoxDecoration(
 					border: Border(
-						top: BorderSide(color: Palette.greyColor.withValues(alpha: 0.5))
+						top: BorderSide(color: theme.Palette.greyColor.withValues(alpha: 0.5))
 					),
-					color: Palette.backgroundColor
+					color: theme.Palette.backgroundColor
 				),
 				child: SafeArea(
 					top: false,
@@ -48,7 +48,7 @@ class BottomBarActions extends StatelessWidget {
 									child: SvgPicture.asset(
 										AssetsConstants.addImageIcon,
 										colorFilter: ColorFilter.mode(
-											Palette.blueColor,
+											theme.Palette.blueColor,
 											BlendMode.srcIn
 										),
 										height: 24,		
@@ -65,7 +65,7 @@ class BottomBarActions extends StatelessWidget {
 									child: SvgPicture.asset(
 										AssetsConstants.camera,
 										colorFilter: ColorFilter.mode(
-											Palette.blueColor,
+											theme.Palette.blueColor,
 											BlendMode.srcIn
 										),
 										height: 20,	

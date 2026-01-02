@@ -9,8 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
-import 'package:flutter_blog_app/config/theme_pallet.dart';
-import 'package:flutter_blog_app/config/theme.dart';
+import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 
 import 'package:flutter_blog_app/models/blog_posts.dart';
@@ -58,7 +57,7 @@ class BlogList extends ConsumerWidget {
 			backgroundColor: Colors.transparent,
 			builder: (sheetContext) => Container(
 				decoration: BoxDecoration(
-					color: AppTheme.theme.scaffoldBackgroundColor,
+					color: theme.AppTheme.theme.scaffoldBackgroundColor,
 					borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
 				),
 				child: SafeArea(
@@ -92,13 +91,13 @@ class BlogList extends ConsumerWidget {
 							ListTile(
 								leading: const Icon(
 									Icons.restore_from_trash_sharp,
-									color: Palette.redColor,
+									color: theme.Palette.redColor,
 								),
 								title: const Text(
 									'Delete', 
 									style: TextStyle(
 										fontSize: 14,
-										color: Palette.redColor,
+										color: theme.Palette.redColor,
 										fontWeight: FontWeight.bold,
 									),
 								),
@@ -155,7 +154,7 @@ class BlogList extends ConsumerWidget {
 							debugPrint('Deleted blog: ${blog.id}');
 						},
 						style: TextButton.styleFrom(
-							foregroundColor: Palette.redColor,
+							foregroundColor: theme.Palette.redColor,
 						),
 						child: const Text('Delete'),
 					),
@@ -174,12 +173,12 @@ class BlogList extends ConsumerWidget {
 						Icon(
 							Icons.article_outlined,
 							size: 64,
-							color: AppTheme.theme.colorScheme.onSurface.withAlpha(80),
+							color: theme.AppTheme.theme.colorScheme.onSurface.withAlpha(80),
 						),
 						const SizedBox(height: 16),
 						Text(
 							'No blog posts yet',
-							style: AppTheme.theme.textTheme.titleMedium?.copyWith(color: AppTheme.theme.colorScheme.onSurface.withAlpha(120)),
+							style: theme.AppTheme.theme.textTheme.titleMedium?.copyWith(color: theme.AppTheme.theme.colorScheme.onSurface.withAlpha(120)),
 						),
 					],
 				),
@@ -314,10 +313,10 @@ class _BlogListItemState extends State<_BlogListItem> {
 				curve: Curves.linear,
 				decoration: BoxDecoration(
 					color: _isLongPressed
-						? Palette.greyColor.withValues(alpha: 0.2)
-						: Palette.backgroundColor.withValues(alpha: 0.5),
+						? theme.Palette.greyColor.withValues(alpha: 0.2)
+						: theme.Palette.backgroundColor.withValues(alpha: 0.5),
 					border: Border(
-						top: widget.indexItem > 0 ? BorderSide(color: Palette.greyColor.withValues(alpha: 0.2)) : BorderSide.none,
+						top: widget.indexItem > 0 ? BorderSide(color: theme.Palette.greyColor.withValues(alpha: 0.2)) : BorderSide.none,
 					),
 				),
 				child: Column(
@@ -332,7 +331,7 @@ class _BlogListItemState extends State<_BlogListItem> {
 										username: 'username_example',
 										time: common_utils.formatPostTime(blog.createdAt),
 										avatarWidget: CircleAvatar(
-											backgroundColor: Palette.blueColor,
+											backgroundColor: theme.Palette.blueColor,
 											radius: 15,
 										),
 										isSelectionMode: widget.isSelectionMode,

@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 
-import 'package:flutter_blog_app/config/theme.dart';
+import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 
 import 'package:flutter_blog_app/common/controllers/index.dart' as common_controllers;
 import 'package:flutter_blog_app/common/providers/index.dart' as common_providers;
@@ -275,11 +275,11 @@ class _HomeViewState extends ConsumerState<HomeView> {
 													child: Column(
 														mainAxisAlignment: MainAxisAlignment.center,
 														children: [
-															Icon(Icons.error_outline, size: 64, color: AppTheme.theme.colorScheme.error),
+															Icon(Icons.error_outline, size: 64, color: theme.AppTheme.theme.colorScheme.error),
 															const SizedBox(height: 16),
-															Text('Error loading blogs', style: AppTheme.theme.textTheme.titleMedium),
+															Text('Error loading blogs', style: theme.AppTheme.theme.textTheme.titleMedium),
 															const SizedBox(height: 8),
-															Text(err.toString(), style: AppTheme.theme.textTheme.bodySmall, textAlign: TextAlign.center),
+															Text(err.toString(), style: theme.AppTheme.theme.textTheme.bodySmall, textAlign: TextAlign.center),
 															const SizedBox(height: 16),
 															ElevatedButton.icon(
 																onPressed: () => ref.invalidate(homeViewProvider),

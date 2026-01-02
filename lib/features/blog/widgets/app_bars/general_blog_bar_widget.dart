@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart' as m;
 
-import 'package:flutter_blog_app/config/theme_pallet.dart';
+import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 
 class AppBar extends m.StatelessWidget implements m.PreferredSizeWidget {
 	final m.VoidCallback onLeadingButton;
@@ -28,7 +28,7 @@ class AppBar extends m.StatelessWidget implements m.PreferredSizeWidget {
 		return m.AppBar(
 			titleSpacing: 0,
 			leadingWidth: 50,
-			backgroundColor: Palette.backgroundColor,
+			backgroundColor: theme.Palette.backgroundColor,
 			leading: m.Padding(
 				padding: const m.EdgeInsets.only(left: 5),
 				child: m.IconButton(
@@ -53,7 +53,7 @@ class AppBar extends m.StatelessWidget implements m.PreferredSizeWidget {
 								counterText: "", // hides the auto maxLength from TextField
 								hintText: "Title",
 								hintStyle: m.TextStyle(
-									color: Palette.greyColor,
+									color: theme.Palette.greyColor,
 									fontSize: 13,
 									fontWeight: m.FontWeight.w500,
 								),
@@ -76,7 +76,7 @@ class AppBar extends m.StatelessWidget implements m.PreferredSizeWidget {
 									alignment: m.Alignment.center,
 									decoration: m.BoxDecoration(
 										borderRadius: m.BorderRadius.circular(15),
-										color: Palette.blueColor,
+										color: theme.Palette.blueColor,
 									),
 									child: m.Padding(
 										padding: const m.EdgeInsets.only(left: 5, right: 5),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_blog_app/config/theme_pallet.dart';
+import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 
 class BlogListContent extends StatefulWidget {
 	final String content;
@@ -171,7 +171,7 @@ class _BlogListContentState extends State<BlogListContent> with TickerProviderSt
 											style: textStyle.copyWith(
 												fontSize: 11,
 												fontWeight: FontWeight.w500,
-												color: Palette.blueColor.withAlpha(180),
+												color: theme.Palette.blueColor.withAlpha(180),
 											),
 										),
 									),

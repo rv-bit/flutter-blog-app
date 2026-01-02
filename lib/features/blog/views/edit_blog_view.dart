@@ -8,7 +8,7 @@ import 'package:flutter/material.dart' hide AppBar;
 
 import 'package:carousel_slider/carousel_slider.dart';
 
-import 'package:flutter_blog_app/config/theme_pallet.dart';
+import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 
 import 'package:flutter_blog_app/models/blog_posts.dart';
@@ -176,7 +176,7 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 										Padding(
 											padding: const EdgeInsets.only(top: 9),
 											child: CircleAvatar(
-												backgroundColor: Palette.blueColor,
+												backgroundColor: theme.Palette.blueColor,
 												radius: 15,
 											),
 										),
@@ -200,7 +200,7 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 													counterText: "", // hides the auto maxLength from TextField
 													hintText: "What's happening?",
 													hintStyle: TextStyle(
-														color: Palette.greyColor,
+														color: theme.Palette.greyColor,
 														fontSize: 15,
 														fontWeight: FontWeight.w300,
 													),

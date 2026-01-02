@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart' hide AppBar;
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'package:flutter_blog_app/config/theme_pallet.dart';
+import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 import 'package:flutter_blog_app/constants/assets_constants.dart';
 
 import 'package:flutter_blog_app/common/controllers/index.dart' as common_controllers;
@@ -49,10 +49,10 @@ class AppBar extends StatelessWidget {
 							filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
 							child: Container(
 								decoration: BoxDecoration(
-									color: Palette.backgroundColor.withValues(alpha: 0.5),
+									color: theme.Palette.backgroundColor.withValues(alpha: 0.5),
 									border: Border(
 										bottom: BorderSide(
-											color: Palette.greyColor.withValues(alpha: 0.2),
+											color: theme.Palette.greyColor.withValues(alpha: 0.2),
 										),
 									),
 								),
