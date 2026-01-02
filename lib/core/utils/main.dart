@@ -13,16 +13,16 @@ void onNavItemTapped(BuildContext context, int index) {
 }
 
 String formatPostTime(String dateString) {
-	DateTime postDate;
+	DateTime date;
 
 	try {
-		postDate = DateTime.parse(dateString);
+		date = DateTime.parse(dateString);
 	} catch (e) {
 		return '';
 	}
 
 	final now = DateTime.now();
-	final difference = now.difference(postDate);
+	final difference = now.difference(date);
 
 	if (difference.inSeconds < 60) {
 		return '${difference.inSeconds}s';
@@ -33,9 +33,41 @@ String formatPostTime(String dateString) {
 	} else if (difference.inDays < 7) {
 		return '${difference.inDays}d';
 	} else {
-		final day = postDate.day.toString().padLeft(2, '0');
-		final month = postDate.month.toString().padLeft(2, '0');
-		final year = postDate.year.toString();
-		return '$day-$month-$year';
+		final day = date.day.toString().padLeft(2, '0');
+		final month = date.month.toString().padLeft(2, '0');
+		final year = date.year.toString();
+		return '$day/$month/$year';
 	}
+}
+
+String formatDate(
+	String dateString, {
+	bool showDate = false,
+	bool showTime = false,
+	bool showBoth = false,
+}) {
+	DateTime date;
+
+	try {
+		date = DateTime.parse(dateString);
+	} catch (e) {
+		return '';
+	}
+
+	final day = date.day.toString().padLeft(2, '0');
+	final month = date.month.toString().padLeft(2, '0');
+	final year = date.year.toString();
+
+	final hour = date.hour.toString().padLeft(2, '0');
+	final minute = date.minute.toString().padLeft(2, '0');
+
+	if (showDate) {
+		return '$day/$month/$year';
+	} else if (showTime) {
+		return '$hour:$minute';
+	} else if (showBoth) {
+		return '$hour:$minute · $day/$month/$year';
+	}
+
+	return '';
 }
