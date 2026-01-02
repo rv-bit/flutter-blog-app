@@ -14,11 +14,12 @@ import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 import 'package:flutter_blog_app/models/blog_posts.dart';
 import 'package:flutter_blog_app/models/payloads/update_blog_post_payload.dart';
 
-import 'package:flutter_blog_app/features/blog/widgets/app_bars/general_blog_bar_widget.dart';
-import 'package:flutter_blog_app/features/blog/widgets/bottom_bar_actions_widget.dart';
-
 import 'package:flutter_blog_app/features/home/controllers/home_controller.dart';
-import 'package:flutter_blog_app/features/blog/controllers/blog_edit_controller.dart';
+
+import '../widgets/app_bars/general_blog_bar_widget.dart';
+import '../widgets/bottom_bar_actions_widget.dart';
+
+import '../controllers/blog_edit_controller.dart';
 
 class EditBlogView extends ConsumerStatefulWidget {
 	final String blogId;

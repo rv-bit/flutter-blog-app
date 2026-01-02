@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 import 'package:flutter_blog_app/constants/assets_constants.dart';
 
-import 'package:flutter_blog_app/features/blog/widgets/character_indicator_widget.dart';
+import '../widgets/character_indicator_widget.dart';
 
 const int maxCharacters = 100;
 

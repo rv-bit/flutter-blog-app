@@ -12,11 +12,11 @@ import 'package:flutter_blog_app/common/providers/index.dart' as common_provider
 
 import 'package:flutter_blog_app/common/widgets/indicator_widget.dart';
 
-import 'package:flutter_blog_app/features/home/widgets/blog_widgets/blog_list_items_widget.dart';
-import 'package:flutter_blog_app/features/home/widgets/action_buttons_widget.dart';
-import 'package:flutter_blog_app/features/home/widgets/app_bar_widget.dart';
+import '../widgets/blog_widgets/blog_list_items_widget.dart';
+import '../widgets/action_buttons_widget.dart';
+import '../widgets/app_bar_widget.dart';
 
-import 'package:flutter_blog_app/features/home/controllers/home_controller.dart';
+import '../controllers/home_controller.dart';
 
 class HomeView extends ConsumerStatefulWidget {
 	const HomeView({super.key});

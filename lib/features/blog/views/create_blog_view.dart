@@ -10,11 +10,11 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 
-import 'package:flutter_blog_app/features/blog/widgets/bottom_bar_actions_widget.dart';
-import 'package:flutter_blog_app/features/blog/widgets/app_bars/general_blog_bar_widget.dart';
-
 import 'package:flutter_blog_app/features/home/controllers/home_controller.dart';
 import 'package:flutter_blog_app/features/blog/controllers/blog_add_controller.dart';
+
+import '../widgets/app_bars/general_blog_bar_widget.dart';
+import '../widgets/bottom_bar_actions_widget.dart';
 
 class CreateBlogView extends ConsumerStatefulWidget {
 	const CreateBlogView({super.key});

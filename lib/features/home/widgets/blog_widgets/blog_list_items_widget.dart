@@ -15,8 +15,8 @@ import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 
 import 'package:flutter_blog_app/common/widgets/blog_widgets/action_sheet_widget.dart';
 
-import 'package:flutter_blog_app/features/home/widgets/blog_widgets/blog_list_content_widget.dart';
-import 'package:flutter_blog_app/features/home/controllers/home_controller.dart';
+import '../../controllers/home_controller.dart';
+import '../blog_widgets/blog_list_content_widget.dart';
 
 class BlogList extends ConsumerWidget {
   	final ScrollController scrollController;
