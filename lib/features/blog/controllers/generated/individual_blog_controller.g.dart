@@ -13,7 +13,7 @@ part of '../individual_blog_controller.dart';
 const individualBlogProvider = IndividualBlogFamily._();
 
 final class IndividualBlogProvider
-    extends $AsyncNotifierProvider<IndividualBlog, BlogPost?> {
+    extends $AsyncNotifierProvider<IndividualBlog, models.BlogPost?> {
   const IndividualBlogProvider._({
     required IndividualBlogFamily super.from,
     required String super.argument,
@@ -56,9 +56,9 @@ final class IndividualBlogFamily extends $Family
     with
         $ClassFamilyOverride<
           IndividualBlog,
-          AsyncValue<BlogPost?>,
-          BlogPost?,
-          FutureOr<BlogPost?>,
+          AsyncValue<models.BlogPost?>,
+          models.BlogPost?,
+          FutureOr<models.BlogPost?>,
           String
         > {
   const IndividualBlogFamily._()
@@ -77,21 +77,21 @@ final class IndividualBlogFamily extends $Family
   String toString() => r'individualBlogProvider';
 }
 
-abstract class _$IndividualBlog extends $AsyncNotifier<BlogPost?> {
+abstract class _$IndividualBlog extends $AsyncNotifier<models.BlogPost?> {
   late final _$args = ref.$arg as String;
   String get id => _$args;
 
-  FutureOr<BlogPost?> build(String id);
+  FutureOr<models.BlogPost?> build(String id);
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build(_$args);
-    final ref = this.ref as $Ref<AsyncValue<BlogPost?>, BlogPost?>;
+    final ref = this.ref as $Ref<AsyncValue<models.BlogPost?>, models.BlogPost?>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<BlogPost?>, BlogPost?>,
-              AsyncValue<BlogPost?>,
+              AnyNotifier<AsyncValue<models.BlogPost?>, models.BlogPost?>,
+              AsyncValue<models.BlogPost?>,
               Object?,
               Object?
             >;

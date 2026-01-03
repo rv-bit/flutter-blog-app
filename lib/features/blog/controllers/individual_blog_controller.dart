@@ -1,8 +1,7 @@
 import 'package:logging/logging.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'package:flutter_blog_app/models/blog_posts.dart';
-
+import 'package:flutter_blog_app/models/index.dart' as models;
 import 'package:flutter_blog_app/common/repositories/index.dart' as common_repositories;
 
 part 'generated/individual_blog_controller.g.dart';
@@ -14,7 +13,7 @@ class IndividualBlog extends _$IndividualBlog {
 	common_repositories.BlogRepository get _repository => ref.read(common_repositories.blogRepositoryProvider);
 
 	@override
-	Future<BlogPost?> build(String id) async {
+	Future<models.BlogPost?> build(String id) async {
 		final blog = await _repository.fetchBlogById(id);
 		return blog;
 	}

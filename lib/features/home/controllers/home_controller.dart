@@ -2,16 +2,16 @@ import 'package:logging/logging.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:flutter_blog_app/models/blog_posts.dart';
+import 'package:flutter_blog_app/models/index.dart' as models;
 import 'package:flutter_blog_app/common/repositories/index.dart' as common_repositories;
 
 final log = Logger('HomeController');
 
-final homeViewProvider = AsyncNotifierProvider<HomeController, List<BlogPost>>(() {
+final homeViewProvider = AsyncNotifierProvider<HomeController, List<models.BlogPost>>(() {
 	return HomeController();
 });
 
-class HomeController extends AsyncNotifier<List<BlogPost>> {
+class HomeController extends AsyncNotifier<List<models.BlogPost>> {
 	common_repositories.BlogRepository get _repository => ref.read(common_repositories.blogRepositoryProvider);
 	
 	static const int _pageSize = 10;
@@ -20,7 +20,7 @@ class HomeController extends AsyncNotifier<List<BlogPost>> {
 	bool _isLoadingMore = false;
 
 	@override
-	Future<List<BlogPost>> build() async {
+	Future<List<models.BlogPost>> build() async {
 		_currentOffset = 0;
 		_hasMore = true;
 		

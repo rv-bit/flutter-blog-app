@@ -1,8 +1,7 @@
 import 'package:logging/logging.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'package:flutter_blog_app/models/blog_posts.dart';
-import 'package:flutter_blog_app/models/payloads/update_blog_post_payload.dart';
+import 'package:flutter_blog_app/models/index.dart' as models;
 
 import 'package:flutter_blog_app/common/repositories/index.dart' as common_repositories;
 
@@ -15,12 +14,12 @@ class EditBlog extends _$EditBlog {
 	common_repositories.BlogRepository get _repository => ref.read(common_repositories.blogRepositoryProvider);
 
 	@override
-	Future<BlogPost?> build(String id) async {
+	Future<models.BlogPost?> build(String id) async {
 		final blog = await _repository.fetchBlogById(id);
 		return blog;
 	}
 
-	Future<void> updateBlog(UpdateBlogPayload payload) async {
+	Future<void> updateBlog(models.UpdateBlogPayload payload) async {
 		state = const AsyncValue.loading();
 		state = await AsyncValue.guard(() async {
 			await _repository.updateBlog(payload);

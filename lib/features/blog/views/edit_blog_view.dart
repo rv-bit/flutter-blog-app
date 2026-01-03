@@ -6,13 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter/material.dart' hide AppBar;
 
-import 'package:carousel_slider/carousel_slider.dart';
-
 import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
+import 'package:flutter_blog_app/common/widgets/index.dart' as common_widgets;
 
-import 'package:flutter_blog_app/models/blog_posts.dart';
-import 'package:flutter_blog_app/models/payloads/update_blog_post_payload.dart';
+import 'package:flutter_blog_app/models/index.dart' as models;
 
 import 'package:flutter_blog_app/features/home/controllers/home_controller.dart';
 
@@ -88,7 +86,7 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 		if (isSubmitting) return;
 
 		await ref.read(editBlogProvider(widget.blogId).notifier).updateBlog(
-			UpdateBlogPayload(
+			models.UpdateBlogPayload(
 				blogId: blog.id,
 				title: titleTextController.text,
 				content: contentTextController.text,
@@ -106,27 +104,9 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 		onHandleCloseButton();
 	}
 
-	Widget _removeButton(VoidCallback onTap) {
-		return Positioned(
-			top: 8,
-			right: 8,
-			child: GestureDetector(
-			onTap: onTap,
-			child: Container(
-				decoration: BoxDecoration(
-					color: Colors.black.withValues(alpha: 0.6),
-					shape: BoxShape.circle,
-				),
-				padding: const EdgeInsets.all(6),
-				child: const Icon(Icons.close, size: 18, color: Colors.white),
-			),
-			),
-		);
-	}
-
 	@override
 	Widget build(BuildContext context) {
-		ref.listen<AsyncValue<BlogPost?>>(
+		ref.listen<AsyncValue<models.BlogPost?>>(
 			editBlogProvider(widget.blogId),
 			(previous, next) {
 				next.whenOrNull(
@@ -154,6 +134,47 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 		final isSubmitting = blogAsync.isLoading;
 
 		final allImagesCount = savedImageIds.length + localImages.length;
+
+		final carouselItems = [
+			// Existing images
+			...savedImageData.asMap().entries.map((entry) {
+				final index = entry.key;
+				final base64 = entry.value;
+
+				return common_widgets.imageTile(
+					image: Image.memory(
+						base64Decode(base64),
+						fit: BoxFit.cover,
+						gaplessPlayback: true,
+					),
+					overlay: _removeButtonOverlay(() {
+						setState(() {
+							savedImageData.removeAt(index);
+							savedImageIds.removeAt(index);
+						});
+					}),
+				);
+			}),
+
+			...localImages.asMap().entries.map((entry) {
+				final index = entry.key;
+				final file = entry.value;
+
+				return common_widgets.imageTile(
+					image: Image.file(
+						file,
+						fit: BoxFit.cover,
+						gaplessPlayback: true,
+					),
+					overlay: _removeButtonOverlay(() {
+						setState(() {
+							localImages.removeAt(index);
+						});
+					}),
+				);
+			}),
+		];
+
 
 		return Scaffold(
 			appBar: AppBar(
@@ -218,78 +239,11 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 								),
 							),
 							
-							if (allImagesCount > 0) 
-								CarouselSlider(
-									items: [
-										// Network images (existing)
-										...savedImageData.asMap().entries.map((entry) {
-											final index = entry.key;
-											final url = entry.value;
-
-											return Stack(
-												key: ValueKey('saved_$index'),
-												children: [
-													Container(
-														width: MediaQuery.of(context).size.width,
-														margin: const EdgeInsets.symmetric(
-															horizontal: 5,
-														),
-														child: ClipRRect(
-															borderRadius: BorderRadius.circular(8.0),
-															child: Image.memory(
-																base64Decode(url), 
-																fit: BoxFit.cover,
-																gaplessPlayback: true, // Prevents flicker
-															),
-														),
-													),
-													_removeButton(() {
-														setState(() {
-															savedImageData.removeAt(index);
-															savedImageIds.removeAt(index);
-														});
-													}),
-												],
-											);
-										}),
-
-										// Local images (new)
-										...localImages.asMap().entries.map((entry) {
-											final index = entry.key;
-											final file = entry.value;
-
-											return Stack(
-												key: ValueKey('local_$index'),
-												children: [
-													Container(
-														width: MediaQuery.of(context).size.width,
-														margin: const EdgeInsets.symmetric(
-															horizontal: 5,
-														),
-														child: ClipRRect(
-															borderRadius: BorderRadius.circular(8.0),
-															child: Image.file(
-																file,
-																fit: BoxFit.cover,
-																gaplessPlayback: true, // Prevents flicker
-															),
-														),
-													),
-													_removeButton(() {
-														setState(() {
-															localImages.removeAt(index);
-														});
-													}),
-												],
-											);
-										}),
-									],
-									options: CarouselOptions(
-										height: 400,
-										enableInfiniteScroll: false,
-									),
-								),
-								const SizedBox(height: 80),
+							if (allImagesCount > 0 && carouselItems.isNotEmpty)
+								Padding(
+									padding: const EdgeInsets.symmetric(horizontal: 10),
+									child: common_widgets.imageCarousel(context, carouselItems),
+								)
 						],
 					),
 				),
@@ -299,6 +253,24 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 				onPickImageFromCamera: onPickImageFromCamera, 
 				currentCharCount: _currentCharCount
 			)
+		);
+	}
+
+	Widget _removeButtonOverlay(VoidCallback onTap) {
+		return Positioned(
+			top: 8,
+			right: 8,
+			child: GestureDetector(
+				onTap: onTap,
+				child: Container(
+					decoration: BoxDecoration(
+						color: Colors.black.withValues(alpha: 0.6),
+						shape: BoxShape.circle,
+					),
+					padding: const EdgeInsets.all(6),
+					child: const Icon(Icons.close, size: 18, color: Colors.white),
+				),
+			),
 		);
 	}
 }

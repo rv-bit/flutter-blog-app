@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
 
-import 'package:flutter_blog_app/models/blog_posts.dart';
+import 'package:flutter_blog_app/models/index.dart' as models;
 
 import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
@@ -24,7 +24,7 @@ class BlogList extends ConsumerWidget {
 	final ValueListenable<Widget?>? headerNotifier;
 	
 	// data
-	final List<BlogPost> blogs;
+	final List<models.BlogPost> blogs;
 	
 	// styles
 	final double indicatorHeight;
@@ -154,7 +154,7 @@ class BlogList extends ConsumerWidget {
 class _BlogListItem extends StatefulWidget {
 	final int indexItem;
 
-	final BlogPost blog;
+	final models.BlogPost blog;
 	final bool hasImages;
 	final bool isSelectionMode;
 	final bool isSelected;

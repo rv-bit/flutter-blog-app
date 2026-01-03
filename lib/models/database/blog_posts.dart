@@ -1,4 +1,4 @@
-import 'package:flutter_blog_app/models/images.dart';
+import './images.dart';
 
 class BlogPost {
 	final String id;

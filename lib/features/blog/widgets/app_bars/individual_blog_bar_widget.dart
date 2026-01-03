@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:go_router/go_router.dart';
 
-import 'package:flutter_blog_app/models/blog_posts.dart';
+import 'package:flutter_blog_app/models/database/blog_posts.dart';
 
 import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 import 'package:flutter_blog_app/common/controllers/index.dart' as common_controllers;

@@ -6,8 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import 'package:logging/logging.dart';
 
-import 'package:flutter_blog_app/models/images.dart';
-import 'package:flutter_blog_app/models/blog_posts.dart';
+import 'package:flutter_blog_app/models/index.dart' as models;
 
 import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 import 'package:flutter_blog_app/common/repositories/index.dart' as common_repositories;
@@ -40,7 +39,7 @@ class CreateBlogController extends Notifier<AsyncValue<void>> {
 			final String blogId = const Uuid().v4();
       		final now = DateTime.now().toIso8601String();
 
-			final blog = BlogPost(
+			final blog = models.BlogPost(
 				id: blogId,
 				title: title,
 				content: content,
@@ -48,14 +47,14 @@ class CreateBlogController extends Notifier<AsyncValue<void>> {
 				createdAt: now,
 			);
 
-			final List<Images> images = [];
+			final List<models.Images> images = [];
 			if (imageFiles != null && imageFiles.isNotEmpty) {
 				for (final file in imageFiles) {
 					final compressedBytes = await common_utils.compressImage(file);
 					final base64Image = base64Encode(compressedBytes);
 
 					images.add(
-						Images(
+						models.Images(
 							id: const Uuid().v4(),
 							blogId: blogId,
 							image: base64Image, // Store as base64 string
