@@ -67,76 +67,94 @@ class AppBar extends ConsumerWidget implements m.PreferredSizeWidget {
 										),
 									),
 								),
-								child: m.AppBar(
-									titleSpacing: 0,
-									leadingWidth: 40,
-									backgroundColor: theme.Palette.backgroundColor,
-									leading: m.IconButton(
-										onPressed: () => onHandleCloseButton(context),
-										icon: const m.Icon(m.Icons.arrow_back, size: 25),
-									),
-									title: m.Row(
-										crossAxisAlignment: m.CrossAxisAlignment.center,
-										mainAxisAlignment: m.MainAxisAlignment.spaceBetween,
-										children: [
-											m.Align(
-												alignment: Alignment.center,
-												child: m.Text(
-													blog.title,
-													style: textStyle.copyWith(fontWeight: m.FontWeight.bold, fontSize: 15),
-													maxLines: null,
+								child: SafeArea(
+									left: false,
+  									right: false,
+									bottom: false,
+									child: Container(
+										decoration: BoxDecoration(
+											color: theme.Palette.backgroundColor.withValues(alpha: 0.8),
+											border: Border(
+												bottom: BorderSide(
+													color: theme.Palette.greyColor.withValues(alpha: 0.2),
 												),
 											),
-											m.Container(
-												alignment: m.Alignment.centerRight,
-												child: m.Opacity(
-													opacity: 1.0,
-													child: m.Builder(
-														builder: (buttonContext) => m.SizedBox(
-															width: 36,
-															height: 36,
-															child: BlogActionSheet.buildPopupMenuButton(
-																context: buttonContext,
-																actions: [
-																	ActionSheetItem(
-																		title: 'Edit',
-																		icon: m.Icons.edit_outlined,
-																		onTap: () {
-																			final router = GoRouter.of(context);
-																			router.pushNamed('edit', pathParameters: {
-																				'blogId': blog.id
-																			});
-																		},
-																	),
-																	ActionSheetItem(
-																		title: 'Delete',
-																		icon: m.Icons.restore_from_trash_sharp,
-																		isDestructive: true,
-																		onTap: () {
-																			BlogActionSheet.showConfirmationDialog(
-																				context: context,
-																				title: 'Delete Blog Post',
-																				text: 'Are you sure you want to delete this blog post? This action cannot be undone.',
-																				cancelTitle: 'Cancel',
-																				submitTitle: 'Delete',
-																				onSubmit: () async {
-																					await ref.read(homeViewProvider.notifier).deleteBlog(blog.id);
+										),
+										child: Row(
+											crossAxisAlignment: m.CrossAxisAlignment.center,
+											mainAxisAlignment: m.MainAxisAlignment.spaceBetween,
+											children: [
+												Align(
+													alignment: Alignment.centerLeft,
+													child: m.IconButton(
+														padding: EdgeInsets.only(right: 10),
+														icon: const Icon(m.Icons.arrow_back, size: 25),
+														onPressed: () => onHandleCloseButton(context),
+													),
+												),
+												Expanded(
+													child: Text(
+														blog.title,
+														style: textStyle.copyWith(
+															fontWeight: m.FontWeight.bold,
+															fontSize: 15,
+															height: 1.25,
+														),
+														softWrap: true,
+													),
+												),	
+												m.Container(
+													alignment: m.Alignment.centerRight,
+													padding: const m.EdgeInsets.symmetric(horizontal: 10),
+													child: m.Opacity(
+														opacity: 1.0,
+														child: m.Builder(
+															builder: (buttonContext) => m.SizedBox(
+																width: 36,
+																height: 36,
+																child: BlogActionSheet.buildPopupMenuButton(
+																	context: buttonContext,
+																	actions: [
+																		ActionSheetItem(
+																			title: 'Edit',
+																			icon: m.Icons.edit_outlined,
+																			onTap: () {
+																				final router = GoRouter.of(context);
+																				router.pushNamed('edit', pathParameters: {
+																					'blogId': blog.id
+																				});
+																			},
+																		),
+																		ActionSheetItem(
+																			title: 'Delete',
+																			icon: m.Icons.restore_from_trash_sharp,
+																			isDestructive: true,
+																			onTap: () {
+																				BlogActionSheet.showConfirmationDialog(
+																					context: context,
+																					title: 'Delete Blog Post',
+																					text: 'Are you sure you want to delete this blog post? This action cannot be undone.',
+																					cancelTitle: 'Cancel',
+																					submitTitle: 'Delete',
+																					onSubmit: () async {
+																						await ref.read(homeViewProvider.notifier).deleteBlog(blog.id);
 
-																					if (!context.mounted) return;
+																						if (!context.mounted) return;
 
-																					onHandleCloseButton(context);
-																				},
-																			);
-																		},
-																	),
-																],
+																						onHandleCloseButton(context);
+																					},
+																				);
+																			},
+																		),
+																	],
+																),
 															),
 														),
 													),
-												),
-											)
-										],
-									),
+												)
+											],
+										),
+									)
 								)
 							)
 						),

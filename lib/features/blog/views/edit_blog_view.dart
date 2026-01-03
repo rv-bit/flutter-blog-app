@@ -197,7 +197,7 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 					child: Column(
 						children: [
 							Padding(
-								padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+								padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
 								child: Row(
 									crossAxisAlignment: CrossAxisAlignment.start,
 									children: [
@@ -243,7 +243,7 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 							
 							if (allImagesCount > 0 && carouselItems.isNotEmpty)
 								Padding(
-									padding: const EdgeInsets.symmetric(horizontal: 10),
+									padding: const EdgeInsets.symmetric(horizontal: 5),
 									child: common_widgets.imageCarousel(context, carouselItems),
 								)
 						],

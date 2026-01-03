@@ -41,14 +41,11 @@ class AppBar extends m.StatelessWidget implements m.PreferredSizeWidget {
 
 		return m.AppBar(
 			titleSpacing: 0,
-			leadingWidth: 50,
+			leadingWidth: 45,
 			backgroundColor: theme.Palette.backgroundColor,
-			leading: m.Padding(
-				padding: const m.EdgeInsets.only(left: 5),
-				child: m.IconButton(
-					onPressed: onLeadingButton,
-					icon: const m.Icon(m.Icons.close, size: 25),
-				),
+			leading: m.IconButton(
+				onPressed: onLeadingButton,
+				icon: const m.Icon(m.Icons.close, size: 25),
 			),
 			title: m.Row(
 				crossAxisAlignment: m.CrossAxisAlignment.center,
@@ -77,7 +74,7 @@ class AppBar extends m.StatelessWidget implements m.PreferredSizeWidget {
 						onTap: onSubmit,
 						child: m.Container(
 							alignment: m.Alignment.centerRight,
-							padding: const m.EdgeInsets.only(right: 15),
+							padding: const m.EdgeInsets.symmetric(horizontal: 10),
 							child: m.Opacity(
 								opacity: opacity,
 								child: m.Container(

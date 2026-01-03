@@ -80,7 +80,6 @@ class AppBar extends StatelessWidget {
 			child: Stack(
 				alignment: Alignment.center,
 				children: [
-					// Center logo (true center)
 					Center(
 						child: SvgPicture.asset(
 							AssetsConstants.logoIcon,
@@ -88,7 +87,6 @@ class AppBar extends StatelessWidget {
 						),
 					),
 
-					// Left action
 					Align(
 						alignment: Alignment.centerLeft,
 						child: onEnterSelectionMode != null ? 
@@ -107,46 +105,45 @@ class AppBar extends StatelessWidget {
 	Widget _buildSelectionAppBar(BuildContext context) {
 		final allSelected = selectedCount == totalCount && totalCount > 0;
 
-		return Padding(
-			padding: const EdgeInsets.symmetric(horizontal: 8),
-			child: Row(
-				children: [
-					IconButton(
-						icon: const Icon(Icons.close, size: 24),
-						onPressed: onExitSelectionMode,
-						tooltip: 'Cancel',
-					),
-					const SizedBox(width: 8),
-					Expanded(
-						child: Text(
-							'$selectedCount selected',
-							style: const TextStyle(
-								fontSize: 16,
-								fontWeight: FontWeight.w600,
-							),
+		return  Row(
+			children: [
+				IconButton(
+					icon: const Icon(Icons.close, size: 24),
+					onPressed: onExitSelectionMode,
+					tooltip: 'Cancel',
+				),
+
+				Expanded(
+					child: Text(
+						'$selectedCount selected',
+						style: const TextStyle(
+							fontSize: 16,
+							fontWeight: FontWeight.w600,
 						),
 					),
-					if (totalCount > 0) ...[
-						IconButton(
-							icon: Icon(
-								allSelected ? Icons.deselect : Icons.select_all,
-								size: 22,
-							),
-							onPressed: allSelected ? onDeselectAll : onSelectAll,
-							tooltip: allSelected ? 'Deselect all' : 'Select all',
-						),
-					],
+				),
+
+				if (totalCount > 0) ...[
 					IconButton(
 						icon: Icon(
-							Icons.delete_outline,
+							allSelected ? Icons.deselect : Icons.select_all,
 							size: 22,
-							color: selectedCount > 0 ? Colors.red : Colors.grey,
 						),
-						onPressed: selectedCount > 0 ? onDelete : null,
-						tooltip: 'Delete',
+						onPressed: allSelected ? onDeselectAll : onSelectAll,
+						tooltip: allSelected ? 'Deselect all' : 'Select all',
 					),
 				],
-			),
+
+				IconButton(
+					icon: Icon(
+						Icons.delete_outline,
+						size: 22,
+						color: selectedCount > 0 ? Colors.red : Colors.grey,
+					),
+					onPressed: selectedCount > 0 ? onDelete : null,
+					tooltip: 'Delete',
+				),
+			],
 		);
 	}
 }

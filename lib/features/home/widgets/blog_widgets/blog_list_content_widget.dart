@@ -82,25 +82,25 @@ class _BlogListContentState extends State<BlogListContent> with TickerProviderSt
 			child: Row(
 				crossAxisAlignment: CrossAxisAlignment.start,
 				children: [
-					if (widget.isSelectionMode)
+					if (widget.isSelectionMode)	...[
 						SizedBox(
-						width: 40,
-						height: 40,
-						child: Checkbox(
-							value: widget.isSelected,
-							onChanged: (_) => widget.onSelectionToggle?.call(),
-							shape: RoundedRectangleBorder(
-								borderRadius: BorderRadius.circular(4),
+							width: 40,
+							height: 40,
+							child: Checkbox(
+								value: widget.isSelected,
+								onChanged: (_) => widget.onSelectionToggle?.call(),
+								shape: RoundedRectangleBorder(
+									borderRadius: BorderRadius.circular(4),
+								),
 							),
-						),
 						)
-					else
+					] else ...[
 						Padding(
 							padding: const EdgeInsets.only(top: 4),
 							child: widget.avatarWidget,
 						),
-
-					const SizedBox(width: 10),
+						const SizedBox(width: 10),
+					],
 
 					Expanded(
 						child: Column(
