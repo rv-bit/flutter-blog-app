@@ -10,7 +10,7 @@ import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 import 'package:flutter_blog_app/common/controllers/index.dart' as common_controllers;
 import 'package:flutter_blog_app/common/providers/index.dart' as common_providers;
 
-import 'package:flutter_blog_app/common/widgets/indicator_widget.dart';
+import 'package:flutter_blog_app/common/widgets/components/indicator_widget.dart';
 
 import '../widgets/blog_widgets/blog_list_items_widget.dart';
 import '../widgets/action_buttons_widget.dart';

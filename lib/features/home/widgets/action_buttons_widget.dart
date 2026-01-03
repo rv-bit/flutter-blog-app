@@ -8,7 +8,7 @@ import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 import 'package:flutter_blog_app/constants/assets_constants.dart';
 
 import 'package:flutter_blog_app/common/controllers/index.dart' as common_controllers;
-import 'package:flutter_blog_app/common/widgets/action_buttons_widget.dart' as common_widgets;
+import 'package:flutter_blog_app/common/widgets/navigation/action_buttons_widget.dart' as common_widgets;
 
 class AnimatedFAB extends StatelessWidget {
 	const AnimatedFAB({super.key});
