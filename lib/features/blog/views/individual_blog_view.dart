@@ -196,7 +196,7 @@ class _IndividualBlogViewState extends ConsumerState<IndividualBlogView> {
 						Padding(
 							padding: const EdgeInsets.only(top: 10, left: 5),
 							child: Text(
-								isEdited ? 'Last updated at $time' : time,
+								isEdited ? 'Last edited $time' : time,
 								style: const TextStyle(
 									fontSize: 13,
 									color: theme.Palette.greyColor,
