@@ -1,10 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart' hide AppBar;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:go_router/go_router.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 
 import 'package:flutter_blog_app/config/navigation_config.dart';
 import 'package:flutter_blog_app/config/theme/index.dart' as theme;
@@ -173,9 +170,9 @@ class _IndividualBlogViewState extends ConsumerState<IndividualBlogView> {
 								child: appDirAsync.when(
 									data: (_) {
 										if (imageCount == 1) {
-											return _singleImage(context, imageData!.first);
+											return common_widgets.singleImage(context, imageData!.first);
 										} else {
-											return _imageCarousel(context, imageData!);
+											return common_widgets.imageCarousel(context, imageData!);
 										}
 									},
 									loading: () => const Padding(
@@ -203,47 +200,4 @@ class _IndividualBlogViewState extends ConsumerState<IndividualBlogView> {
 			),
 		);
 	}
-
-	Widget _singleImage(BuildContext context, String base64) {
-		return ClipRRect(
-			borderRadius: BorderRadius.circular(12),
-			child: Image.memory(
-				base64Decode(base64),
-				width: double.infinity,
-				height: 300,
-				fit: BoxFit.cover,
-				gaplessPlayback: true,
-			),
-		);
-	}
-
-	Widget _imageCarousel(BuildContext context, List<String> images) {
-		final width = MediaQuery.of(context).size.width;
-
-		return CarouselSlider(
-			items: images.map((base64) {
-				return Container(
-					margin: const EdgeInsets.symmetric(horizontal: 5),
-					child: ClipRRect(
-						borderRadius: BorderRadius.circular(8.0),
-						child: AspectRatio(
-							aspectRatio: 1,
-							child: Image.memory(
-								base64Decode(base64),
-								fit: BoxFit.cover,
-								gaplessPlayback: true,
-							),
-						),
-					),
-				);
-			}).toList(),
-			options: CarouselOptions(
-				height: width * 0.8,
-				viewportFraction: 0.8,
-				enableInfiniteScroll: false,
-				padEnds: false,
-			),
-		);
-	}
-
 }
