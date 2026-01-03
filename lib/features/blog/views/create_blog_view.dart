@@ -5,16 +5,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter/material.dart' hide AppBar;
 
-import 'package:carousel_slider/carousel_slider.dart';
-
 import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
+import 'package:flutter_blog_app/common/widgets/index.dart' as common_widgets;
 
 import 'package:flutter_blog_app/features/home/controllers/home_controller.dart';
-import 'package:flutter_blog_app/features/blog/controllers/blog_add_controller.dart';
 
 import '../widgets/app_bars/general_blog_bar_widget.dart';
 import '../widgets/bottom_bar_actions_widget.dart';
+
+import '../controllers/blog_add_controller.dart';
 
 class CreateBlogView extends ConsumerStatefulWidget {
 	const CreateBlogView({super.key});
@@ -107,19 +107,18 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 					child: Column(
 						children: [
 							Padding(
-								padding: const EdgeInsets.only(left: 15, right: 20),
+								padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
 								child: Row(
 									crossAxisAlignment: CrossAxisAlignment.start,
 									children: [
 										Padding(
-											padding: const EdgeInsets.only(top: 9),
+											padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
 											child: CircleAvatar(
 												backgroundColor: theme.Palette.blueColor,
 												radius: 15,
 											),
 										),
 
-										const SizedBox(width: 8),
 										Expanded(
 											child: TextField(
 												controller: contentTextController,
@@ -153,56 +152,30 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 							),
 
 							if (images.isNotEmpty) 
-								CarouselSlider(
-									items: images.asMap().entries.map((entry) {
-										final index = entry.key;
-										final file = entry.value;
+								Padding(
+									padding: const EdgeInsets.symmetric(horizontal: 10),
+									child: common_widgets.imageCarousel(
+										context,
+										images.asMap().entries.map((entry) {
+											final index = entry.key;
+											final file = entry.value; 
 
-										return Stack(
-											children: [
-												Container(
-													width: MediaQuery.of(context).size.width,
-													margin: const EdgeInsets.symmetric(
-														horizontal: 5,
-													),
-													child: ClipRRect(
-														borderRadius: BorderRadius.circular(8.0),
-														child: Image.file(file, fit: BoxFit.cover),
-													),
+											return common_widgets.imageTile(
+												image: Image.file(
+													file,
+													height: 400,
+													fit: BoxFit.cover,
+													gaplessPlayback: true,
 												),
-
-												Positioned(
-													top: 8,
-													right: 8,
-													child: GestureDetector(
-														onTap: () {
-															setState(() {
-																images.removeAt(index);
-															});
-														},
-														child: Container(
-															decoration: BoxDecoration(
-																color: Colors.black.withValues(alpha: 0.6),
-																shape: BoxShape.circle,
-															),
-															padding: const EdgeInsets.all(6),
-															child: const Icon(
-																Icons.close,
-																size: 18,
-																color: Colors.white,
-															),
-														),
-													),
-												),
-											],
-										);
-									}).toList(),
-									options: CarouselOptions(
-										height: 400,
-										enableInfiniteScroll: false,
+												overlay: _removeButtonOverlay(() {
+													setState(() {
+														images.removeAt(index);
+													});
+												}),
+											);
+										}).toList(),
 									),
-								),
-								const SizedBox(height: 80),
+								)
 						],
 					),
 				),
@@ -212,6 +185,24 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 				onPickImageFromCamera: onPickImageFromCamera, 
 				currentCharCount: _currentCharCount
 			)
+		);
+	}
+
+	Widget _removeButtonOverlay(VoidCallback onTap) {
+		return Positioned(
+			top: 8,
+			right: 8,
+			child: GestureDetector(
+				onTap: onTap,
+				child: Container(
+					decoration: BoxDecoration(
+						color: Colors.black.withValues(alpha: 0.6),
+						shape: BoxShape.circle,
+					),
+					padding: const EdgeInsets.all(6),
+					child: const Icon(Icons.close, size: 18, color: Colors.white),
+				),
+			),
 		);
 	}
 }

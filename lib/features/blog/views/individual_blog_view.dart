@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart' hide AppBar;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -11,7 +13,7 @@ import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 import 'package:flutter_blog_app/common/controllers/index.dart' as common_controllers;
 import 'package:flutter_blog_app/common/widgets/index.dart' as common_widgets;
 
-import 'package:flutter_blog_app/models/blog_posts.dart';
+import 'package:flutter_blog_app/models/index.dart' as models;
 
 import '../widgets/blog_widgets/blog_content_widget.dart';
 import '../widgets/app_bars/individual_blog_bar_widget.dart';
@@ -61,7 +63,7 @@ class _IndividualBlogViewState extends ConsumerState<IndividualBlogView> {
 		final activeTabIndex = ref.watch(common_controllers.navigationControllerProvider);
 		final appDirAsync = ref.watch(common_providers.appDirectoryProvider);
 
-		ref.listen<AsyncValue<BlogPost?>>(
+		ref.listen<AsyncValue<models.BlogPost?>>(
 			individualBlogProvider(widget.blogId),
 			(previous, next) {
 				next.whenOrNull(
@@ -130,10 +132,9 @@ class _IndividualBlogViewState extends ConsumerState<IndividualBlogView> {
 		);
 	}
 
-	Widget _blogContent(BuildContext context, BlogPost blog, AsyncValue appDirAsync) {
+	Widget _blogContent(BuildContext context, models.BlogPost blog, AsyncValue appDirAsync) {
 		final hasImages = blog.images != null && blog.images!.isNotEmpty;
 		final imageData = hasImages ? blog.imageData : null;
-		final imageCount = blog.imageData?.length ?? 0;
 
 		final isEdited = blog.updatedAt != null && blog.updatedAt!.isNotEmpty;
 		final time = isEdited ? common_utils.formatDate(blog.updatedAt!, showBoth: true) : common_utils.formatDate(blog.createdAt, showBoth: true);
@@ -169,11 +170,19 @@ class _IndividualBlogViewState extends ConsumerState<IndividualBlogView> {
 								padding: const EdgeInsets.only(top: 10),
 								child: appDirAsync.when(
 									data: (_) {
-										if (imageCount == 1) {
-											return common_widgets.singleImage(context, imageData!.first);
-										} else {
-											return common_widgets.imageCarousel(context, imageData!);
-										}
+										return common_widgets.imageCarousel(
+											context,
+											imageData!.map((base64) {
+												return common_widgets.imageTile(
+													image: Image.memory(
+														base64Decode(base64),
+														height: 400,
+														fit: BoxFit.cover,
+														gaplessPlayback: true,
+													),
+												);
+											}).toList(),
+										);
 									},
 									loading: () => const Padding(
 										padding: EdgeInsets.symmetric(vertical: 16),

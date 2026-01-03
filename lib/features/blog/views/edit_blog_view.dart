@@ -144,6 +144,7 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 				return common_widgets.imageTile(
 					image: Image.memory(
 						base64Decode(base64),
+						height: 400,
 						fit: BoxFit.cover,
 						gaplessPlayback: true,
 					),
@@ -163,6 +164,7 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 				return common_widgets.imageTile(
 					image: Image.file(
 						file,
+						height: 400,
 						fit: BoxFit.cover,
 						gaplessPlayback: true,
 					),

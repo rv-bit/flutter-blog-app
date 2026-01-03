@@ -1,44 +1,39 @@
-import 'dart:convert';
-
 import 'package:flutter/widgets.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
 
-Widget singleImage(BuildContext context, String base64) {
-	return ClipRRect(
-		borderRadius: BorderRadius.circular(12),
-		child: Image.memory(
-			base64Decode(base64),
-			width: double.infinity,
-			height: 300,
-			fit: BoxFit.cover,
-			gaplessPlayback: true,
-		),
+Widget imageTile({
+	required Widget image,
+	Widget? overlay,
+	BorderRadius borderRadius = const BorderRadius.all(Radius.circular(8)),
+}) {
+	return Stack(
+		children: [
+			ClipRRect(
+				borderRadius: borderRadius,
+				child: image,
+			),
+			if (overlay != null) overlay,
+		],
 	);
 }
 
-Widget imageCarousel(BuildContext context, List<String> images) {
+Widget imageCarousel(BuildContext context, List<Widget> items) {
 	final width = MediaQuery.of(context).size.width;
 
 	return CarouselSlider(
-		items: images.map((base64) {
+   		items: items.map((child) {
 			return Container(
+				width: width,
 				margin: const EdgeInsets.symmetric(horizontal: 5),
-				child: ClipRRect(
-					borderRadius: BorderRadius.circular(8.0),
-					child: AspectRatio(
-						aspectRatio: 1,
-						child: Image.memory(
-							base64Decode(base64),
-							fit: BoxFit.cover,
-							gaplessPlayback: true,
-						),
-					),
-				),
+					// child: AspectRatio(
+					// 	aspectRatio: 16.0/9.0,
+						child: child
+					// ),
 			);
 		}).toList(),
 		options: CarouselOptions(
-			height: width * 0.8,
+			height: 400,
 			viewportFraction: 0.8,
 			enableInfiniteScroll: false,
 			padEnds: false,
