@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+// import 'package:flutter/rendering.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:logging/logging.dart';
@@ -12,6 +14,8 @@ import 'app/app.dart';
 
 void main() async {
 	WidgetsFlutterBinding.ensureInitialized();
+
+	// debugPaintSizeEnabled = true;
   
 	// Set up logging
 	Logger.root.level = Level.ALL;
