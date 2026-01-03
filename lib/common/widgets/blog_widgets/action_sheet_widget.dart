@@ -54,6 +54,7 @@ class BlogActionSheet {
 	static Widget buildPopupMenuButton({
 		required BuildContext context,
 		required List<ActionSheetItem> actions,
+		Color? iconColor = theme.Palette.whiteColor,
 		IconData? buttonIcon,
 		double size = 36,
 		CNButtonStyle? buttonStyle,
@@ -68,22 +69,22 @@ class BlogActionSheet {
 						menuItems.add(const CNPopupMenuDivider());
 					}
 					
+					final itemIconColor = action.isDestructive 
+						? CupertinoColors.systemRed 
+						: action.iconColor;
+
 					menuItems.add(
 						CNPopupMenuItem(
 							label: action.title,
 							icon: action.icon != null 
 								? CNSymbol(
-										_getSymbolName(action.icon!),
-										size: 18,
-										color: action.isDestructive 
-											? CupertinoColors.systemRed 
-											: action.iconColor,
-									)
-								: null,
+									_getSymbolName(action.icon!),
+									size: 18,
+									color: itemIconColor,
+								)
+							: null,
 							customIcon: action.icon,
-							iconColor: action.isDestructive 
-								? CupertinoColors.systemRed 
-								: action.iconColor,
+							iconColor: itemIconColor,
 							enabled: true,
 						),
 					);
@@ -93,6 +94,7 @@ class BlogActionSheet {
 					buttonIcon: CNSymbol(
 						_getSymbolName(buttonIcon ?? Icons.more_horiz),
 						size: 20,
+						color: iconColor 
 					),
 					buttonCustomIcon: buttonIcon ?? Icons.more_horiz,
 					size: size,
