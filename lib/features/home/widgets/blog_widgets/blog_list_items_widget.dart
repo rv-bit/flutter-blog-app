@@ -112,8 +112,8 @@ class BlogList extends ConsumerWidget {
 					isSelectionMode: isSelectionMode,
 					isSelected: selectedBlogIds.contains(blog.id),
 					onSelectionToggle: () => onBlogSelectionToggle?.call(blog.id),
-					onActionPressed: (ctx) => BlogActionSheet.showActionSheet(
-						context: context, 
+					onActionPressedWidget: (ctx) => BlogActionSheet.buildPopupMenuButton(
+						context: ctx, 
 						actions: [
 							ActionSheetItem(
 								title: 'Edit',
@@ -152,6 +152,16 @@ class BlogList extends ConsumerWidget {
 }
 
 class _BlogListItem extends StatefulWidget {
+	final int indexItem;
+
+	final BlogPost blog;
+	final bool hasImages;
+	final bool isSelectionMode;
+	final bool isSelected;
+	final VoidCallback onSelectionToggle;
+	final Widget Function(BuildContext context)? onActionPressedWidget;
+	final AsyncValue<dynamic> appDirAsync;
+
 	const _BlogListItem({
 		required this.indexItem,
 
@@ -160,19 +170,9 @@ class _BlogListItem extends StatefulWidget {
 		required this.isSelectionMode,
 		required this.isSelected,
 		required this.onSelectionToggle,
-		required this.onActionPressed,
+		required this.onActionPressedWidget,
 		required this.appDirAsync,
 	});
-
-	final int indexItem;
-
-	final BlogPost blog;
-	final bool hasImages;
-	final bool isSelectionMode;
-	final bool isSelected;
-	final VoidCallback onSelectionToggle;
-	final ValueChanged<BuildContext> onActionPressed;
-	final AsyncValue<dynamic> appDirAsync;
 
 	@override
 	State<_BlogListItem> createState() => _BlogListItemState();
@@ -256,7 +256,7 @@ class _BlogListItemState extends State<_BlogListItem> {
 										isSelectionMode: widget.isSelectionMode,
 										isSelected: widget.isSelected,
 										onSelectionToggle: widget.onSelectionToggle,
-										onActionPressed: (ctx) => widget.onActionPressed(ctx),
+										onActionPressedWidget: widget.onActionPressedWidget,
 									),
 
 									const SizedBox(height: 5),

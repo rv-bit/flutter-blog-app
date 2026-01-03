@@ -12,7 +12,7 @@ class BlogListContent extends StatefulWidget {
 
 	final int collapsedMaxLines;	
 
-	final Function(BuildContext)? onActionPressed;
+	final Widget Function(BuildContext context)? onActionPressedWidget;
 
 	final bool isSelectionMode;
 	final bool isSelected;
@@ -27,7 +27,7 @@ class BlogListContent extends StatefulWidget {
 		required this.username,
 		required this.time,
 
-		this.onActionPressed,
+		this.onActionPressedWidget,
 		this.isSelectionMode = false,
 		this.isSelected = false,
 		this.onSelectionToggle,
@@ -78,26 +78,26 @@ class _BlogListContentState extends State<BlogListContent> with TickerProviderSt
 		final textStyle = DefaultTextStyle.of(context).style;
 
 		return Padding(
-			padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+			padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
 			child: Row(
 				crossAxisAlignment: CrossAxisAlignment.start,
 				children: [
 					if (widget.isSelectionMode)
 						SizedBox(
-							width: 40,
-							height: 40,
-							child: Checkbox(
-								value: widget.isSelected,
-								onChanged: (_) => widget.onSelectionToggle?.call(),
-								shape: RoundedRectangleBorder(
-									borderRadius: BorderRadius.circular(4),
-								),
+						width: 40,
+						height: 40,
+						child: Checkbox(
+							value: widget.isSelected,
+							onChanged: (_) => widget.onSelectionToggle?.call(),
+							shape: RoundedRectangleBorder(
+								borderRadius: BorderRadius.circular(4),
 							),
+						),
 						)
 					else
 						Padding(
-							padding: const EdgeInsets.only(top: 5), 
-							child: widget.avatarWidget
+							padding: const EdgeInsets.only(top: 4),
+							child: widget.avatarWidget,
 						),
 
 					const SizedBox(width: 10),
@@ -105,13 +105,11 @@ class _BlogListContentState extends State<BlogListContent> with TickerProviderSt
 					Expanded(
 						child: Column(
 							crossAxisAlignment: CrossAxisAlignment.start,
-							mainAxisSize: MainAxisSize.min, // to shrink-wrap content
 							children: [
-								Row(
-									crossAxisAlignment: CrossAxisAlignment.center,
-									mainAxisAlignment: MainAxisAlignment.spaceBetween,
+								Stack(
 									children: [
-										Expanded(
+										Padding(
+											padding: const EdgeInsets.only(right: 40),
 											child: Row(
 												children: [
 													Flexible(
@@ -119,59 +117,61 @@ class _BlogListContentState extends State<BlogListContent> with TickerProviderSt
 															widget.username,
 															maxLines: 1,
 															overflow: TextOverflow.ellipsis,
-															style: textStyle.copyWith(fontWeight: FontWeight.bold),
+															style: textStyle.copyWith(
+																fontWeight: FontWeight.bold,
+															),
 														),
 													),
-													Padding(
-														padding: const EdgeInsets.only(left: 5),
-														child: Text(
-															widget.time,
-															style: textStyle.copyWith(fontSize: 12, color: Colors.grey[600]),
+													const SizedBox(width: 6),
+													Text(
+														widget.time,
+														style: textStyle.copyWith(
+															fontSize: 12,
+															color: Colors.grey[600],
 														),
-													)
+													),
 												],
 											),
 										),
 
-										// Right: menu icon
-										if (!widget.isSelectionMode && widget.onActionPressed != null)
-											GestureDetector(
-												onTap: () => widget.onActionPressed!(context),
-												child: Padding(
-													padding: const EdgeInsets.symmetric(horizontal: 5),
-													child: Icon(
-														Icons.more_horiz,
-														size: 20,
-														color: Colors.grey[600],
+										if (!widget.isSelectionMode && widget.onActionPressedWidget != null)
+											Positioned(
+												top: -6,
+												right: -6,
+												child: SizedBox(
+													width: 36,
+													height: 36,
+													child: Builder(
+														builder: (ctx) => widget.onActionPressedWidget!(ctx),
 													),
-												) 
+												),
 											),
 									],
 								),
 
 								GestureDetector(
-									onTap: widget.isSelectionMode 
-										? _handleTap 
-										: (_showMoreNeeded ? () => setState(() => _expanded = !_expanded) : null),
-									child: SizedBox(
-										child: Text(
-											widget.content,
-											maxLines: _expanded ? null : widget.collapsedMaxLines,
-											softWrap: true,
-											overflow: _expanded ? TextOverflow.visible : TextOverflow.ellipsis,
-										),
+									onTap: widget.isSelectionMode ? _handleTap : (_showMoreNeeded ? () => setState(() => _expanded = !_expanded) : null),
+									child: Text(
+										widget.content,
+										maxLines: _expanded ? null : widget.collapsedMaxLines,
+										softWrap: true,
+										overflow: _expanded ? TextOverflow.visible : TextOverflow.ellipsis,
 									),
 								),
 
+								/// SHOW MORE / LESS
 								if (_showMoreNeeded && !widget.isSelectionMode)
 									GestureDetector(
 										onTap: () => setState(() => _expanded = !_expanded),
-										child: Text(
-											_expanded ? 'Show less' : 'Show More',
-											style: textStyle.copyWith(
-												fontSize: 11,
-												fontWeight: FontWeight.w500,
-												color: theme.Palette.blueColor.withAlpha(180),
+										child: Padding(
+											padding: const EdgeInsets.only(top: 2),
+											child: Text(
+												_expanded ? 'Show less' : 'Show more',
+												style: textStyle.copyWith(
+													fontSize: 11,
+													fontWeight: FontWeight.w500,
+													color: theme.Palette.blueColor.withAlpha(180),
+												),
 											),
 										),
 									),

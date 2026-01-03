@@ -69,14 +69,11 @@ class AppBar extends ConsumerWidget implements m.PreferredSizeWidget {
 								),
 								child: m.AppBar(
 									titleSpacing: 0,
-									leadingWidth: 50,
+									leadingWidth: 40,
 									backgroundColor: theme.Palette.backgroundColor,
-									leading: m.Padding(
-										padding: const m.EdgeInsets.only(left: 5),
-										child: m.IconButton(
-											onPressed: () => onHandleCloseButton(context),
-											icon: const m.Icon(m.Icons.arrow_back, size: 25),
-										),
+									leading: m.IconButton(
+										onPressed: () => onHandleCloseButton(context),
+										icon: const m.Icon(m.Icons.arrow_back, size: 25),
 									),
 									title: m.Row(
 										crossAxisAlignment: m.CrossAxisAlignment.center,
@@ -94,12 +91,12 @@ class AppBar extends ConsumerWidget implements m.PreferredSizeWidget {
 												alignment: m.Alignment.centerRight,
 												child: m.Opacity(
 													opacity: 1.0,
-													child: m.SizedBox(
-														width: 36,
-														height: 36,
-														child: m.InkWell(
-															onTap: () => BlogActionSheet.showActionSheet(
-																context: context, 
+													child: m.Builder(
+														builder: (buttonContext) => m.SizedBox(
+															width: 36,
+															height: 36,
+															child: BlogActionSheet.buildPopupMenuButton(
+																context: buttonContext,
 																actions: [
 																	ActionSheetItem(
 																		title: 'Edit',
@@ -132,18 +129,12 @@ class AppBar extends ConsumerWidget implements m.PreferredSizeWidget {
 																			);
 																		},
 																	),
-																]
-															),
-															borderRadius: m.BorderRadius.circular(20),
-															child: m.Icon(
-																m.Icons.more_horiz,
-																size: 20,
-																color: m.Colors.grey[600],
+																],
 															),
 														),
-													)
+													),
 												),
-											),
+											)
 										],
 									),
 								)
