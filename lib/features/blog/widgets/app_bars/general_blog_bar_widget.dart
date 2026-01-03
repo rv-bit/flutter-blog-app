@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' as m;
+import 'package:flutter/rendering.dart';
 
 import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 
@@ -31,6 +32,13 @@ class AppBar extends m.StatelessWidget implements m.PreferredSizeWidget {
 
 	@override
 	m.Widget build(m.BuildContext context) {
+		final textStyle = m.DefaultTextStyle.of(context).style;
+
+		final styleTitle = textStyle.copyWith(
+			fontSize: 15,
+			fontWeight: FontWeight.bold
+		);
+
 		return m.AppBar(
 			titleSpacing: 0,
 			leadingWidth: 50,
@@ -51,17 +59,13 @@ class AppBar extends m.StatelessWidget implements m.PreferredSizeWidget {
 							controller: controller,
 							onChanged: onControllerChanged,
 							maxLength: 30,
-							style: const m.TextStyle(
-								fontSize: 13,
-							),
+							style: styleTitle,
 							textAlignVertical: m.TextAlignVertical.top,
-							decoration: const m.InputDecoration(
+							decoration: m.InputDecoration(
 								counterText: "", // hides the auto maxLength from TextField
 								hintText: "Title",
-								hintStyle: m.TextStyle(
+								hintStyle: styleTitle.copyWith(
 									color: theme.Palette.greyColor,
-									fontSize: 13,
-									fontWeight: m.FontWeight.w500,
 								),
 								border: m.InputBorder.none,
 								isDense: false,

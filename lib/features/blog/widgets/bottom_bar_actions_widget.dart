@@ -6,7 +6,7 @@ import 'package:flutter_blog_app/constants/assets_constants.dart';
 
 import '../widgets/character_indicator_widget.dart';
 
-const int maxCharacters = 100;
+const int maxCharacters = 1000;
 
 class BottomBarActions extends StatelessWidget {
 	final VoidCallback onPickImages;

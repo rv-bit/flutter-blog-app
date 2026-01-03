@@ -174,19 +174,18 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 					child: Column(
 						children: [
 							Padding(
-								padding: const EdgeInsets.only(left: 20, right: 20, top: 5),
+								padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
 								child: Row(
 									crossAxisAlignment: CrossAxisAlignment.start,
 									children: [
 										Padding(
-											padding: const EdgeInsets.only(top: 9),
+											padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 10),
 											child: CircleAvatar(
 												backgroundColor: theme.Palette.blueColor,
 												radius: 15,
 											),
 										),
 
-										const SizedBox(width: 8),
 										Expanded(
 											child: TextField(
 												controller: contentTextController,

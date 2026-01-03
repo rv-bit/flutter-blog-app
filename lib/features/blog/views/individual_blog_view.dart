@@ -134,8 +134,6 @@ class _IndividualBlogViewState extends ConsumerState<IndividualBlogView> {
 	}
 
 	Widget _blogContent(BuildContext context, BlogPost blog, AsyncValue appDirAsync) {
-		final textStyle = theme.AppTheme.theme.textTheme.bodyMedium!;
-
 		final hasImages = blog.images != null && blog.images!.isNotEmpty;
 		final imageData = hasImages ? blog.imageData : null;
 		final imageCount = blog.imageData?.length ?? 0;
@@ -152,7 +150,7 @@ class _IndividualBlogViewState extends ConsumerState<IndividualBlogView> {
 			padding: const EdgeInsets.only(bottom: 20),
 			child: Padding(
 				padding: const EdgeInsets.only(
-					left: 15,
+					left: 0,
 					right: 10,
 					top: 60,
 				),
@@ -190,20 +188,19 @@ class _IndividualBlogViewState extends ConsumerState<IndividualBlogView> {
 						],
 
 						Padding(
-							padding: const EdgeInsets.only(top: 10),
+							padding: const EdgeInsets.only(top: 10, left: 5),
 							child: Text(
-								time,
-								style: textStyle.copyWith(
-									fontSize: 12,
-									color: Colors.grey[600],
-									fontWeight: FontWeight.bold,
-									decoration: TextDecoration.none,
+								isEdited ? 'Last updated at $time' : time,
+								style: const TextStyle(
+									fontSize: 13,
+									color: theme.Palette.greyColor,
+									fontWeight: FontWeight.bold
 								),
 							),
 						)
 					],
 				),
-				),
+			),
 		);
 	}
 
