@@ -61,11 +61,7 @@ final appRouter = GoRouter(
 				...shell_navigations.ShellRoutes.values.map((tab) => GoRoute(
 					name: tab.name,
 					path: tab.path,
-					pageBuilder: (context, state) => buildPageWithDefaultTransition<void>(
-						context: context,
-						state: state,
-						child: tab.builder(),
-					),
+					builder: (context, state) => tab.builder(),	
 				)),
 			],
 		),
@@ -73,11 +69,7 @@ final appRouter = GoRouter(
 		GoRoute(
 			name: 'create',
 			path: '/create',
-			pageBuilder: (context, state) => buildPageWithDefaultTransition<void>(
-				context: context,
-				state: state,
-				child: CreateBlogView(),
-			)
+			builder: (context, state) => CreateBlogView(),
 		),
 
 		GoRoute(
@@ -101,11 +93,7 @@ final appRouter = GoRouter(
 
 				return null;
 			},
-			pageBuilder: (context, state) => buildPageWithDefaultTransition<void>(
-				context: context,
-				state: state,
-				child: EditBlogView(blogId: state.pathParameters['blogId']!),
-			),
+			builder: (context, state) => EditBlogView(blogId: state.pathParameters['blogId']!),
 		),
 
 		GoRoute(
