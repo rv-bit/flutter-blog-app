@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../search_controller.dart';
+part of 'search_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -8,14 +8,11 @@ part of '../search_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Holds the current search query (AppBar TextField will update this)
 
 @ProviderFor(SearchQuery)
 const searchQueryProvider = SearchQueryProvider._();
 
-/// Holds the current search query (AppBar TextField will update this)
 final class SearchQueryProvider extends $NotifierProvider<SearchQuery, String> {
-  /// Holds the current search query (AppBar TextField will update this)
   const SearchQueryProvider._()
     : super(
         from: null,
@@ -45,8 +42,6 @@ final class SearchQueryProvider extends $NotifierProvider<SearchQuery, String> {
 
 String _$searchQueryHash() => r'8fb1b07f8448e1c1f11ce831b6ea5fc011af6869';
 
-/// Holds the current search query (AppBar TextField will update this)
-
 abstract class _$SearchQuery extends $Notifier<String> {
   String build();
   @$mustCallSuper
@@ -66,15 +61,11 @@ abstract class _$SearchQuery extends $Notifier<String> {
   }
 }
 
-/// Search results provider (query-driven)
-
 @ProviderFor(SearchResults)
 const searchResultsProvider = SearchResultsFamily._();
 
-/// Search results provider (query-driven)
 final class SearchResultsProvider
     extends $AsyncNotifierProvider<SearchResults, List<models.BlogPost>> {
-  /// Search results provider (query-driven)
   const SearchResultsProvider._({
     required SearchResultsFamily super.from,
     required String super.argument,
@@ -111,9 +102,7 @@ final class SearchResultsProvider
   }
 }
 
-String _$searchResultsHash() => r'bda8f81a3bee81c34aa2b6fd2abb4464738cf1d2';
-
-/// Search results provider (query-driven)
+String _$searchResultsHash() => r'93e0924326251efe632d812a4ac0135222dd19f6';
 
 final class SearchResultsFamily extends $Family
     with
@@ -133,16 +122,12 @@ final class SearchResultsFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Search results provider (query-driven)
-
   SearchResultsProvider call(String query) =>
       SearchResultsProvider._(argument: query, from: this);
 
   @override
   String toString() => r'searchResultsProvider';
 }
-
-/// Search results provider (query-driven)
 
 abstract class _$SearchResults extends $AsyncNotifier<List<models.BlogPost>> {
   late final _$args = ref.$arg as String;

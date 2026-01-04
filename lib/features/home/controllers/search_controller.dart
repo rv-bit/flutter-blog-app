@@ -5,7 +5,7 @@ import 'package:flutter_blog_app/models/index.dart' as models;
 import 'package:flutter_blog_app/common/repositories/index.dart' as common_repositories;
 import 'package:flutter_blog_app/common/widgets/index.dart' as common_widgets;
 
-part 'generated/search_controller.g.dart';
+part 'search_controller.g.dart';
 
 final log = Logger('SearchController');
 

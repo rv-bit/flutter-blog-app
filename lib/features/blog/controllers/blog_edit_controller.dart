@@ -5,7 +5,7 @@ import 'package:flutter_blog_app/models/index.dart' as models;
 
 import 'package:flutter_blog_app/common/repositories/index.dart' as common_repositories;
 
-part 'generated/blog_edit_controller.g.dart';
+part 'blog_edit_controller.g.dart';
 
 final log = Logger('EditBlogController');
 
