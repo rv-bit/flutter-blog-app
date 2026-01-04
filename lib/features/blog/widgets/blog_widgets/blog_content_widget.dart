@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BlogListContent extends StatefulWidget {
 	final Widget avatarWidget;
-	final AsyncValue<dynamic> appDirAsync;
 
 	final String content;
 	final String username;
@@ -12,7 +10,6 @@ class BlogListContent extends StatefulWidget {
 	const BlogListContent({
 		super.key,
 		
-		required this.appDirAsync,
 		required this.avatarWidget,
 
 		required this.content,

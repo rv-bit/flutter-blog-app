@@ -20,7 +20,6 @@ import '../blog_widgets/blog_list_content_widget.dart';
 
 class BlogList extends ConsumerWidget {
   	final ScrollController scrollController;
-	final AsyncValue<dynamic> appDirAsync;
 	final ValueListenable<Widget?>? headerNotifier;
 	
 	// data
@@ -40,7 +39,6 @@ class BlogList extends ConsumerWidget {
 
 		required this.scrollController,
 		required this.blogs,
-		required this.appDirAsync,
 		required this.indicatorHeight,
 		
 		this.isSelectionMode = false,
@@ -144,7 +142,6 @@ class BlogList extends ConsumerWidget {
 							),
 						]
 					),
-					appDirAsync: appDirAsync,
 				);
 			},
 		);
@@ -160,7 +157,6 @@ class _BlogListItem extends StatefulWidget {
 	final bool isSelected;
 	final VoidCallback onSelectionToggle;
 	final Widget Function(BuildContext context)? onActionPressedWidget;
-	final AsyncValue<dynamic> appDirAsync;
 
 	const _BlogListItem({
 		required this.indexItem,
@@ -171,7 +167,6 @@ class _BlogListItem extends StatefulWidget {
 		required this.isSelected,
 		required this.onSelectionToggle,
 		required this.onActionPressedWidget,
-		required this.appDirAsync,
 	});
 
 	@override
@@ -262,35 +257,27 @@ class _BlogListItemState extends State<_BlogListItem> {
 									const SizedBox(height: 5),
 
 									if (widget.hasImages)
-										widget.appDirAsync.when(data: (dir) {
-											return CarouselSlider(
-												items: imageData!.map((base64String) {
-													return Container(
-														width: MediaQuery.of(context).size.width,
-														margin: const EdgeInsets.symmetric(horizontal: 5),
-														child: ClipRRect(
-															borderRadius: BorderRadius.circular(8.0),
-															child: Image.memory(
-																base64Decode(base64String), 
-																fit: BoxFit.cover,
-																gaplessPlayback: true, // prevents flicker when change of state
-															),
-														)
-													);
-												}).toList(),
-												options: CarouselOptions(
-													height: 400,
-													enableInfiniteScroll: false,
-													scrollPhysics: const PageScrollPhysics(),
-												),
-											);
-										},
-										loading: () => const Padding(
-										padding: EdgeInsets.symmetric(vertical: 16.0),
-											child: Center(child: CircularProgressIndicator()),
-										),
-										error: (_, _) => const Icon(Icons.error)
-									),
+										CarouselSlider(
+											items: imageData!.map((base64String) {
+												return Container(
+													width: MediaQuery.of(context).size.width,
+													margin: const EdgeInsets.symmetric(horizontal: 5),
+													child: ClipRRect(
+														borderRadius: BorderRadius.circular(8.0),
+														child: Image.memory(
+															base64Decode(base64String), 
+															fit: BoxFit.cover,
+															gaplessPlayback: true, // prevents flicker when change of state
+														),
+													)
+												);
+											}).toList(),
+											options: CarouselOptions(
+												height: 400,
+												enableInfiniteScroll: false,
+												scrollPhysics: const PageScrollPhysics(),
+											),
+										)
 								],
 							)
 						)

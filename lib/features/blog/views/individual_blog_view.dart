@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_blog_app/config/navigation_config.dart';
 import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 
-import 'package:flutter_blog_app/common/providers/index.dart' as common_providers;
 import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 import 'package:flutter_blog_app/common/controllers/index.dart' as common_controllers;
 import 'package:flutter_blog_app/common/widgets/index.dart' as common_widgets;
@@ -61,7 +60,6 @@ class _IndividualBlogViewState extends ConsumerState<IndividualBlogView> {
 	@override
 	Widget build(BuildContext context) {
 		final activeTabIndex = ref.watch(common_controllers.navigationControllerProvider);
-		final appDirAsync = ref.watch(common_providers.appDirectoryProvider);
 
 		ref.listen<AsyncValue<models.BlogPost?>>(
 			individualBlogProvider(widget.blogId),
@@ -97,7 +95,7 @@ class _IndividualBlogViewState extends ConsumerState<IndividualBlogView> {
 									},
 									child: SingleChildScrollView(
 										controller: _scrollController,
-										child: _blogContent(context, blog, appDirAsync)
+										child: _blogContent(context, blog)
 									),
 								),
 								
@@ -132,7 +130,7 @@ class _IndividualBlogViewState extends ConsumerState<IndividualBlogView> {
 		);
 	}
 
-	Widget _blogContent(BuildContext context, models.BlogPost blog, AsyncValue appDirAsync) {
+	Widget _blogContent(BuildContext context, models.BlogPost blog) {
 		final hasImages = blog.images != null && blog.images!.isNotEmpty;
 		final imageData = hasImages ? blog.imageData : null;
 
@@ -162,34 +160,24 @@ class _IndividualBlogViewState extends ConsumerState<IndividualBlogView> {
 								backgroundColor: theme.Palette.blueColor,
 								radius: 15,
 							),
-							appDirAsync: appDirAsync,
 						),
 
 						if (hasImages) ...[
 							Padding(
 								padding: const EdgeInsets.only(top: 10),
-								child: appDirAsync.when(
-									data: (_) {
-										return common_widgets.imageCarousel(
-											context,
-											imageData!.map((base64) {
-												return common_widgets.imageTile(
-													image: Image.memory(
-														base64Decode(base64),
-														height: 400,
-														fit: BoxFit.cover,
-														gaplessPlayback: true,
-													),
-												);
-											}).toList(),
+								child: common_widgets.imageCarousel(
+									context,
+									imageData!.map((base64) {
+										return common_widgets.imageTile(
+											image: Image.memory(
+												base64Decode(base64),
+												height: 400,
+												fit: BoxFit.cover,
+												gaplessPlayback: true,
+											),
 										);
-									},
-									loading: () => const Padding(
-										padding: EdgeInsets.symmetric(vertical: 16),
-										child: Center(child: CircularProgressIndicator()),
-									),
-									error: (_, _) => const Icon(Icons.error),
-								),
+									}).toList(),
+								)
 							)
 						],
 

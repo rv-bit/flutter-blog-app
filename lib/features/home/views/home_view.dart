@@ -8,7 +8,6 @@ import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 
 import 'package:flutter_blog_app/common/controllers/index.dart' as common_controllers;
-import 'package:flutter_blog_app/common/providers/index.dart' as common_providers;
 
 import 'package:flutter_blog_app/common/widgets/components/indicator_widget.dart';
 
@@ -162,12 +161,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
 		final topInset = common_controllers.kAppBarHeight + topMediaInset + 5.0;
 
 		final blogState = ref.watch(homeViewProvider);
-		final appDirAsync = ref.watch(common_providers.appDirectoryProvider);
 		
 		final blogListChild = BlogList(
 			scrollController: _controller,
 			blogs: blogState.asData?.value ?? [],
-			appDirAsync: appDirAsync,
 			indicatorHeight: _indicatorHeight,
 			headerNotifier: _headerNotifier,
 			padding: EdgeInsets.only(
