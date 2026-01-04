@@ -121,6 +121,9 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 
 										Expanded(
 											child: TextField(
+												onTapOutside: (event) {
+													FocusManager.instance.primaryFocus?.unfocus();
+												},
 												controller: contentTextController,
 												onChanged: (val) => {
 													setState(() {

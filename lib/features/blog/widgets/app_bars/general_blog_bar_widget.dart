@@ -53,6 +53,9 @@ class AppBar extends m.StatelessWidget implements m.PreferredSizeWidget {
 				children: [
 					m.Expanded(
 						child: m.TextField(
+							onTapOutside: (event) {
+								m.FocusManager.instance.primaryFocus?.unfocus();
+							},
 							controller: controller,
 							onChanged: onControllerChanged,
 							maxLength: 30,
