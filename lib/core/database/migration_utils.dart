@@ -25,7 +25,7 @@ class MigrationUtils {
 		
 		if (needsMigration) {
 			log.warning('Migration needed! Current: v$currentVersion, ''Target: v${DatabaseMigrations.latestVersion}');
-			} else {
+		} else {
 			log.info('Database is up to date (v$currentVersion)');
 		}
 		
