@@ -199,14 +199,17 @@ class BlogDAO {
 
 		final database = await databaseHelper.database;
 
-		final ftsRows = await database.query(
-			'blog_posts_fts',
-			where: 'blog_posts_fts MATCH ?',
-			whereArgs: [trimmedQuery],
-			orderBy: 'rank', // ranks by relevance
-			limit: limit,
-			offset: offset
-		);
+		final terms = trimmedQuery.split(' ').map((t) => t.trim()).where((t) => t.isNotEmpty).toList();
+		if (terms.isEmpty) return [];
+
+		final matchQuery = terms.map((t) => '"$t"').join(' OR ');
+
+		final ftsRows = await database.rawQuery('''
+			SELECT rowid, id
+			FROM blog_posts_fts
+			WHERE blog_posts_fts MATCH ?
+			LIMIT ? OFFSET ?
+		''', [matchQuery, limit, offset]);
 
 		if (ftsRows.isEmpty) return [];
 
