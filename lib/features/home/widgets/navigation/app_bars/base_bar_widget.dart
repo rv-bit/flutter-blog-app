@@ -1,15 +1,18 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart' hide AppBar;
+import 'package:flutter_blog_app/features/home/controllers/home_controller.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 import 'package:flutter_blog_app/constants/assets_constants.dart';
 
+import 'package:flutter_blog_app/config/theme/index.dart' as theme;
+import 'package:flutter_blog_app/common/widgets/index.dart' as common_widgets;
 import 'package:flutter_blog_app/common/controllers/index.dart' as common_controllers;
 
-class AppBar extends StatelessWidget {
-	final bool isSelectionMode;
+class AppBar extends ConsumerStatefulWidget {
+   	final bool isSelectionMode;
 	final int selectedCount;
 	final int totalCount;
 
@@ -19,7 +22,7 @@ class AppBar extends StatelessWidget {
 	final VoidCallback? onDeselectAll;
 	final VoidCallback? onDelete;
 
-	const AppBar({
+    const AppBar({
 		super.key,
 		this.isSelectionMode = false,
 		this.selectedCount = 0,
@@ -31,6 +34,11 @@ class AppBar extends StatelessWidget {
 		this.onDelete,
 	});
 
+    @override
+    ConsumerState<AppBar> createState() => _AppBarState();
+}
+
+class _AppBarState extends ConsumerState<AppBar> {
 	@override
 	Widget build(BuildContext context) {
 		return AnimatedBuilder(
@@ -61,7 +69,7 @@ class AppBar extends StatelessWidget {
 									bottom: false,
 									child: SizedBox(
 										height: common_controllers.kAppBarHeight,
-										child: isSelectionMode 
+										child: widget.isSelectionMode
 											? _buildSelectionAppBar(context)
 											: _buildNormalAppBar(context),
 									),
@@ -89,33 +97,45 @@ class AppBar extends StatelessWidget {
 
 					Align(
 						alignment: Alignment.centerLeft,
-						child: onEnterSelectionMode != null ? 
+						child: widget.onEnterSelectionMode != null ? 
 							IconButton(
 								icon: const Icon(Icons.checklist_rounded, size: 24),
-								onPressed: onEnterSelectionMode,
+								onPressed: widget.onEnterSelectionMode,
 								tooltip: 'Select posts',
 							) : const SizedBox.shrink(),
 					),
+
+					Align(
+						alignment: Alignment.centerRight,
+						child: Padding(
+							padding: const EdgeInsets.only(right: 5, left: 15),
+							child: common_widgets.BlogFilterButton(
+								initialOptions: ref.read(homeViewProvider.notifier).currentFilter,
+								onApply: (options) {
+									ref.read(homeViewProvider.notifier).applyFilters(options);
+								},
+							),
+						)
+				),
 				],
 			),
 		);
 	}
 
-
 	Widget _buildSelectionAppBar(BuildContext context) {
-		final allSelected = selectedCount == totalCount && totalCount > 0;
+		final allSelected = widget.selectedCount == widget.totalCount && widget.totalCount > 0;
 
 		return  Row(
 			children: [
 				IconButton(
 					icon: const Icon(Icons.close, size: 24),
-					onPressed: onExitSelectionMode,
+					onPressed: widget.onExitSelectionMode,
 					tooltip: 'Cancel',
 				),
 
 				Expanded(
 					child: Text(
-						'$selectedCount selected',
+						'${widget.selectedCount} selected',
 						style: const TextStyle(
 							fontSize: 16,
 							fontWeight: FontWeight.w600,
@@ -123,13 +143,13 @@ class AppBar extends StatelessWidget {
 					),
 				),
 
-				if (totalCount > 0) ...[
+				if (widget.totalCount > 0) ...[
 					IconButton(
 						icon: Icon(
 							allSelected ? Icons.deselect : Icons.select_all,
 							size: 22,
 						),
-						onPressed: allSelected ? onDeselectAll : onSelectAll,
+						onPressed: allSelected ? widget.onDeselectAll : widget.onSelectAll,
 						tooltip: allSelected ? 'Deselect all' : 'Select all',
 					),
 				],
@@ -138,9 +158,9 @@ class AppBar extends StatelessWidget {
 					icon: Icon(
 						Icons.delete_outline,
 						size: 22,
-						color: selectedCount > 0 ? Colors.red : Colors.grey,
+						color: widget.selectedCount > 0 ? Colors.red : Colors.grey,
 					),
-					onPressed: selectedCount > 0 ? onDelete : null,
+					onPressed: widget.selectedCount > 0 ? widget.onDelete : null,
 					tooltip: 'Delete',
 				),
 			],

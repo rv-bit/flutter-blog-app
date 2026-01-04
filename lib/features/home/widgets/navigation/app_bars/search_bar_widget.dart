@@ -2,11 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' hide AppBar;
-import 'package:flutter_blog_app/config/theme/theme_pallet.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 import 'package:flutter_blog_app/common/controllers/index.dart' as common_controllers;
+import 'package:flutter_blog_app/common/widgets/index.dart' as common_widgets;
 
 import '../../../controllers/search_controller.dart';
 
@@ -63,6 +63,8 @@ class _AppBarState extends ConsumerState<AppBar> {
     }
 
 	Widget _buildNormalAppBar(BuildContext context, WidgetRef ref) {
+		final query = ref.read(searchQueryProvider);
+
 		return SizedBox(
 			height: common_controllers.kAppBarHeight,
 			child: Padding(
@@ -100,7 +102,7 @@ class _AppBarState extends ConsumerState<AppBar> {
 												),
 												cursorColor: Theme.of(context).colorScheme.primary,
 												decoration: BoxDecoration(
-													color: Palette.greyColor.withValues(alpha: 0.4),
+													color: theme.Palette.greyColor.withValues(alpha: 0.4),
 													borderRadius: BorderRadius.circular(30),
 												),
 												placeholder: 'Search',
@@ -135,11 +137,11 @@ class _AppBarState extends ConsumerState<AppBar> {
 						SizedBox(
 							child: Padding(
 								padding: const EdgeInsets.only(right: 5, left: 15),
-								child: GestureDetector(
-									onTap: () {},
-									child: Icon(
-										CupertinoIcons.slider_horizontal_3
-									),
+								child: common_widgets.BlogFilterButton(
+									initialOptions: ref.read(searchResultsProvider(query).notifier).currentFilter,
+									onApply: (options) {
+										ref.read(searchResultsProvider(query).notifier).applyFilters(options);
+									},
 								),
 							)
 						),
