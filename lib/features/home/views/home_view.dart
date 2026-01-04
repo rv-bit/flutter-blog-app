@@ -7,8 +7,7 @@ import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 
 import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 import 'package:flutter_blog_app/common/controllers/index.dart' as common_controllers;
-
-import 'package:flutter_blog_app/common/widgets/components/indicator_widget.dart';
+import 'package:flutter_blog_app/common/widgets/index.dart' as common_widgets;
 
 import '../widgets/blog_widgets/blog_list_items_widget.dart';
 import '../widgets/navigation/action_buttons_widget.dart';
@@ -113,43 +112,29 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
 		final countSelectedBlogs = _selectedBlogIds.length;
 
-		final confirm = await showDialog<bool>(
-			context: context,
-			builder: (context) => AlertDialog(
-				title: const Text('Delete Posts'),
-				content: Text(
-					'Are you sure you want to delete ${_selectedBlogIds.length} post${_selectedBlogIds.length > 1 ? 's' : ''}?',
-				),
-				actions: [
-					TextButton(
-						onPressed: () => Navigator.pop(context, false),
-						child: const Text('Cancel'),
-					),
-					TextButton(
-						onPressed: () => Navigator.pop(context, true),
-						style: TextButton.styleFrom(
-							foregroundColor: Colors.red,
-						),
-						child: const Text('Delete'),
-					),
-				],
-			),
-		);
-
-		if (!mounted || confirm != true) return;
-
-		await ref.read(homeViewProvider.notifier).deleteMultipleBlogs(_selectedBlogIds);
-		await ref.read(homeViewProvider.notifier).refresh();
-
 		if (!mounted) return;
 
-		_exitSelectionMode();
+		common_widgets.BlogActionSheet.showConfirmationDialog(
+			context: context,
+			title: 'Delete Blog Posts',
+			text: 'Are you sure you want to delete ${_selectedBlogIds.length} post${_selectedBlogIds.length > 1 ? 's' : ''}?',
+			cancelTitle: 'Cancel',
+			submitTitle: 'Delete',
+			onSubmit: () async {
+				await ref.read(homeViewProvider.notifier).deleteMultipleBlogs(_selectedBlogIds);
+				await ref.read(homeViewProvider.notifier).refresh();
 
-		ScaffoldMessenger.of(context).showSnackBar(
-			SnackBar(
-				content: Text('$countSelectedBlogs post(s) deleted'),
-				duration: const Duration(seconds: 2),
-			),
+				_exitSelectionMode();
+
+				if (!mounted) return;
+
+				ScaffoldMessenger.of(context).showSnackBar(
+					SnackBar(
+						content: Text('$countSelectedBlogs post(s) deleted'),
+						duration: const Duration(seconds: 2),
+					),
+				);
+			},
 		);
 	}
 
@@ -245,7 +230,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
 										child: Center(
 											child: IgnorePointer(
 												ignoring: true,
-												child: Indicator(
+												child: common_widgets.Indicator(
 													state: controller.state,
 													value: rawValue > 0 ? eased : 0,
 												),
