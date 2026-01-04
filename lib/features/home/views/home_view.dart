@@ -6,14 +6,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 
 import 'package:flutter_blog_app/config/theme/index.dart' as theme;
-
 import 'package:flutter_blog_app/common/controllers/index.dart' as common_controllers;
 
 import 'package:flutter_blog_app/common/widgets/components/indicator_widget.dart';
 
 import '../widgets/blog_widgets/blog_list_items_widget.dart';
-import '../widgets/action_buttons_widget.dart';
-import '../widgets/app_bar_widget.dart';
+import '../widgets/navigation/action_buttons_widget.dart';
+import '../widgets/navigation/app_bars/base_bar_widget.dart';
 
 import '../controllers/home_controller.dart';
 
