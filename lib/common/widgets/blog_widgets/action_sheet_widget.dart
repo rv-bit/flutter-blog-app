@@ -8,7 +8,6 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 
-
 // Helper to convert Material Icons to SF Symbol names (basic mapping)
 String _getSymbolName(IconData icon) {
 	// Map common Material Icons to SF Symbols
@@ -62,32 +61,32 @@ class BlogActionSheet {
 		if (Platform.isIOS) {
 			try {
 				final menuItems = <CNPopupMenuEntry>[];
-				
+				final callbacks = <VoidCallback?>[];
+
 				for (final action in actions) {
 					if (action.isDestructive && menuItems.isNotEmpty) {
-						// add divider before destructive actions
 						menuItems.add(const CNPopupMenuDivider());
+						callbacks.add(null); // divider occupies an index
 					}
-					
-					final itemIconColor = action.isDestructive 
-						? CupertinoColors.systemRed 
-						: action.iconColor;
+
+					final itemIconColor =
+						action.isDestructive ? CupertinoColors.systemRed : action.iconColor;
 
 					menuItems.add(
 						CNPopupMenuItem(
 							label: action.title,
-							icon: action.icon != null 
+							icon: action.icon != null
 								? CNSymbol(
 									_getSymbolName(action.icon!),
-									size: 18,
-									color: itemIconColor,
-								)
-							: null,
-							customIcon: action.icon,
-							iconColor: itemIconColor,
+										size: 18,
+										color: itemIconColor,
+									)
+								: null,
 							enabled: true,
 						),
 					);
+
+					callbacks.add(action.onTap); // perfectly aligned
 				}
 
 				return CNPopupMenuButton.icon(
@@ -99,20 +98,11 @@ class BlogActionSheet {
 					buttonCustomIcon: buttonIcon ?? Icons.more_horiz,
 					size: size,
 					items: menuItems,
-					onSelected: (index) {
-						int actionIndex = 0;
-						int menuIndex = 0;
-						
-						for (int i = 0; i < menuItems.length; i++) {
-							if (menuItems[i] is CNPopupMenuItem) {
-								if (menuIndex == index) {
-									actions[actionIndex].onTap();
-									break;
-								}
-								actionIndex++;
-								menuIndex++;
-							}
-						}
+					onSelected: (index) async {
+						final callback = callbacks[index];
+						if (callback == null) return;
+
+						Future.microtask(callback);
 					},
 					buttonStyle: buttonStyle ?? CNButtonStyle.plain,
 				);
@@ -148,6 +138,68 @@ class BlogActionSheet {
 		}
 	}
 
+	static Future<void> showConfirmationDialog({
+		required BuildContext context,
+		required String cancelTitle,
+		required String submitTitle,
+		required String title,
+		required String text,
+		required Future<void> Function() onSubmit,
+	}) {   	
+		if (Platform.isIOS) {
+			return showDialog<void>(
+				context: context,
+				useRootNavigator: true,
+				barrierDismissible: true,
+				builder: (dialogContext) => CupertinoAlertDialog(
+					title: Text(title),
+					content: Padding(
+						padding: const EdgeInsets.only(top: 8),
+						child: Text(text),
+					),
+					actions: [
+						CupertinoDialogAction(
+							onPressed: () => Navigator.pop(dialogContext),
+							child: Text(cancelTitle),
+						),
+						CupertinoDialogAction(
+							isDestructiveAction: true,
+							onPressed: () async {
+								Navigator.pop(dialogContext);
+								onSubmit();
+							},
+							child: Text(submitTitle),
+						),
+					],
+				),
+			);
+		}
+
+		return showDialog(
+			context: context,
+			builder: (dialogContext) => AlertDialog(
+				title: Text(title),
+				content: Text(text),
+				actions: [
+					TextButton(
+						onPressed: () => Navigator.pop(dialogContext),
+						child: Text(cancelTitle),
+					),
+					TextButton(
+						style: TextButton.styleFrom(
+							foregroundColor: theme.Palette.redColor,
+						),
+						onPressed: () async {
+							Navigator.pop(dialogContext);
+							onSubmit();
+						},
+						child: Text(submitTitle),
+					),
+				],
+			),
+		);
+	}
+
 	static void showActionSheet({
 		required BuildContext context,
 		required List<ActionSheetItem> actions,
@@ -156,35 +208,6 @@ class BlogActionSheet {
 			_showCupertino(context, actions);
 		} else {
 			_showMaterial(context, actions);
-		}
-	}
-
-	static void showConfirmationDialog({
-		required BuildContext context,
-		required String cancelTitle,
-		required String submitTitle,
-		required String title,
-		required String text,
-		required Future<void> Function() onSubmit,
-	}) {
-		if (Platform.isIOS) {
-			_showCupertinoConfirmation(
-				context,
-				cancelTitle,
-				submitTitle,
-				title,
-				text,
-				onSubmit,
-			);
-		} else {
-			_showMaterialConfirmation(
-				context,
-				cancelTitle,
-				submitTitle,
-				title,
-				text,
-				onSubmit,
-			);
 		}
 	}
 
@@ -279,94 +302,5 @@ class BlogActionSheet {
 				action.onTap();
 			},
 		);
-	}
-
-	static void _showCupertinoConfirmation(
-		BuildContext context,
-		String cancelTitle,
-		String submitTitle,
-		String title,
-		String message,
-		Future<void> Function() onSubmit,
-	) {
-		showCupertinoDialog(
-			context: context,
-			builder: (dialogContext) => CupertinoAlertDialog(
-				title: Text(title),
-				content: Padding(
-					padding: const EdgeInsets.only(top: 8),
-					child: Text(message),
-				),
-				actions: [
-					CupertinoDialogAction(
-						onPressed: () => Navigator.pop(dialogContext),
-						child: Text(cancelTitle),
-					),
-					CupertinoDialogAction(
-						isDestructiveAction: true,
-						onPressed: () async {
-							Navigator.pop(dialogContext);
-							await _showLoadingAndSubmit(context, onSubmit);
-						},
-						child: Text(submitTitle),
-					),
-				],
-			),
-		);
-	}
-
-	static void _showMaterialConfirmation(
-		BuildContext context,
-		String cancelTitle,
-		String submitTitle,
-		String title,
-		String message,
-		Future<void> Function() onSubmit,
-	) {
-		showDialog(
-			context: context,
-			builder: (dialogContext) => AlertDialog(
-				title: Text(title),
-				content: Text(message),
-				actions: [
-					TextButton(
-						onPressed: () => Navigator.pop(dialogContext),
-						child: Text(cancelTitle),
-					),
-					TextButton(
-						style: TextButton.styleFrom(
-							foregroundColor: theme.Palette.redColor,
-						),
-						onPressed: () async {
-							Navigator.pop(dialogContext);
-							await _showLoadingAndSubmit(context, onSubmit);
-						},
-						child: Text(submitTitle),
-					),
-				],
-			),
-		);
-	}
-
-	static Future<void> _showLoadingAndSubmit(
-		BuildContext context,
-		Future<void> Function() onSubmit,
-	) async {
-		late BuildContext loadingContext;
-
-		showDialog(
-			context: context,
-			barrierDismissible: false,
-			builder: (ctx) {
-				loadingContext = ctx;
-				return const Center(child: CircularProgressIndicator());
-			},
-		);
-
-		await onSubmit();
-
-		if (loadingContext.mounted) {
-			Navigator.pop(loadingContext);
-		}
 	}
 }
