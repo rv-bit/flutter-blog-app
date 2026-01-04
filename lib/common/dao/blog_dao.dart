@@ -10,7 +10,10 @@ final blogDAOProvider = Provider<BlogDAO>((ref) {
 });
 
 class BlogDAO {
-	final databaseHelper = DatabaseHelper();
+	final DatabaseHelper databaseHelper;
+
+	BlogDAO({DatabaseHelper? databaseHelper})
+		: databaseHelper = databaseHelper ?? DatabaseHelper();
 
 	Future<void> insertBlog({
 		required Map<String, dynamic> blog,
