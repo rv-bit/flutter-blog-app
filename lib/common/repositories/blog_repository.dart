@@ -109,8 +109,14 @@ class BlogRepository {
 		await dao.deleteMultiple(ids);
 	}
 
-	Future<List<common_models.BlogPost>> searchBlogs(String query) async {
-		final rows = await dao.searchBlogs(query);
+	Future<List<common_models.BlogPost>> searchBlogs(
+		String query, 
+		{
+			required limit,
+			required offset
+		}
+	) async {
+		final rows = await dao.searchBlogs(query, limit: limit, offset: offset);
 		return rows.map(common_models.BlogPost.fromMap).toList();
 	}
 }
