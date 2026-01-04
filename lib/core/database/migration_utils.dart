@@ -1,6 +1,7 @@
-import 'package:flutter_blog_app/core/database/database.dart';
-import 'package:flutter_blog_app/core/database/migrations.dart';
 import 'package:logging/logging.dart';
+
+import './database.dart';
+import './migrations.dart';
 
 final log = Logger('MigrationUtils');
 
