@@ -9,7 +9,8 @@ abstract class Migration {
 class DatabaseMigrations {
 	static final List<Migration> migrations = [
 		local_migrations.BlogPostsMigration(),
-		local_migrations.ImagesMigration()
+		local_migrations.ImagesMigration(),
+		local_migrations.FTSBlogMigration()
 	];
 
 	static int get latestVersion => migrations.length;
