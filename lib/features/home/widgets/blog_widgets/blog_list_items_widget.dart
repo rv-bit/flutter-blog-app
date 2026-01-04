@@ -40,7 +40,7 @@ class BlogList extends ConsumerWidget {
 		required this.scrollController,
 		required this.blogs,
 		required this.indicatorHeight,
-		
+
 		this.isSelectionMode = false,
 		this.selectedBlogIds = const {},
 		this.onBlogSelectionToggle,
@@ -51,26 +51,6 @@ class BlogList extends ConsumerWidget {
 
 	@override
 	Widget build(BuildContext context, WidgetRef ref) {
-		if (blogs.isEmpty) {
-			return Center(
-				child: Column(
-				mainAxisAlignment: MainAxisAlignment.center,
-					children: [
-						Icon(
-							Icons.article_outlined,
-							size: 64,
-							color: theme.AppTheme.theme.colorScheme.onSurface.withAlpha(80),
-						),
-						const SizedBox(height: 16),
-						Text(
-							'No blog posts yet',
-							style: theme.AppTheme.theme.textTheme.titleMedium?.copyWith(color: theme.AppTheme.theme.colorScheme.onSurface.withAlpha(120)),
-						),
-					],
-				),
-			);
-		}
-
 		return ListView.builder(
 			controller: scrollController,
 			physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),

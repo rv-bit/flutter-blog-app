@@ -160,8 +160,11 @@ class _HomeViewState extends ConsumerState<HomeView> {
 		final topInset = common_controllers.kAppBarHeight + topMediaInset + 5.0;
 
 		final blogState = ref.watch(homeViewProvider);
-		
-		final blogListChild = BlogList(
+		final blogs = blogState.asData?.value;
+
+		late Widget blogListChild;
+
+		blogListChild = BlogList(
 			scrollController: _controller,
 			blogs: blogState.asData?.value ?? [],
 			indicatorHeight: _indicatorHeight,
@@ -174,6 +177,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
 			selectedBlogIds: _selectedBlogIds,
 			onBlogSelectionToggle: _toggleBlogSelection,
 		);
+
+		if (blogs != null && blogs.isEmpty) {
+			blogListChild = _blogsEmptyFallback();
+		}
 
 		return Stack(
 			children: [
@@ -274,9 +281,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
 															Icon(Icons.error_outline, size: 64, color: theme.AppTheme.theme.colorScheme.error),
 															const SizedBox(height: 16),
 															Text('Error loading blogs', style: theme.AppTheme.theme.textTheme.titleMedium),
-															const SizedBox(height: 8),
-															Text(err.toString(), style: theme.AppTheme.theme.textTheme.bodySmall, textAlign: TextAlign.center),
-															const SizedBox(height: 16),
 															ElevatedButton.icon(
 																onPressed: () => ref.invalidate(homeViewProvider),
 																icon: const Icon(Icons.refresh),
@@ -307,6 +311,26 @@ class _HomeViewState extends ConsumerState<HomeView> {
 				
 				if (!_isSelectionMode) AnimatedFAB(),
 			],
+		);
+	}
+
+	Widget _blogsEmptyFallback() {
+		return Center(
+			child: Column(
+			mainAxisAlignment: MainAxisAlignment.center,
+				children: [
+					Icon(
+						Icons.article_outlined,
+						size: 64,
+						color: theme.AppTheme.theme.colorScheme.onSurface.withAlpha(80),
+					),
+					const SizedBox(height: 16),
+					Text(
+						'No blog posts yet',
+						style: theme.AppTheme.theme.textTheme.titleMedium?.copyWith(color: theme.AppTheme.theme.colorScheme.onSurface.withAlpha(120)),
+					),
+				],
+			),
 		);
 	}
 }
