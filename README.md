@@ -1,1 +1,27 @@
-# Blog Application
+# Offline Blogging Application
+
+This blogging app inspired by X.com (Twitter), allows users to create, edit, search and delete posts while managing media uploads, all without internet connectivity.
+
+## Features
+### Core Functionalities
+- **User Posts**: Users can create text-based posts, adds title and optionally adds images via the camera or choose from the library.
+- **Editing Posts**: Modify existing posts, allowing user to modify current title, content, remove or add new images.
+- **Deleting Posts**: Remove single or multiple posts at once.
+- **Image Handling**: Capture images via the camera or choose from the library.
+
+## Tech Stack
+- **Flutter**
+- **SQLite** (via dependency)
+
+## Dependencies and Use cases
+- **sqflite + path +path_provider** - These are all used to create a database helper / utility function, opens / creates database, usage of path to get current application dir
+- **go_router** - Used for the Routing system of the application, since to push history stacks when moving to different pages, creating a better UX, and better navigation
+- **flutter_riverpod + riverpod_annotation** - Usage of providers / State setters and getters, better state management, caching, and used as the middleware between the Repository and DAO, without allowing direct access to these layers to the client (Widgets). https://pub.dev/packages/flutter_riverpod
+- **logging** - Logging framework, mainly used to debug in try-catch errs
+- **image_picker + flutter_image_compress** - The image_picker dependecy is widely used in order for easy access to end users Camera Roll / Gallery and Capturing new image from Camera, used to build the required 'image-capture' task set by the client.
+- **uuid** - Used to generate Unique ID's when inserting new blog posts, makes it easier to always make sure blogs are unique, and a great use for real-world projects
+- **custom_refresh_indicator** - Used to build the Pull-Down-To-Refresh for loading more tasks / refetching
+- **flutter_svg + cupertino_icons + cupertino_native_better + carousel_slider + modal_bottom_sheet** - They were all used from a perspective of UI design, flutter_svg helped to render out SVG images, cupertino_icons enabled more iOS style icons for better compatability between devices, cupertino_native_better was used to build Liquid Glass Pop Up menu, if iOS 26 is avaliable, carousel_slider was used for image sliders and modal_bottom_sheet was used to build a iOS feel Sheet Container with better interface and configurability than the default Material https://api.flutter.dev/flutter/material/showModalBottomSheet.html
+
+- **build_runner + riverpod_generator + riverpod_lintr** - The build_runner helped with generating .g.dart or .mocks.dart files for testing and defining family providers, as used flutter_riverpod 3.x, which required for such code generations, used mainly for blog edit, as the route build needed 'id' - '/blog/:id', which in normal AsyncNotifier this cannot be done. And the lintr was added automatically as used when generating.
+- **sqflite_common_ffi + mockito** - The sqflite_common_ffi was used during testing for better compability and mocking, and the mockito library allowed for test generation, and many utility functions that were used throughout all the tests, such as 'verify', 'argThat', etc.
