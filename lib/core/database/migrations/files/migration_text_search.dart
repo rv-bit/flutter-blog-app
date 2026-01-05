@@ -1,4 +1,4 @@
-import 'package:sqflite_common/sqflite.dart';
+import 'package:sqflite/sqflite.dart';
 import '../../migrations.dart';
 
 class FTSBlogMigration implements Migration {
