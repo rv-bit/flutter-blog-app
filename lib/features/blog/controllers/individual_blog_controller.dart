@@ -4,7 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_blog_app/models/index.dart' as models;
 import 'package:flutter_blog_app/common/repositories/index.dart' as common_repositories;
 
-part 'generated/individual_blog_controller.g.dart';
+part 'individual_blog_controller.g.dart';
 
 final log = Logger('IndividualBlogController');
 

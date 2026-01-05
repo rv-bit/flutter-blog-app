@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../blog_edit_controller.dart';
+part of 'blog_edit_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -50,7 +50,7 @@ final class EditBlogProvider
   }
 }
 
-String _$editBlogHash() => r'8ae1819016f42b097436afe47d2ec6e00cdb8440';
+String _$editBlogHash() => r'9a2778368f1f5f1705921e64cc7a02d2919465a2';
 
 final class EditBlogFamily extends $Family
     with
@@ -86,7 +86,8 @@ abstract class _$EditBlog extends $AsyncNotifier<models.BlogPost?> {
   @override
   void runBuild() {
     final created = build(_$args);
-    final ref = this.ref as $Ref<AsyncValue<models.BlogPost?>, models.BlogPost?>;
+    final ref =
+        this.ref as $Ref<AsyncValue<models.BlogPost?>, models.BlogPost?>;
     final element =
         ref.element
             as $ClassProviderElement<

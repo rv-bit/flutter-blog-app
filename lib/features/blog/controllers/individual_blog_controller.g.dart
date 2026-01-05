@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../individual_blog_controller.dart';
+part of 'individual_blog_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -50,7 +50,7 @@ final class IndividualBlogProvider
   }
 }
 
-String _$individualBlogHash() => r'd353ae76005d3bf8ab8c953291262d7dd35d7fa7';
+String _$individualBlogHash() => r'e52bfd90933962d17cf0f5d64fd13de5265996d0';
 
 final class IndividualBlogFamily extends $Family
     with
@@ -86,7 +86,8 @@ abstract class _$IndividualBlog extends $AsyncNotifier<models.BlogPost?> {
   @override
   void runBuild() {
     final created = build(_$args);
-    final ref = this.ref as $Ref<AsyncValue<models.BlogPost?>, models.BlogPost?>;
+    final ref =
+        this.ref as $Ref<AsyncValue<models.BlogPost?>, models.BlogPost?>;
     final element =
         ref.element
             as $ClassProviderElement<

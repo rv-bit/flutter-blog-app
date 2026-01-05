@@ -6,44 +6,44 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:logging/logging.dart';
 
-import 'package:flutter_blog_app/core/exceptions/database_exceptions.dart';
 import 'package:flutter_blog_app/core/database/migrations.dart';
 
 final log = Logger('DatabaseHelper');
 
 class DatabaseHelper {
+	final String? overridePath;
 	static final DatabaseHelper _instance = DatabaseHelper._internal();
 	factory DatabaseHelper() => _instance;
-	DatabaseHelper._internal();
+	DatabaseHelper._internal() : overridePath = null;
+
+	DatabaseHelper.forTest(this.overridePath);
 
 	static Database? _database;
-	static const String _databaseName = 'blog_posts.db';
+	static const String _databaseName = 'app.db';
 	static int get _databaseVersion => DatabaseMigrations.latestVersion;
 
 	Future<Database> get database async {
 		if (_database != null) return _database!;
-		_database = await _initDatabase();
-		return _database!;
-	}
-
-	Future<Database> _initDatabase() async {
-		try {
+			if (overridePath != null) {
+			_database = await openDatabase(
+				overridePath!,
+				version: _databaseVersion,
+				onCreate: _onCreate,
+				onConfigure: _onConfigure,
+				onUpgrade: _onUpgrade,
+			);
+		} else {
 			final documentsDirectory = await getApplicationDocumentsDirectory();
-			final path = join(documentsDirectory.path, _databaseName);
-
-			log.info('Initializing database at: $path');
-
-			return await openDatabase(
+			final path = join(documentsDirectory.path, "app.db");
+			_database = await openDatabase(
 				path,
 				version: _databaseVersion,
 				onCreate: _onCreate,
 				onConfigure: _onConfigure,
-				onUpgrade: _onUpgrade
+				onUpgrade: _onUpgrade,
 			);
-		} catch (e) {
-			log.severe('Database initialization failed: $e');
-			throw MyDatabaseException('Something went wrong, $e');
 		}
+		return _database!;
 	}
 
 	Future<int> getDatabaseVersion() async {
