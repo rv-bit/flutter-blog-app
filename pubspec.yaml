@@ -65,6 +65,7 @@ dev_dependencies:
   custom_lint: ^0.8.0
   riverpod_lint: ^3.0.0
   sqflite_common_ffi: ^2.3.7+1
+  mockito: ^5.5.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
