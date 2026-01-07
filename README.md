@@ -17,18 +17,18 @@ This blogging app inspired by X.com (Twitter), allows users to create, edit, sea
 - ! Important - The assets/ directory will need to be copied into a new application if created from scratch, this is to make sure any additional icons that not in library of Material or Cupertino
 - ! Important - If the application is created from scratch / new from Android Studio, the **pubspec.yaml**, along with of course the **lib/** directory will be necessary. If the name in pubspec.yaml is changed, make sure that within the **lib/** along with **test/** dir there will be needed to change the package name. As most modules were imported with the proper package alias of the application.
 
-# Makes sure that everything is configured properly
+#### Makes sure that everything is configured properly
 ```js
 flutter doctor
 ```
 
-# Builds all the code generations for some controllers like, [edit_controller](https://github.com/rv-bit/flutter-blog-app/blob/main/lib/features/blog/controllers/blog_edit_controller.dart) and [individual_controller](https://github.com/rv-bit/flutter-blog-app/blob/main/lib/features/blog/controllers/individual_blog_controller.dart). Used due to need of param / arg in the build / constuctor for state provider as, these are routes with arguments.
+#### Builds all the code generations for some controllers like, [edit_controller](https://github.com/rv-bit/flutter-blog-app/blob/main/lib/features/blog/controllers/blog_edit_controller.dart) and [individual_controller](https://github.com/rv-bit/flutter-blog-app/blob/main/lib/features/blog/controllers/individual_blog_controller.dart). Used due to need of param / arg in the build / constuctor for state provider as, these are routes with arguments.
 ```js
 flutter pub run build_runner clean
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
-# Resolves the pubspec, adds all necessary dependencies if not already installed, and runs the applicaiton.
+#### Resolves the pubspec, adds all necessary dependencies if not already installed, and runs the applicaiton.
 ```js
 flutter pub get
 flutter run
