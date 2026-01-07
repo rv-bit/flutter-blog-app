@@ -10,7 +10,10 @@ final blogDAOProvider = Provider<BlogDAO>((ref) {
 });
 
 class BlogDAO {
-	final databaseHelper = DatabaseHelper();
+	final DatabaseHelper databaseHelper;
+
+	BlogDAO({DatabaseHelper? databaseHelper})
+		: databaseHelper = databaseHelper ?? DatabaseHelper();
 
 	Future<void> insertBlog({
 		required Map<String, dynamic> blog,
@@ -44,8 +47,6 @@ class BlogDAO {
 		}
 	}
 
-	// Return a List of multiple objects aka posts, and each post will include all data like content, image etc.
-	// TODO: #1 Will be ordered by the created time, not the updated will be later added a new function to order by selected sort type
 	Future<List<Map<String, dynamic>>> getBlogPosts({
 		required int limit,
   		required int offset,
@@ -73,17 +74,21 @@ class BlogDAO {
 		);
 	}
 
-	Future<List<Map<String, dynamic>>> getImagesByBlogId(String blogId) async {
+	Future<List<Map<String, dynamic>>> getImagesByBlogId(String id) async {
+		if (id.isEmpty) return [];
+
 		final database = await databaseHelper.database;
 		return await database.query(
 			'images',
 			where: 'blog_id = ?',
-			whereArgs: [blogId],
+			whereArgs: [id],
 			orderBy: 'created_at ASC',
 		);
 	}
 
 	Future<Map<String, dynamic>?> getBlog(String id) async {
+		// if (id.isEmpty) return [];
+
 		final database = await databaseHelper.database;
 		final res = await database.query(
 			'blog_posts',
@@ -91,10 +96,13 @@ class BlogDAO {
 			whereArgs: [id],
 			orderBy: 'created_at DESC',
 		);
+
 		return res.isNotEmpty ? res.first : null;
 	}
 
 	Future<void> insertImage(Map<String, dynamic> imageMap) async {
+		if (imageMap.isEmpty) return;
+
 		final database = await databaseHelper.database;
 		await database.insert(
 			'images',
@@ -104,6 +112,8 @@ class BlogDAO {
 	}
 
 	Future<int> updateBlog(String id, Map<String, dynamic> data) async {
+		if (id.isEmpty || data.isEmpty) return 0;
+
 		final database = await databaseHelper.database;
 		return database.update(
 			'blog_posts', 
@@ -138,6 +148,8 @@ class BlogDAO {
 	}
 
 	Future<int> deleteBlog(String id) async {
+		if (id.isEmpty) return 0;
+
 		final database = await databaseHelper.database;
 
 		return await database.transaction((txn) async {
@@ -178,12 +190,40 @@ class BlogDAO {
 		});
 	}
 
-	Future<List<Map<String, dynamic>>> searchBlogs(String query) async {
+	Future<List<Map<String, dynamic>>> searchBlogs(
+		String query, 
+		{
+			required int limit,
+			required int offset,
+		}
+	) async {
+		final trimmedQuery = query.trim();
+		if (trimmedQuery.isEmpty) return [];
+
 		final database = await databaseHelper.database;
+
+		final terms = trimmedQuery.split(' ').map((t) => t.trim()).where((t) => t.isNotEmpty).toList();
+		if (terms.isEmpty) return [];
+
+		final matchQuery = terms.map((t) => '"$t"').join(' OR ');
+
+		final ftsRows = await database.rawQuery('''
+			SELECT rowid, id
+			FROM blog_posts_fts
+			WHERE blog_posts_fts MATCH ?
+			LIMIT ? OFFSET ?
+		''', [matchQuery, limit, offset]);
+
+		if (ftsRows.isEmpty) return [];
+
+		final ids = ftsRows.map((row) => row['id'] as String).toList();
+		final placeholders = List.filled(ids.length, '?').join(',');
+
 		return await database.query(
 			'blog_posts',
-			where: '(content LIKE ?)',
-			whereArgs: ['%$query%']
+			where: 'id IN ($placeholders)',
+			whereArgs: ids,
+			orderBy: 'created_at DESC',
 		);
 	}
 }

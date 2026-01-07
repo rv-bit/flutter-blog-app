@@ -15,8 +15,10 @@ import 'package:flutter_blog_app/core/utils/index.dart' as common_utils;
 
 import 'package:flutter_blog_app/common/widgets/blog_widgets/action_sheet_widget.dart';
 
-import '../../controllers/home_controller.dart';
 import '../blog_widgets/blog_list_content_widget.dart';
+
+import '../../controllers/home_controller.dart';
+import '../../controllers/search_controller.dart';
 
 class BlogList extends ConsumerWidget {
   	final ScrollController scrollController;
@@ -116,6 +118,11 @@ class BlogList extends ConsumerWidget {
 										submitTitle: 'Delete',
 										onSubmit: () async {
 											await ref.read(homeViewProvider.notifier).deleteBlog(blog.id);
+
+											// invalidate search results to reflect deletion, only based on the current query
+											// query will likely be non-empty since user is deleting from search results
+											final query = ref.read(searchQueryProvider);
+											ref.invalidate(searchResultsProvider(query));
 										},
 									);
 								},

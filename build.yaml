@@ -1,11 +1,10 @@
 targets:
-    $default:
-        builders:
-            riverpod_generator|riverpod_generator:
-                options:
-                    # Output generated files to generated/ subdirectory
-                    build_extensions:
-                        .dart:
-                            - generated/{{name}}.g.dart
-                generate_for:
-                    - lib/**
+  $default:
+    builders:
+      riverpod_generator|riverpod_generator:
+        generate_for:
+          - lib/**.dart
+
+      mockito|mockBuilder:
+        generate_for:
+          - test/**.dart

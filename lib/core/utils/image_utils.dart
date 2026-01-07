@@ -7,6 +7,9 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 import 'package:image_picker/image_picker.dart';
 
+// Function to pick multiple images from gallery, uses image_picker package as most reliable
+// Source: https://pub.dev/packages/image_picker and adapted from https://github.com/RivaanRanawat/flutter_twitter_clone/blob/4f2c8a3bf02a0f5c72da5c56815c749b24c778ad/lib/core/utils.dart
+// The pickImageCamera was created internally, for single image picking when the user wants to take a photo.
 Future<List<File>> pickImages() async {
 	List<File> images = [];
 	final ImagePicker picker = ImagePicker();
@@ -37,6 +40,9 @@ Future<File?> pickImageCamera() async {
 	return null;
 }
 
+// Function to compress image file before upload, uses flutter_image_compress package
+// Source: https://github.com/fluttercandies/flutter_image_compress?tab=readme-ov-file#usage
+// This was due because have ran into some android devices, where they have upload / download limits on image size, so we need to compress the image before uploading to database.
 Future<Uint8List> compressImage(File file) async {
 	final result = await FlutterImageCompress.compressWithFile(
 		file.absolute.path,
@@ -48,6 +54,8 @@ Future<Uint8List> compressImage(File file) async {
 	return result ?? await file.readAsBytes();
 }
 
+// This code is to take a base64 string and convert it to an image widget, which can be displayed in the app.
+// Code was adapted from: https://stackoverflow.com/a/55699979 
 widgets.Image imageFromBase64String(String base64String) {
     return widgets.Image.memory(base64Decode(base64String));
 }

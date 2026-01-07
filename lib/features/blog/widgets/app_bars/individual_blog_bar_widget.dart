@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart' as m;
 import 'package:flutter/widgets.dart';
+import 'package:flutter_blog_app/features/home/controllers/search_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:go_router/go_router.dart';
@@ -138,6 +139,11 @@ class AppBar extends ConsumerWidget implements m.PreferredSizeWidget {
 																					submitTitle: 'Delete',
 																					onSubmit: () async {
 																						await ref.read(homeViewProvider.notifier).deleteBlog(blog.id);
+
+																						// invalidate search results to reflect deletion, only based on the current query
+																						// query will likely be non-empty since user is deleting from search results
+																						final query = ref.read(searchQueryProvider);
+																						ref.invalidate(searchResultsProvider(query));
 
 																						if (!context.mounted) return;
 

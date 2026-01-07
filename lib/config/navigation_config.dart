@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_blog_app/constants/assets_constants.dart';
+
 import 'package:flutter_blog_app/features/home/views/home_view.dart';
+import 'package:flutter_blog_app/features/home/views/search_blogs_view.dart';
 
 enum ShellRoutes {
 	home(
@@ -13,7 +15,7 @@ enum ShellRoutes {
 	search(
 		path: '/search',
 		name: 'search',
-		builder: HomeView.new, // Or your SearchView
+		builder: SearchView.new, // Or your SearchView
 		activeIcon: AssetsConstants.searchIcon,
     	inactiveIcon: AssetsConstants.searchIcon,
 	);

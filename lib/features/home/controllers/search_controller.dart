@@ -1,20 +1,33 @@
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:logging/logging.dart';
-
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_blog_app/models/index.dart' as models;
 import 'package:flutter_blog_app/common/repositories/index.dart' as common_repositories;
 import 'package:flutter_blog_app/common/widgets/index.dart' as common_widgets;
 
-final log = Logger('HomeController');
+part 'search_controller.g.dart';
 
-final homeViewProvider = AsyncNotifierProvider<HomeController, List<models.BlogPost>>(() {
-	return HomeController();
-});
+final log = Logger('SearchController');
 
-class HomeController extends AsyncNotifier<List<models.BlogPost>> {
+// holds the current search query (search app bar  CupertinoTextField will update this)
+@riverpod
+class SearchQuery extends _$SearchQuery {
+	@override
+	String build() => '';
+
+	void setQuery(String value) {
+		state = value.trim();
+	}
+
+	void clear() {
+		state = '';
+	}
+}
+
+@riverpod
+class SearchResults extends _$SearchResults {
 	common_repositories.BlogRepository get _repository => ref.read(common_repositories.blogRepositoryProvider);
-	
+
 	common_widgets.BlogFilterOptions _currentFilter = common_widgets.BlogFilterOptions(
 		sortBy: common_widgets.SortBy.createdAt,
 		sortOrder: common_widgets.SortOrder.desc,
@@ -24,7 +37,7 @@ class HomeController extends AsyncNotifier<List<models.BlogPost>> {
 	common_widgets.BlogFilterOptions get currentFilter => _currentFilter;
 
 	static const int _pageSize = 10;
-	int _currentOffset = 0;
+	int _offset = 0;
 	bool _hasMore = true;
 	bool _isLoadingMore = false;
 
@@ -32,18 +45,22 @@ class HomeController extends AsyncNotifier<List<models.BlogPost>> {
 	bool get isLoadingMore => _isLoadingMore;
 
 	@override
-	Future<List<models.BlogPost>> build() async {
-		_currentOffset = 0;
+	Future<List<models.BlogPost>> build(String query) async {
+		final trimmedQuery = query.trim();
+		_offset = 0;
 		_hasMore = true;
-		
-		final blogs = await _repository.fetchBlogs(
+
+		if (trimmedQuery.isEmpty) return [];
+
+		final blogs = await _repository.searchBlogs(
+			trimmedQuery,
 			limit: _pageSize,
 			offset: 0,
 		);
 
-		_currentOffset = blogs.length;
-
+		_offset = blogs.length;
 		_hasMore = blogs.length == _pageSize;
+
 		return blogs;
 	}
 
@@ -51,18 +68,19 @@ class HomeController extends AsyncNotifier<List<models.BlogPost>> {
 		_currentFilter = options; // save current filter
 		
 		// Reset and refetch with new filters
-		_currentOffset = 0;
+		_offset = 0;
 		_hasMore = true;
 		
 		state = const AsyncValue.loading();
 		
 		try {
-			final blogs = await _repository.fetchBlogs(
+			final blogs = await _repository.searchBlogs(
+				query,
 				limit: _pageSize,
 				offset: 0,
 			);
 			
-			_currentOffset = blogs.length;
+			_offset = blogs.length;
 			_hasMore = blogs.length == _pageSize;
 			
 			final filtered = _applyFilterLogic(blogs, options);
@@ -128,31 +146,25 @@ class HomeController extends AsyncNotifier<List<models.BlogPost>> {
 		return filtered;
 	}
 
-
-	// Load more blogs (pagination)
 	Future<void> loadMore() async {
-		if (_isLoadingMore || !_hasMore) return;
-		
+		if (_isLoadingMore || !_hasMore || query.isEmpty) return;
+
 		_isLoadingMore = true;
-		
-		final currentBlogs = state.value ?? [];
-		
+		final current = state.value ?? [];
+
 		try {
-			final newBlogs = await _repository.fetchBlogs(
+			final next = await _repository.searchBlogs(
+				query,
 				limit: _pageSize,
-				offset: _currentOffset,
+				offset: _offset,
 			);
 
-			if (newBlogs.isEmpty || newBlogs.length < _pageSize) {
-				_hasMore = false;
-			}
-			
-			_currentOffset += newBlogs.length;
-			
-			state = AsyncValue.data([...currentBlogs, ...newBlogs]);
-		} catch (e) {
-			// Keep existing data, just log the error
-			log.severe('Error loading more blogs: $e');
+			if (next.length < _pageSize) _hasMore = false;
+			_offset += next.length;
+
+			state = AsyncValue.data([...current, ...next]);
+		} catch (error, stackTrace) {
+			log.severe('Error loading more results', error, stackTrace);
 		} finally {
 			_isLoadingMore = false;
 		}
@@ -160,58 +172,6 @@ class HomeController extends AsyncNotifier<List<models.BlogPost>> {
 
 	Future<void> refresh() async {
 		state = const AsyncValue.loading();
-		
-		// Remember how many items were loaded before refresh
-		final currentCount = state.value?.length ?? _pageSize;
-		final itemsToFetch = currentCount.clamp(_pageSize, _pageSize);
-		
-		_isLoadingMore = false;
-		
-		state = await AsyncValue.guard(() async {
-			final blogs = await _repository.fetchBlogs(
-				limit: itemsToFetch,
-				offset: 0,
-			);
-
-			_currentOffset = blogs.length;
-			_hasMore = blogs.length == itemsToFetch;
-			return blogs;
-		});
-	}
-
-	Future<void> deleteBlog(String id) async {
-		if (id.isEmpty) return;
-
-		final current = state.value ?? [];
-
-		state = AsyncValue.data(
-			current.where((b) => b.id != id).toList(),
-		);
-
-		try {
-			await _repository.deleteBlog(id);
-		} catch (e, stack) {
-			log.severe('❌ Error deleting blog', e, stack);
-			ref.invalidateSelf(); // rollback by refetch
-			rethrow;
-		}
-	}
-
-	Future<void> deleteMultipleBlogs(Set<String> ids) async {
-		if (ids.isEmpty) return;
-
-		final current = state.value ?? [];
-
-		state = AsyncValue.data(
-			current.where((b) => !ids.contains(b.id)).toList(),
-		);
-
-		try {
-			await _repository.deleteMultipleBlogs(ids);
-		} catch (e, stack) {
-			log.severe('❌ Error deleting blog', e, stack);
-			ref.invalidateSelf(); // rollback by refetch
-			rethrow;
-		}
+		state = await AsyncValue.guard(() => build(query));
 	}
 }
