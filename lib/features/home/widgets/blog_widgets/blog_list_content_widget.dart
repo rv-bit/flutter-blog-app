@@ -92,6 +92,12 @@ class _BlogListContentState extends State<BlogListContent> with TickerProviderSt
 								shape: RoundedRectangleBorder(
 									borderRadius: BorderRadius.circular(4),
 								),
+								fillColor: WidgetStateProperty.resolveWith((states) {
+									if (states.contains(WidgetState.selected)) {
+										return theme.Palette.blueColor;
+									}
+									return theme.Palette.whiteColor.withValues(alpha: 0.5);
+								}),
 							),
 						)
 					] else ...[
