@@ -148,7 +148,7 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 						fit: BoxFit.cover,
 						gaplessPlayback: true,
 					),
-					overlay: _removeButtonOverlay(() {
+					overlay: common_widgets.removeButtonOverlay(() {
 						setState(() {
 							savedImageData.removeAt(index);
 							savedImageIds.removeAt(index);
@@ -168,7 +168,7 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 						fit: BoxFit.cover,
 						gaplessPlayback: true,
 					),
-					overlay: _removeButtonOverlay(() {
+					overlay: common_widgets.removeButtonOverlay(() {
 						setState(() {
 							localImages.removeAt(index);
 						});
@@ -258,24 +258,6 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 				onPickImageFromCamera: onPickImageFromCamera, 
 				currentCharCount: _currentCharCount
 			)
-		);
-	}
-
-	Widget _removeButtonOverlay(VoidCallback onTap) {
-		return Positioned(
-			top: 8,
-			right: 8,
-			child: GestureDetector(
-				onTap: onTap,
-				child: Container(
-					decoration: BoxDecoration(
-						color: Colors.black.withValues(alpha: 0.6),
-						shape: BoxShape.circle,
-					),
-					padding: const EdgeInsets.all(6),
-					child: const Icon(Icons.close, size: 18, color: Colors.white),
-				),
-			),
 		);
 	}
 }

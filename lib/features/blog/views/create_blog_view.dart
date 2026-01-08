@@ -170,7 +170,7 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 													fit: BoxFit.cover,
 													gaplessPlayback: true,
 												),
-												overlay: _removeButtonOverlay(() {
+												overlay: common_widgets.removeButtonOverlay(() {
 													setState(() {
 														images.removeAt(index);
 													});
@@ -188,24 +188,6 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 				onPickImageFromCamera: onPickImageFromCamera, 
 				currentCharCount: _currentCharCount
 			)
-		);
-	}
-
-	Widget _removeButtonOverlay(VoidCallback onTap) {
-		return Positioned(
-			top: 8,
-			right: 8,
-			child: GestureDetector(
-				onTap: onTap,
-				child: Container(
-					decoration: BoxDecoration(
-						color: Colors.black.withValues(alpha: 0.6),
-						shape: BoxShape.circle,
-					),
-					padding: const EdgeInsets.all(6),
-					child: const Icon(Icons.close, size: 18, color: Colors.white),
-				),
-			),
 		);
 	}
 }
