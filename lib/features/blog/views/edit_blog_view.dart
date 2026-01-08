@@ -85,6 +85,16 @@ class _EditBlogViewState extends ConsumerState<EditBlogView> {
 		if (blog == null) return;
 		if (isSubmitting) return;
 
+		if (titleTextController.text.isEmpty || contentTextController.text.isEmpty) {
+			final snackBar = SnackBar(
+				content: const Text('Title and Content cannot be empty.'),
+				duration: Duration(milliseconds: 5000),
+			);
+
+			ScaffoldMessenger.of(context).showSnackBar(snackBar);
+			return;
+		}
+
 		await ref.read(editBlogProvider(widget.blogId).notifier).updateBlog(
 			models.UpdateBlogPayload(
 				blogId: blog.id,

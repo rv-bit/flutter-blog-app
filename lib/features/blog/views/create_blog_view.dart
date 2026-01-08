@@ -69,6 +69,16 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 	void onPostBlog(bool isSubmitting) async {
 		if (isSubmitting) return;
 
+		if (titleTextController.text.isEmpty || contentTextController.text.isEmpty) {
+			final snackBar = SnackBar(
+				content: const Text('Title and Content cannot be empty.'),
+				duration: Duration(milliseconds: 5000),
+			);
+
+			ScaffoldMessenger.of(context).showSnackBar(snackBar);
+			return;
+		}
+
 		final router = GoRouter.of(context);
 
 		await ref.read(createBlogProvider.notifier).createBlog(
