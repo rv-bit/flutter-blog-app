@@ -5,8 +5,6 @@ PODS:
   - cupertino_native_better (0.0.1):
     - Flutter
     - SVGKit (~> 3.0)
-  - device_info_plus (0.0.1):
-    - Flutter
   - Flutter (1.0.0)
   - flutter_image_compress_common (1.0.0):
     - Flutter
@@ -46,7 +44,6 @@ PODS:
 
 DEPENDENCIES:
   - cupertino_native_better (from `.symlinks/plugins/cupertino_native_better/ios`)
-  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - Flutter (from `Flutter`)
   - flutter_image_compress_common (from `.symlinks/plugins/flutter_image_compress_common/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
@@ -65,8 +62,6 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   cupertino_native_better:
     :path: ".symlinks/plugins/cupertino_native_better/ios"
-  device_info_plus:
-    :path: ".symlinks/plugins/device_info_plus/ios"
   Flutter:
     :path: Flutter
   flutter_image_compress_common:
@@ -81,7 +76,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   CocoaLumberjack: 5644158777912b7de7469fa881f8a3f259c2512a
   cupertino_native_better: 1548ee565186534a34a406bf56b7c49510485844
-  device_info_plus: 21fcca2080fbcd348be798aa36c3e5ed849eefbe
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_image_compress_common: 1697a328fd72bfb335507c6bca1a65fa5ad87df1
   image_picker_ios: e0ece4aa2a75771a7de3fa735d26d90817041326
