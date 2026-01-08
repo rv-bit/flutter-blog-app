@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import 'package:flutter_blog_app/config/theme/index.dart' as theme;
-import 'package:flutter_blog_app/common/widgets/blog_widgets/filter_button_sheet_widget.dart';
+import 'package:flutter_blog_app/common/widgets/blog_widgets/filters/index.dart';
 
 import './date_filter_view.dart';
 import './sort_filter_view.dart';

@@ -3,8 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blog_app/config/theme/index.dart' as theme;
 
-import '../widgets/blog_widgets/filters/common_filters_widget.dart';
-import '../widgets/blog_widgets/filter_button_sheet_widget.dart';
+import 'package:flutter_blog_app/common/widgets/blog_widgets/filters/index.dart';
 
 class SortFilterScreen extends StatefulWidget {
 	final SortBy initialSortBy;
