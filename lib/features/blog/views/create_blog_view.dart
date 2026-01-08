@@ -58,7 +58,7 @@ class _CreateBlogViewState extends ConsumerState<CreateBlogView> {
 	}
 
 	void onPickImageFromCamera() async {
-		File? pickedImage = await common_utils.pickImageCamera();
+		final pickedImage = await common_utils.pickImageCamera();
 		if (pickedImage != null) {
 			setState(() {
 				images.add(pickedImage);
